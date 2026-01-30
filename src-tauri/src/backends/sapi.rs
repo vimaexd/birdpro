@@ -28,12 +28,12 @@ impl TTSProvider for WindowsTTSProvider {
     fn get_voices() -> Vec<String> {
         let voices = installed_voices(None, None).unwrap();
         voices.map(|v| {
-            v.name()
+            v.name().unwrap().into_string().unwrap()
         }).collect()
     }
 
     fn get_default_voice() -> String {
         let mut voices = installed_voices(None, None).unwrap();
-        voices.nth(0)?.name()?.into_string().unwrap()
+        voices.nth(0).name().into_string().unwrap()
     }
 }

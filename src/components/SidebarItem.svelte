@@ -21,12 +21,12 @@
         grid-template-rows: 1fr;
         grid-template-columns: auto 1fr;
         gap: 32px;
-        padding: 4px 0px;
+        padding: 8px 0px;
         user-select: none;
 
         & h2 {
-            font-weight: 500;
-            font-size: 0.95rem;
+            font-weight: 600;
+            font-size: 1rem;
         }
     }
 

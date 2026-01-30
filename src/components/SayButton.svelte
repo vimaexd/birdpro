@@ -5,7 +5,7 @@
     const props = $props();
 </script>
 
-<button class="btn-say" {...props}>
+<button class="btn-say {props.active ? 'active' : ''}" {...props}>
 {#if props.loading}
     <LoadingSpinner/>
 {:else}
@@ -41,9 +41,10 @@
             filter: brightness(1.35);
         }
 
-        &:active {
+        &:active, :global(&.active) {
             transform: translateY(4px);
             box-shadow: 0px 0px color-mix(in srgb, #4744eb 70%, white 30%);
+            filter: brightness(0.90);
         }
     }
 

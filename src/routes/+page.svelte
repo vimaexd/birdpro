@@ -22,6 +22,7 @@
     import { onMount } from "svelte";
     import LoadingSpinner from "../components/LoadingSpinner.svelte";
 
+    let buttonIsDown = $state(false);
     let message = $state("");
 
     // TODO: refactor ALL of this
@@ -56,19 +57,25 @@
             class="talkbox"
             placeholder="type something to say"
             bind:value={message}
-            onkeypress={(e) => {
-                // enter key
+            onkeydown={(e) => {
                 if (e.key == "Enter") {
                     e.preventDefault();
+                    buttonIsDown = true
+                }
+            }}
+            onkeyup={(e) => {
+                if (e.key == "Enter") {
+                    e.preventDefault();
+                    buttonIsDown = false;
                     onSubmit();
                 }
             }}
         ></textarea>
-        <SayButton onclick={onSubmit} loading={isLoading} />
+        <SayButton onclick={onSubmit} loading={isLoading} active={buttonIsDown}/>
         <div class="history">
             <h2 class="history-title">History</h2>
             <div class="history-items">
-                <HistoryItem>tuah hawk</HistoryItem>
+                <HistoryItem>woof</HistoryItem>
             </div>
         </div>
     </div>
@@ -138,6 +145,8 @@
         gap: 16px;
         padding: 12px;
         background: var(--color-bg);
+
+        overflow: hidden;
     }
 
     /* set general text color */

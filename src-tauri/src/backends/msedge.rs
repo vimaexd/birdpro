@@ -22,11 +22,7 @@ impl TTSProvider for MsEdgeTTSProvider {
             .synthesize(message, &speech_config)
             .await
             .unwrap();
-
-        println!("got speech wave");
-
-        // in testing this was usually audio-24khz-48kbitrate-mono-mp3
-        println!("format: {}", audio.audio_format);
+        // format is usually audio-24khz-48kbitrate-mono-mp3
 
         Ok(audio.audio_bytes)
     }
