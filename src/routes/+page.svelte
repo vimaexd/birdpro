@@ -3,68 +3,118 @@
     import SidebarOscStatus from "../components/SidebarOscStatus.svelte";
     import StepToggle from "../components/StepToggle.svelte";
     import Voicebank from "../components/Voicebank.svelte";
+    import SayButton from "../components/SayButton.svelte";
+
     import { invoke } from "@tauri-apps/api/core";
     import { speakTts } from "$lib/bird";
     import { onMount } from "svelte";
 
-    let message = "";
-    let selectedVoice = "";
-    let voices: string[] = [];
+    let message = $state("");
 
-    let selectedDevice = "";
-    let devices: string[] = [];
+
+    // TODO: refactor ALL of this
+    interface Provider {
+      id: number;
+      name: string;
+    }
+
+    let selectedProvider = $state("");
+    let providers: Provider[] = $state([]);
+
+    let selectedVoice = $state("");
+    let voices: string[] = $state([]);
+
+    let selectedDevice = $state("");
+    let devices: string[] = $state([]);
+
+    let isLoading = $state(false);
 
     const onChangeVoice = async () => {
       await invoke("tts_set_voice", { voice: selectedVoice });
     }
 
-    const onSubmit = () => {
-      speakTts(message);
+    const onChangeDevice = async () => {
+      await invoke("audio_set_device", { deviceName: selectedDevice });
+    }
+
+    const onSubmit = async () => {
+      if(!message) return;
+
+      let msg = message;
+      message = ""
+
+      // TODO: push to history
+
+      isLoading = true;
+      await speakTts(msg);
+      isLoading = false;
     }
 
     onMount(async () => {
-      voices = await invoke("tts_get_voices");
+      providers = await invoke("tts_get_providerlist");
+      selectedProvider = await invoke("tts_get_provider");
+
+      console.log(providers);
+
+      voices = await invoke("tts_get_voicelist");
+      selectedVoice = await invoke("tts_get_voice");
+
       devices = await invoke("audio_get_devices");
+      selectedDevice = await invoke("audio_get_device");
       console.log(voices);
     })
 </script>
 
 <main class="app-container theme-dark">
     <div class="app-left">
-        <textarea class="talkbox" placeholder="type something to say" bind:value={message}></textarea>
-        <button class="btn-say" onclick={onSubmit}>
-            ↵ say
-        </button>
+        <textarea class="talkbox" placeholder="type something to say"
+            bind:value={message}
+            onkeypress={(e) => {
+              // enter key
+              if(e.key == "Enter") {
+                e.preventDefault();
+                onSubmit();
+              }
+            }}
+        ></textarea>
+        <SayButton onclick={onSubmit} loading={isLoading}/>
         <div class="history">
             <h2 class="history-title">History</h2>
             <div class="history-items">
-                <HistoryItem>awawawa</HistoryItem>
-                <HistoryItem>im bird</HistoryItem>
-                <HistoryItem>Hey guys, did you know that in terms of bird and puppy breeding, Vaporeo</HistoryItem>
-                <HistoryItem>year of the linux desktop</HistoryItem>
+                <HistoryItem>tuah hawk</HistoryItem>
             </div>
         </div>
 
     </div>
     <div class="app-right">
-        <StepToggle name="pitch"/>
-        <StepToggle name="speed"/>
+        <!-- <StepToggle name="pitch"/> -->
+        <!-- <StepToggle name="speed"/> -->
 
-        <p>SUPER BETA DEBUG SHIT</p>
-        <p>Voice</p>
-        <select name="pets" id="pet-select" onchange={onChangeVoice} bind:value={selectedVoice}>
-          {#each voices as voice}
-           	<option value={voice}>{voice}</option>
-          {/each}
-        </select>
+        <Voicebank voiceName={selectedVoice} provider="Microsoft Edge TTS [!!CHANGE ME!!]" />
 
-        <p>Device</p>
-        <select name="pets" id="pet-select" bind:value={selectedDevice}>
-          {#each devices as device}
-           	<option value={device}>{device}</option>
-          {/each}
-        </select>
-        <!-- <Voicebank/> -->
+        <div>
+            <p>SUPER BETA DEBUG SHIT</p>
+            <p>Provider</p>
+            <select name="pets" id="pet-select" bind:value={selectedProvider}>
+              {#each providers as provider}
+               	<option value={provider.id}>{provider.name}</option>
+              {/each}
+            </select>
+
+            <p>Voice</p>
+            <select name="pets" id="pet-select" onchange={onChangeVoice} bind:value={selectedVoice}>
+              {#each voices as voice}
+               	<option value={voice}>{voice}</option>
+              {/each}
+            </select>
+
+            <p>Device</p>
+            <select name="pets" id="pet-select" onchange={onChangeDevice} bind:value={selectedDevice}>
+              {#each devices as device}
+               	<option value={device}>{device}</option>
+              {/each}
+            </select>
+        </div>
         <!-- <SidebarOscStatus>
             Connected to VRChat OSC
         </SidebarOscStatus>
@@ -108,32 +158,6 @@
         height: 100%;
     }
 
-    .btn-say {
-        width: 100%;
-        background-color: #4744eb;
-        color: #fff;
-        border: none;
-        padding: 24px 16px;
-        font-size: 1.25rem;
-
-        border-radius: var(--rounding);
-
-        transition: filter, transform .15s var(--ease-out-expo);
-        will-change: filter;
-
-        box-shadow: 0px 4px color-mix(in srgb, #4744eb 70%, white 30%);
-
-        cursor: pointer;
-
-        &:hover {
-            filter: brightness(1.35);
-        }
-
-        &:active {
-            transform: translateY(4px);
-            box-shadow: 0px 0px color-mix(in srgb, #4744eb 70%, white 30%);
-        }
-    }
 
     .app-left {
         display: flex;

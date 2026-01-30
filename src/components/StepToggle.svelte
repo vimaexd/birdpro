@@ -48,10 +48,10 @@
         transition: filter .15s var(--ease-out-expo);
         will-change: filter;
         filter: brightness(1.0) saturate(var(--btn-sat));
-    }
 
-    .buttons > button:hover {
-        filter: brightness(1.75) saturate(var(--btn-sat));
+        &:hover {
+            filter: brightness(1.75) saturate(var(--btn-sat));
+        }
     }
 
     #steptoggle-slide {

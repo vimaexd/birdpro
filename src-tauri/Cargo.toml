@@ -26,3 +26,4 @@ tts = "0.26.3"
 msedge-tts = "0.3.0"
 rodio = { version = "0.21.1" }
 cpal = { version = "0.17.1", features = ["asio", "jack"] }
+tokio = "1.49.0"

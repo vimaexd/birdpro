@@ -1,7 +1,13 @@
+<script>
+    const {
+      provider, voiceName
+    } = $props();
+</script>
+
 <div class="voice-status">
     <div class="status-text">
-        <h2>Microsoft Hazel Desktop - English (Great Britain)</h2>
-        <p>System</p>
+        <h2>{voiceName}</h2>
+        <p>{provider}</p>
     </div>
 
     <div class="arrow">
@@ -14,8 +20,7 @@
 <style>
     .voice-status {
         display: flex;
-        justify-content: center;
-        align-items: center;
+        justify-content: space-between;
 
         width: 100%;
         background: #000 linear-gradient(176deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.08) 10%, rgba(255,255,255,0.02) 40%);
@@ -31,11 +36,16 @@
             & h2 {
                 font-size: 1em;
             }
+            user-select: none;
         }
 
         & .arrow {
             font-size: 1.5rem;
             font-weight: 600;
+
+            & p {
+                user-select: none;
+            }
         }
     }
 </style>
