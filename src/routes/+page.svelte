@@ -4,117 +4,118 @@
     import StepToggle from "../components/StepToggle.svelte";
     import Voicebank from "../components/Voicebank.svelte";
     import SayButton from "../components/SayButton.svelte";
+    import SidebarItem from "../components/SidebarItem.svelte";
 
-    import { invoke } from "@tauri-apps/api/core";
-    import { speakTts } from "$lib/bird";
+    import {
+        speakTts,
+        ttsStore,
+        audioStore,
+        initialiseStores,
+        setVoice,
+        setProvider,
+        setAudioDevice,
+        ttsVoices,
+        audioDevices,
+        ttsProviders,
+        resolveProvider,
+    } from "$lib/bird";
     import { onMount } from "svelte";
+    import LoadingSpinner from "../components/LoadingSpinner.svelte";
 
     let message = $state("");
 
-
     // TODO: refactor ALL of this
     interface Provider {
-      id: number;
-      name: string;
+        id: number;
+        name: string;
     }
-
-    let selectedProvider = $state("");
-    let providers: Provider[] = $state([]);
-
-    let selectedVoice = $state("");
-    let voices: string[] = $state([]);
-
-    let selectedDevice = $state("");
-    let devices: string[] = $state([]);
 
     let isLoading = $state(false);
 
-    const onChangeVoice = async () => {
-      await invoke("tts_set_voice", { voice: selectedVoice });
-    }
-
-    const onChangeDevice = async () => {
-      await invoke("audio_set_device", { deviceName: selectedDevice });
-    }
-
     const onSubmit = async () => {
-      if(!message) return;
+        if (!message) return;
 
-      let msg = message;
-      message = ""
+        let msg = message;
+        message = "";
 
-      // TODO: push to history
+        // TODO: push to history
 
-      isLoading = true;
-      await speakTts(msg);
-      isLoading = false;
-    }
+        isLoading = true;
+        await speakTts(msg);
+        isLoading = false;
+    };
 
     onMount(async () => {
-      providers = await invoke("tts_get_providerlist");
-      selectedProvider = await invoke("tts_get_provider");
-
-      console.log(providers);
-
-      voices = await invoke("tts_get_voicelist");
-      selectedVoice = await invoke("tts_get_voice");
-
-      devices = await invoke("audio_get_devices");
-      selectedDevice = await invoke("audio_get_device");
-      console.log(voices);
-    })
+        await initialiseStores();
+    });
 </script>
 
 <main class="app-container theme-dark">
     <div class="app-left">
-        <textarea class="talkbox" placeholder="type something to say"
+        <textarea
+            class="talkbox"
+            placeholder="type something to say"
             bind:value={message}
             onkeypress={(e) => {
-              // enter key
-              if(e.key == "Enter") {
-                e.preventDefault();
-                onSubmit();
-              }
+                // enter key
+                if (e.key == "Enter") {
+                    e.preventDefault();
+                    onSubmit();
+                }
             }}
         ></textarea>
-        <SayButton onclick={onSubmit} loading={isLoading}/>
+        <SayButton onclick={onSubmit} loading={isLoading} />
         <div class="history">
             <h2 class="history-title">History</h2>
             <div class="history-items">
                 <HistoryItem>tuah hawk</HistoryItem>
             </div>
         </div>
-
     </div>
     <div class="app-right">
         <!-- <StepToggle name="pitch"/> -->
         <!-- <StepToggle name="speed"/> -->
 
-        <Voicebank voiceName={selectedVoice} provider="Microsoft Edge TTS [!!CHANGE ME!!]" />
+        {#if $ttsStore.providerId}
+            <Voicebank
+                voiceName={$ttsStore.voice}
+                provider={resolveProvider($ttsStore.providerId).name}
+            />
+        {:else}
+            <LoadingSpinner/>
+        {/if}
 
-        <div>
-            <p>SUPER BETA DEBUG SHIT</p>
+        <SidebarItem title="Debug">
             <p>Provider</p>
-            <select name="pets" id="pet-select" bind:value={selectedProvider}>
-              {#each providers as provider}
-               	<option value={provider.id}>{provider.name}</option>
-              {/each}
+            <select
+                onchange={(e) => setProvider($ttsStore.providerId)}
+                bind:value={$ttsStore.providerId}
+            >
+                {#each $ttsProviders as provider}
+                    <option value={provider.id}>{provider.name}</option>
+                {/each}
             </select>
 
             <p>Voice</p>
-            <select name="pets" id="pet-select" onchange={onChangeVoice} bind:value={selectedVoice}>
-              {#each voices as voice}
-               	<option value={voice}>{voice}</option>
-              {/each}
+            <select
+                onchange={() => setVoice($ttsStore.voice)}
+                bind:value={$ttsStore.voice}
+            >
+                {#each $ttsVoices as voice}
+                    <option value={voice}>{voice}</option>
+                {/each}
             </select>
 
-            <p>Device</p>
-            <select name="pets" id="pet-select" onchange={onChangeDevice} bind:value={selectedDevice}>
-              {#each devices as device}
-               	<option value={device}>{device}</option>
-              {/each}
+            <p>Output Device</p>
+            <select
+                onchange={() => setAudioDevice($audioStore.device)}
+                bind:value={$audioStore.device}
+            >
+                {#each $audioDevices as device}
+                    <option value={device}>{device}</option>
+                {/each}
             </select>
-        </div>
+        </SidebarItem>
         <!-- <SidebarOscStatus>
             Connected to VRChat OSC
         </SidebarOscStatus>
@@ -130,16 +131,18 @@
         grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
         grid-template-rows: 1fr;
         min-height: 100vh;
+        min-width: 100vw;
         height: 100%;
         width: 100%;
 
-        gap: 4px;
+        gap: 16px;
         padding: 12px;
         background: var(--color-bg);
     }
 
     /* set general text color */
-    .app-container, textarea {
+    .app-container,
+    textarea {
         color: var(--color-text);
     }
 
@@ -158,16 +161,14 @@
         height: 100%;
     }
 
-
     .app-left {
         display: flex;
         flex-direction: column;
         width: 100%;
         gap: 8px;
     }
-    .app-right {
-        padding: 0px 8px;
 
+    .app-right {
         display: flex;
         flex-direction: column;
         gap: 8px;
@@ -189,11 +190,13 @@
 
         .history-items {
             justify-content: end;
-            display:flex;
+            display: flex;
             flex-direction: column;
             min-width: 0;
             gap: 8px;
             width: 100%;
         }
     }
+
+
 </style>

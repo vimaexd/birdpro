@@ -1,15 +1,13 @@
 <script>
     import IconEnter from "../assets/icons/IconEnter.svelte";
-    import IconSpinner from "../assets/icons/IconSpinner.svelte";
+    import LoadingSpinner from "./LoadingSpinner.svelte";
 
     const props = $props();
 </script>
 
 <button class="btn-say" {...props}>
 {#if props.loading}
-    <div class="spin spin-center">
-        <IconSpinner height={24}/>
-    </div>
+    <LoadingSpinner/>
 {:else}
     <IconEnter height={24} width={24}/> <span class="action">say</span>
 {/if}
@@ -49,28 +47,11 @@
         }
     }
 
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg)
-        }
-        100% {
-            transform: rotate(360deg)
-        }
-    }
+
 
     .action {
         margin-left: 8px;
     }
 
-    .spin-center {
-        display: flex;
-        align-items: center;
-    }
 
-    .spin {
-        animation-name: spin;
-        animation-duration: 0.6s;
-        animation-timing-function: linear;
-        animation-iteration-count: infinite;
-    }
 </style>

@@ -27,3 +27,7 @@ msedge-tts = "0.3.0"
 rodio = { version = "0.21.1" }
 cpal = { version = "0.17.1", features = ["jack"] }
 tokio = "1.49.0"
+reqwest = { version = "0.13.1", features = ["json"] }
+
+[target.'cfg(windows)'.dependencies]
+sapi-lite = "0.1.1"

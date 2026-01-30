@@ -14,12 +14,20 @@ use tokio::sync::Mutex as AsyncMutex;
 use std::sync::Mutex as SyncMutex;
 use crate::audio::AudioSetup;
 use crate::backends::{msedge::{MsEdgeTTSProvider}};
-use crate::provider::{TTSBackend, TTSProvider};
+use crate::provider::{TTSBackend, TTSProvider, TTSProviderPlatform};
 
 pub struct AppData {
   provider: TTSBackend,
   audio_setup: AudioSetup,
   voice: String
+}
+
+pub fn get_platform() -> TTSProviderPlatform {
+    match std::env::consts::OS {
+        "windows" => TTSProviderPlatform::Windows,
+        "linux" => TTSProviderPlatform::Linux,
+        _ => TTSProviderPlatform::Unknown
+    }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -41,6 +49,7 @@ pub fn run() {
             crate::ipc::tts::tts_get_voice,
             crate::ipc::tts::tts_get_providerlist,
             crate::ipc::tts::tts_get_provider,
+            crate::ipc::tts::tts_set_provider,
             crate::ipc::audio::audio_get_devices,
             crate::ipc::audio::audio_get_device,
             crate::ipc::audio::audio_set_device

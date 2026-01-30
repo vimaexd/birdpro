@@ -1,22 +1,51 @@
+use serde::{Serialize, Deserialize};
 
-#[derive(Default, Clone, Copy, serde::Serialize)]
+#[derive(Default, Clone, Copy, Serialize, Deserialize, Debug)]
 pub enum TTSBackend {
     #[default]
-    MsEdge
+    MsEdge,
+
+    TikTok,
+
+    #[cfg(windows)]
+    Windows
 }
 
-#[derive(Clone, Copy, serde::Serialize)]
+#[derive(Clone, Copy, Serialize)]
 pub struct TTSBackendInfo {
-    id: TTSBackend,
-    name: &'static str,
+    pub id: TTSBackend,
+    pub name: &'static str,
+    pub supported_platforms: &'static [TTSProviderPlatform]
 }
 
 pub static TTS_BACKENDS: &[TTSBackendInfo] = &[
     TTSBackendInfo {
         id: TTSBackend::MsEdge,
-        name: "Microsoft Edge TTS"
+        name: "Microsoft Edge TTS",
+        supported_platforms: &[TTSProviderPlatform::Windows, TTSProviderPlatform::Linux]
+    },
+    TTSBackendInfo {
+        id: TTSBackend::TikTok,
+        name: "TikTok",
+        supported_platforms: &[]
+    },
+    #[cfg(windows)]
+    TTSBackendInfo {
+        id: TTSBackend::Windows,
+        name: "Windows",
+        supported_platforms: &[TTSProviderPlatform::Windows]
     },
 ];
+
+#[derive(Clone, Copy, Serialize, PartialEq)]
+pub enum TTSProviderPlatform {
+    Linux,
+    Windows,
+    Unknown
+
+    // maybe in the future?
+    // MacOS,
+}
 
 pub trait TTSProvider {
     fn name() -> &'static str;

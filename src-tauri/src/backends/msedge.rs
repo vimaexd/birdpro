@@ -1,13 +1,13 @@
 use msedge_tts::voice::{get_voices_list};
 use msedge_tts::tts::SpeechConfig;
 use msedge_tts::tts::client::connect_async;
-use crate::provider::TTSProvider;
+use crate::provider::{TTSProvider, TTSProviderPlatform};
 
 pub struct MsEdgeTTSProvider {}
 
 impl TTSProvider for MsEdgeTTSProvider {
     fn name() -> &'static str {
-        "Microsoft Edge Read-Aloud"
+        "Microsoft Edge TTS"
     }
 
     async fn get_speech_bytes(message: &str, voice: &String) -> Result<Vec<u8>, ()> {

@@ -40,6 +40,8 @@
         }
 
         & .arrow {
+            align-self: center;
+            transform: translateY(-3px);
             font-size: 1.5rem;
             font-weight: 600;
 
