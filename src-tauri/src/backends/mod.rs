@@ -1,3 +1,5 @@
 pub mod msedge;
 pub mod tiktok;
-pub mod sapi;
+
+#[cfg(windows)]
+pub mod windows;

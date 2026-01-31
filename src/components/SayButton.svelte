@@ -26,6 +26,7 @@
         border: none;
         /*padding: 24px 16px;*/
         font-size: 1.25rem;
+        font-family: var(--font-family);
         height: 164px;
 
         border-radius: var(--rounding);

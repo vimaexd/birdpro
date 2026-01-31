@@ -44,7 +44,8 @@ export async function setProvider(providerId: string) {
   await invoke("tts_set_provider", { provider: providerId })
   ttsStore.set({
     ...get(ttsStore),
-    providerId: providerId
+    providerId: providerId,
+    voice: await invoke("tts_get_voice") // fetch new default voice
   });
 
   console.log(get(ttsStore))

@@ -3,7 +3,7 @@ use rodio::{Decoder, DeviceTrait, cpal};
 use tauri::State;
 use tauri::{Manager};
 use tokio::sync::Mutex as AsyncMutex;
-use crate::backends::sapi::WindowsTTSProvider;
+use crate::backends::windows::WindowsTTSProvider;
 use crate::backends::tiktok::TiktokTTSProvider;
 use crate::backends::msedge::MsEdgeTTSProvider;
 use crate::provider::{TTS_BACKENDS, TTSBackend, TTSProvider, TTSBackendInfo};
@@ -93,6 +93,16 @@ pub async fn tts_get_provider(state: State<'_, AsyncMutex<AppData>>) -> Result<T
 pub async fn tts_set_provider(provider: TTSBackend, state: State<'_, AsyncMutex<AppData>>) -> Result<(), ()> {
     let mut state = state.lock().await;
     state.provider = provider.clone();
+
+    let default_voice = match state.provider {
+        TTSBackend::MsEdge => MsEdgeTTSProvider::get_default_voice(),
+        TTSBackend::TikTok => TiktokTTSProvider::get_default_voice(),
+
+        #[cfg(windows)]
+        TTSBackend::Windows => WindowsTTSProvider::get_default_voice()
+    };
+
+    state.voice = default_voice;
 
     println!("provider changed to {:?}", provider);
 
