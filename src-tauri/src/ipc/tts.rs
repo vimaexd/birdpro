@@ -3,6 +3,8 @@ use rodio::{Decoder, DeviceTrait, cpal};
 use tauri::State;
 use tauri::{Manager};
 use tokio::sync::Mutex as AsyncMutex;
+
+#[cfg(windows)]
 use crate::backends::windows::WindowsTTSProvider;
 use crate::backends::tiktok::TiktokTTSProvider;
 use crate::backends::msedge::MsEdgeTTSProvider;
