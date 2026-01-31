@@ -15,25 +15,29 @@ pub enum TTSBackend {
 pub struct TTSBackendInfo {
     pub id: TTSBackend,
     pub name: &'static str,
-    pub supported_platforms: &'static [TTSProviderPlatform]
+    pub supported_platforms: &'static [TTSProviderPlatform],
+    pub cloud: bool
 }
 
 pub static TTS_BACKENDS: &[TTSBackendInfo] = &[
     TTSBackendInfo {
         id: TTSBackend::MsEdge,
         name: "Microsoft Edge TTS",
-        supported_platforms: &[TTSProviderPlatform::Windows, TTSProviderPlatform::Linux]
+        supported_platforms: &[TTSProviderPlatform::Windows, TTSProviderPlatform::Linux],
+        cloud: true
     },
     TTSBackendInfo {
         id: TTSBackend::TikTok,
         name: "TikTok",
-        supported_platforms: &[]
+        supported_platforms: &[],
+        cloud: true
     },
     #[cfg(windows)]
     TTSBackendInfo {
         id: TTSBackend::Windows,
         name: "Windows",
-        supported_platforms: &[TTSProviderPlatform::Windows]
+        supported_platforms: &[TTSProviderPlatform::Windows],
+        cloud: false
     },
 ];
 

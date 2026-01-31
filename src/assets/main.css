@@ -5,7 +5,8 @@
 :root {
     --color-text: #fff;
     --color-bg: #111210;
-    --color-surface0: #282A27;
+    --color-surface0:#2f2f30;
+    --color-surface1: #373638;
     --font-family: "Switzer", sans-serif;
 
     --rounding: 12px;
@@ -29,3 +30,5 @@ h6, p {
     margin: 0px;
     padding: 0px;
 }
+
+/* global select styles */

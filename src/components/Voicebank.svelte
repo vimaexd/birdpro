@@ -1,13 +1,20 @@
 <script>
+    import IconCloud from "../assets/icons/IconCloud.svelte";
+
     const {
-      provider, voiceName
+      provider, voiceName, cloud = false
     } = $props();
 </script>
 
 <div class="voice-status">
     <div class="status-text">
         <h2>{voiceName}</h2>
-        <p>{provider}</p>
+        <p>
+            {provider}
+        {#if cloud}
+            <IconCloud width="24px" height="24px"/>
+        {/if}
+        </p>
     </div>
 
     <div class="arrow">
@@ -36,10 +43,17 @@
             & h2 {
                 font-size: 1em;
             }
+            & p {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
             user-select: none;
         }
 
         & .arrow {
+            display: flex;
+
             align-self: center;
             transform: translateY(-3px);
             font-size: 1.5rem;

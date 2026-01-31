@@ -4,6 +4,7 @@ import { writable, get } from "svelte/store";
 interface Provider {
   id: string;
   name: string;
+  cloud: boolean;
 }
 
 export let audioDevices = writable([]);

@@ -5,6 +5,8 @@
     import Voicebank from "../components/Voicebank.svelte";
     import SayButton from "../components/SayButton.svelte";
     import SidebarItem from "../components/SidebarItem.svelte";
+    import SelectList from "../components/ui/SelectList.svelte";
+    import SelectListOption from "../components/ui/SelectListOption.svelte";
 
     import {
         speakTts,
@@ -21,6 +23,8 @@
     } from "$lib/bird";
     import { onMount } from "svelte";
     import LoadingSpinner from "../components/LoadingSpinner.svelte";
+    import IconCloud from "../assets/icons/IconCloud.svelte";
+
 
     let buttonIsDown = $state(false);
     let message = $state("");
@@ -87,41 +91,50 @@
             <Voicebank
                 voiceName={$ttsStore.voice}
                 provider={resolveProvider($ttsStore.providerId).name}
+                cloud={resolveProvider($ttsStore.providerId).cloud}
             />
         {:else}
             <LoadingSpinner/>
         {/if}
 
         <SidebarItem title="Debug">
-            <p>Provider</p>
-            <select
-                onchange={(e) => setProvider($ttsStore.providerId)}
-                bind:value={$ttsStore.providerId}
-            >
-                {#each $ttsProviders as provider}
-                    <option value={provider.id}>{provider.name}</option>
-                {/each}
-            </select>
+            <div class="debug">
+                <p>Provider</p>
+                <SelectList bind:value={$ttsStore.providerId} onChange={() => setProvider($ttsStore.providerId)}>
+                    {#each $ttsProviders as provider}
+                        <SelectListOption value={provider.id}>
+                            {provider.name}
+                            {#if provider.cloud}
+                                <IconCloud width="16px" height="16px"/>
+                            {/if}
+                        </SelectListOption>
+                    {/each}
+                    <SelectListOption value={0}>
+                        Dummy Provider 1
+                    </SelectListOption>
+                    <SelectListOption value={0}>
+                        Dummy Provider 2
+                    </SelectListOption>
+                </SelectList>
 
-            <p>Voice</p>
-            <select
-                onchange={() => setVoice($ttsStore.voice)}
-                bind:value={$ttsStore.voice}
-            >
-                {#each $ttsVoices as voice}
-                    <option value={voice}>{voice}</option>
-                {/each}
-            </select>
+                <p>Voice</p>
+                <SelectList bind:value={$ttsStore.value} onChange={() => setVoice($ttsStore.value)}>
+                    {#each $ttsVoices as voice}
+                        <SelectListOption value={voice}>
+                            {voice}
+                        </SelectListOption>
+                    {/each}
+                </SelectList>
 
-            <p>Output Device</p>
-            <select
-                onchange={() => setAudioDevice($audioStore.device)}
-                bind:value={$audioStore.device}
-            >
-                {#each $audioDevices as device}
-                    <option value={device}>{device}</option>
-                {/each}
-            </select>
+                <p>Output Device</p>
+                <SelectList onChange={() => setAudioDevice($audioStore.device)} bind:value={$audioStore.device}>
+                    {#each $audioDevices as device}
+                        <SelectListOption value={device}>
+                            {device}
+                        </SelectListOption>
+                    {/each}
+                </SelectList>
+            </div>
         </SidebarItem>
         <!-- <SidebarOscStatus>
             Connected to VRChat OSC
@@ -135,9 +148,11 @@
 <style>
     .app-container {
         display: grid;
-        grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+        grid-template-columns: minmax(0, 3fr) 360px;
         grid-template-rows: 1fr;
         min-height: 100vh;
+        max-height: 100vh;
+
         min-width: 100vw;
         height: 100%;
         width: 100%;
@@ -181,6 +196,8 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
+
+        max-height: calc(100vh - 24px);
     }
 
     .history {
@@ -207,5 +224,7 @@
         }
     }
 
-
+    .debug {
+        height: 100%;
+    }
 </style>
