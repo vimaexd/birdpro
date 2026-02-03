@@ -94,7 +94,7 @@ jobs:
             xdg-utils \
             nsis \
             lld \
-            lvm \
+            llvm \
 
       - name: install rust
         run: |
