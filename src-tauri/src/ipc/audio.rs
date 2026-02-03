@@ -19,13 +19,16 @@ pub fn audio_get_devices() -> Vec<String> {
 }
 
 #[tauri::command]
-pub async fn audio_get_device(state: State<'_, AsyncMutex<AppData>>) -> Result<String, ()> {
+pub async fn audio_get_device(setup_idx: usize, state: State<'_, AsyncMutex<AppData>>) -> Result<Option<String>, ()> {
     let state = state.lock().await;
-    Ok(state.audio_setup.device.name().unwrap())
+    if state.audio_setups.get(setup_idx).is_none() {
+        return Ok(None)
+    }
+    Ok(Some(state.audio_setups[setup_idx].device.name().unwrap()))
 }
 
 #[tauri::command]
-pub async fn audio_set_device(device_name: String, state: State<'_, AsyncMutex<AppData>>) -> Result<(), ()> {
+pub async fn audio_set_device(setup_idx: usize, device_name: String, state: State<'_, AsyncMutex<AppData>>) -> Result<(), ()> {
     let mut state = state.lock().await;
 
     //find the device based on the name
@@ -34,9 +37,10 @@ pub async fn audio_set_device(device_name: String, state: State<'_, AsyncMutex<A
         x.name().unwrap() == device_name
     }).expect("failed to resolve device");
 
+    log::info!("[IPC] Audio setup update (setup {})", setup_idx);
     let setup = AudioSetup::from_device(device);
+    state.audio_setups[setup_idx] = setup;
 
-    state.audio_setup = setup;
 
     Ok(())
 }

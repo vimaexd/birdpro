@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use reqwest;
 use serde::Serialize;
 use serde_json::Value;
-use crate::provider::{TTSProvider, TTSProviderPlatform};
+use crate::{provider::{TTSProvider, TTSProviderPlatform}, voice::Voice};
 
 // TODO: fix all of this and make it work with a session id
 
@@ -21,11 +21,11 @@ impl TTSProvider for TiktokTTSProvider {
         "TikTok"
     }
 
-    async fn get_speech_bytes(message: &str, voice: &String) -> Result<Vec<u8>, ()> {
+    async fn get_speech_bytes(message: &str, voice: &Voice) -> Result<Vec<u8>, ()> {
 
         let mut map = HashMap::new();
         map.insert("text", message);
-        map.insert("voice", voice);
+        map.insert("voice", voice.id.as_str());
 
         let client = reqwest::Client::new();
         let resp: Value = client.post(TTBASEURL)
@@ -41,12 +41,24 @@ impl TTSProvider for TiktokTTSProvider {
         Ok(vec![])
     }
 
-    fn get_voices() -> Vec<String> {
-        // TODO: populate with all voices
-        vec!["en_us_002".to_string()]
+    fn get_voices() -> Vec<Voice> {
+        // TODO: write
+        vec![Voice {
+            provider: crate::provider::TTSBackend::TikTok,
+            id: "".to_string(),
+            name: "test".to_string(),
+            rate: 1.0,
+            pitch: 0
+        }]
     }
 
-    fn get_default_voice() -> String {
-        return "en_us_002".to_string();
+    fn get_default_voice() -> Voice {
+        Voice {
+            provider: crate::provider::TTSBackend::TikTok,
+            id: "".to_string(),
+            name: "test".to_string(),
+            rate: 1.0,
+            pitch: 0
+        }
     }
 }

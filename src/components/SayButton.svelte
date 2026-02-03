@@ -21,10 +21,10 @@
         align-items: center;
 
         width: 100%;
-        background-color: #4744eb;
+        background-color: var(--color-accent);
         color: #fff;
         border: none;
-        /*padding: 24px 16px;*/
+
         font-size: 1.25rem;
         font-family: var(--font-family);
         height: 164px;
@@ -34,7 +34,7 @@
         transition: filter, transform .15s var(--ease-out-expo);
         will-change: filter;
 
-        box-shadow: 0px 4px color-mix(in srgb, #4744eb 70%, white 30%);
+        box-shadow: 0px 4px color-mix(in srgb, var(--color-accent) 70%, white 30%);
 
         cursor: pointer;
 
@@ -44,7 +44,7 @@
 
         &:active, :global(&.active) {
             transform: translateY(4px);
-            box-shadow: 0px 0px color-mix(in srgb, #4744eb 70%, white 30%);
+            box-shadow: 0px 0px color-mix(in srgb, var(--color-accent) 70%, white 30%);
             filter: brightness(0.90);
         }
 

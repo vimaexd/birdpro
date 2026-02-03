@@ -1,4 +1,5 @@
 use serde::{Serialize, Deserialize};
+use crate::voice::{Voice};
 
 #[derive(Default, Clone, Copy, Serialize, Deserialize, Debug)]
 pub enum TTSBackend {
@@ -54,7 +55,7 @@ pub enum TTSProviderPlatform {
 pub trait TTSProvider {
     fn name() -> &'static str;
 
-    async fn get_speech_bytes(message: &str, voice: &String) -> Result<Vec<u8>, ()>;
-    fn get_voices() -> Vec<String>;
-    fn get_default_voice() -> String;
+    async fn get_speech_bytes(message: &str, voice: &Voice) -> Result<Vec<u8>, ()>;
+    fn get_voices() -> Vec<Voice>;
+    fn get_default_voice() -> Voice;
 }

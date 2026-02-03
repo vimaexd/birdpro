@@ -40,8 +40,17 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+
+            flex-grow: 0;
+
+            min-width: 0;
+
             & h2 {
                 font-size: 1em;
+                font-weight: 600;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
             }
             & p {
                 display: flex;

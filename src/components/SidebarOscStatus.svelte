@@ -31,13 +31,14 @@
             align-items: center;
             gap: 8px;
             & h2 {
-                font-size: 1em;
+                font-size: 0.9em;
+                font-weight: 500;
             }
         }
 
         & .arrow {
             font-size: 1.25rem;
-            font-weight: 600;
+            font-weight: 500;
             margin-left: auto;
         }
 

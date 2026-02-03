@@ -7,6 +7,9 @@
         <h2>{title}</h2>
         <hr/>
     </div>
+    <div class="sidebaritem-content">
+
+    </div>
     {@render children()}
 </div>
 
@@ -14,7 +17,7 @@
     .sidebaritem {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 2px;
     }
     .sidebaritem-header {
         display: grid;
@@ -28,6 +31,12 @@
             font-weight: 600;
             font-size: 1rem;
         }
+    }
+
+    .sidebaritem-content {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
     }
 
     hr {

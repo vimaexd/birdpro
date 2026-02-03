@@ -1,7 +1,7 @@
-<script lang="ts">
+<script>
     import { getContext, setContext } from "svelte";
     import { derived } from "svelte/store";
-    const { children, value, onSelect } = $props();
+    const { children, value, onSelect = undefined } = $props();
 
     let val = getContext('selectlist-value');
     let selected = $derived(val.current == value);
@@ -11,7 +11,7 @@
 <li class={(selected) ? 'selected' : ''} onclick={() => {
   console.log("clic")
   val.set(value)
-}}>
+}} role="button">
     {@render children()}
 </li>
 

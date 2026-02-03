@@ -16,7 +16,6 @@ impl AudioSetup {
     }
 
     pub fn from_device(device: rodio::Device) -> Self {
-        println!("output: {}", device.clone().name().unwrap());
 
         let stream_handle = rodio::OutputStreamBuilder::from_device(device.clone())
             .expect("failed to open device")
@@ -26,7 +25,7 @@ impl AudioSetup {
 
         let sink = rodio::Sink::connect_new(&stream_handle.mixer());
 
-        println!("{}", "audio setup created");
+        log::info!("[Audio] audio setup created with device \"{}\"", device.clone().name().unwrap());
 
         Self {
             device,

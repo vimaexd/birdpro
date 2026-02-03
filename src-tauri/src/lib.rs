@@ -1,25 +1,26 @@
 pub mod provider;
 pub mod audio;
 pub mod backends;
+pub mod voice;
 
 #[macro_use]
 pub mod ipc;
 
-use std::io::Cursor;
-use rodio::cpal::traits::HostTrait;
-use rodio::{Decoder, DeviceTrait, cpal};
-use tauri::State;
+use log::*;
+use fern::colors::{Color, ColoredLevelConfig};
 use tauri::{Manager};
 use tokio::sync::Mutex as AsyncMutex;
-use std::sync::Mutex as SyncMutex;
 use crate::audio::AudioSetup;
 use crate::backends::{msedge::{MsEdgeTTSProvider}};
 use crate::provider::{TTSBackend, TTSProvider, TTSProviderPlatform};
+use crate::voice::Voice;
 
 pub struct AppData {
   provider: TTSBackend,
-  audio_setup: AudioSetup,
-  voice: String
+  audio_setups: Vec<AudioSetup>,
+  voice: Voice,
+  rate: f64,
+  pitch: f64
 }
 
 pub fn get_platform() -> TTSProviderPlatform {
@@ -32,13 +33,41 @@ pub fn get_platform() -> TTSProviderPlatform {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let colors_line = ColoredLevelConfig::new()
+        .error(Color::Red)
+        .warn(Color::Yellow)
+        .info(Color::White)
+        .debug(Color::White)
+        .trace(Color::BrightBlack);
+
+    fern::Dispatch::new()
+        .format(move |out, message, record| {
+            out.finish(format_args!(
+                "[{} {}] {}",
+                humantime::format_rfc3339(std::time::SystemTime::now()),
+                colors_line.color(record.level()),
+                message
+            ))
+        })
+        // .filter(|m| m.target() == "birdcore")
+        .level(log::LevelFilter::Info)
+        .chain(std::io::stdout())
+        //.chain(fern::log_file("output.log")?)
+        // Apply globally
+        .apply().unwrap();
+
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
+            info!("Bird Pro v{}", app.package_info().version);
+
+            let audio = AudioSetup::new();
             app.manage(AsyncMutex::new(AppData {
                 provider: TTSBackend::MsEdge,
-                audio_setup: AudioSetup::new(),
-                voice: MsEdgeTTSProvider::get_default_voice()
+                audio_setups: vec![audio],
+                voice: MsEdgeTTSProvider::get_default_voice(),
+                rate: 1.0,
+                pitch: 0.0
             }));
             Ok(())
         })

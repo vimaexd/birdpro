@@ -1,5 +1,5 @@
 use std::io::Cursor;
-use rodio::{Decoder, DeviceTrait, cpal};
+use rodio::{Decoder, DeviceTrait, Source, cpal};
 use tauri::State;
 use tauri::{Manager};
 use tokio::sync::Mutex as AsyncMutex;
@@ -9,27 +9,33 @@ use crate::backends::windows::WindowsTTSProvider;
 use crate::backends::tiktok::TiktokTTSProvider;
 use crate::backends::msedge::MsEdgeTTSProvider;
 use crate::provider::{TTS_BACKENDS, TTSBackend, TTSProvider, TTSBackendInfo};
+use crate::voice::{self, Voice};
 use crate::{AppData, get_platform};
 
 #[tauri::command]
-pub async fn tts_say(message: String, state: State<'_, AsyncMutex<AppData>>) -> Result<(), ()> {
+pub async fn tts_say(message: String, pitch: i32, rate: f64, state: State<'_, AsyncMutex<AppData>>) -> Result<(), ()> {
     if(message.is_empty()) {
         // empty message so skip
         // this should be handled on frontend, this is just a failsafe to prevent weird errors
         return Ok(())
     }
 
-    println!("{}", message);
+    log::info!("[IPC] TTS speech: \"{}\", pitch: {}, rate: {}", message, pitch, rate);
     let state = state.lock().await;
 
+    // add pitch and rate to voice
+    let mut voice_final = state.voice.clone();
+    voice_final.pitch = pitch;
+    voice_final.rate = rate;
+
     let bytes: Result<Vec<u8>, ()> = match state.provider {
-        TTSBackend::MsEdge => MsEdgeTTSProvider::get_speech_bytes(message.as_str(), &state.voice)
+        TTSBackend::MsEdge => MsEdgeTTSProvider::get_speech_bytes(message.as_str(), &voice_final)
             .await,
-        TTSBackend::TikTok => TiktokTTSProvider::get_speech_bytes(message.as_str(), &state.voice)
+        TTSBackend::TikTok => TiktokTTSProvider::get_speech_bytes(message.as_str(), &voice_final)
             .await,
 
         #[cfg(windows)]
-        TTSBackend::Windows => WindowsTTSProvider::get_speech_bytes(message.as_str(), &state.voice)
+        TTSBackend::Windows => WindowsTTSProvider::get_speech_bytes(message.as_str(), &voice_final)
             .await
     };
 
@@ -38,14 +44,17 @@ pub async fn tts_say(message: String, state: State<'_, AsyncMutex<AppData>>) -> 
         return Ok(()) // drop the promise to make the
     }
 
-    let source = Decoder::try_from(Cursor::new(bytes.unwrap())).unwrap();
-    state.audio_setup.stream_handle.mixer().add(source);
+
+    for setup in &state.audio_setups {
+        let src = Decoder::try_from(Cursor::new(bytes.clone()?)).unwrap();
+        setup.stream_handle.mixer().add(src);
+    }
 
     Ok(())
 }
 
 #[tauri::command]
-pub async fn tts_get_voicelist(state: State<'_, AsyncMutex<AppData>>) -> Result<Vec<String>, ()> {
+pub async fn tts_get_voicelist(state: State<'_, AsyncMutex<AppData>>) -> Result<Vec<Voice>, ()> {
     let state = state.lock().await;
 
     let voices = match state.provider {
@@ -60,17 +69,17 @@ pub async fn tts_get_voicelist(state: State<'_, AsyncMutex<AppData>>) -> Result<
 }
 
 #[tauri::command]
-pub async fn tts_get_voice(state: State<'_, AsyncMutex<AppData>>) -> Result<String, ()> {
+pub async fn tts_get_voice(state: State<'_, AsyncMutex<AppData>>) -> Result<Voice, ()> {
     let mut state = state.lock().await;
     Ok(state.voice.clone())
 }
 
 #[tauri::command]
-pub async fn tts_set_voice(voice: String, state: State<'_, AsyncMutex<AppData>>) -> Result<(), ()> {
+pub async fn tts_set_voice(voice: Voice, state: State<'_, AsyncMutex<AppData>>) -> Result<(), ()> {
     let mut state = state.lock().await;
     state.voice = voice.clone();
 
-    println!("voice changed to {}", voice);
+    log::info!("[IPC] TTS voice changed to {}", voice.id);
     Ok(())
 }
 
@@ -106,7 +115,7 @@ pub async fn tts_set_provider(provider: TTSBackend, state: State<'_, AsyncMutex<
 
     state.voice = default_voice;
 
-    println!("provider changed to {:?}", provider);
+    log::info!("[IPC] TTS provider changed to {:?}", provider);
 
     Ok(())
 }

@@ -1,8 +1,8 @@
 <script lang="ts">
-    let { children } = $props();
+    let { children, onclick = undefined } = $props();
 </script>
 
-<div class="history-item">
+<div class="history-item" role="button" onclick={onclick} tabindex="0">
     <p>{@render children()}</p>
 </div>
 

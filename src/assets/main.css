@@ -3,13 +3,14 @@
 }
 
 :root {
+    --color-accent: #4744eb;
     --color-text: #fff;
     --color-bg: #111210;
     --color-surface0:#2f2f30;
     --color-surface1: #373638;
     --font-family: "Switzer", sans-serif;
 
-    --rounding: 12px;
+    --rounding: 6px;
 
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-in-out-sine: cubic-bezier(0.37, 0, 0.63, 1);
