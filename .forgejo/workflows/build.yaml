@@ -128,6 +128,6 @@ jobs:
               with:
                   name: birdpro-win-{{FORGEJO_SHA}}
                   path: |
-                      src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.msi
+                      src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
                   if-no-files-found: warn
                   retention-days: 90
