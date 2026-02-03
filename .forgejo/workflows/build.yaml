@@ -55,13 +55,78 @@ jobs:
       - name: build bird pro
         run: |
           source "$HOME/.cargo/env"
-          bun run tauri build
+          bunx tauri build
 
       - name: upload artifact
         uses: forgejo/upload-artifact@v4
         with:
-          name: birdpro-linux
+          name: birdpro-linux-{{FORGEJO_SHA}}
           path: |
             src-tauri/target/release/bundle/appimage/*.AppImage
+          if-no-files-found: warn
+          retention-days: 90
+  build-win:
+    runs-on: docker
+    container:
+      image: ghcr.io/catthehacker/ubuntu:act-22.04
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      # tauri requirements as of https://v2.tauri.app/start/prerequisites/#linux
+      - name: install system dependencies
+        run: |
+          apt update
+          apt install -y libwebkit2gtk-4.1-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libxdo-dev \
+            libssl-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libasound2-dev \
+            libpulse-dev \
+            libjack-dev \
+            libclang-dev \
+            xdg-utils \
+            nsis \
+            lld \
+            lvm \
+
+      - name: install rust
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          echo "$HOME/.cargo/bin" >> $FORGEJO_PATH
+          source "$HOME/.cargo/env"
+          rustup show
+
+      - name: install rustup target & cargo-xwin
+        run: |
+          source "$HOME/.cargo/env"
+          rustup target add x86_64-pc-windows-msvc
+          cargo install --locked cargo-xwin
+
+      - name: install bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> $FORGEJO_PATH
+
+      - name: install js dependencies
+        run: bun ci
+
+      - name: build bird pro
+        run: |
+          source "$HOME/.cargo/env"
+          bunx tauri build --runner cargo-xwin --target x86_64-pc-windows-msvc
+
+      - name: upload artifact
+        uses: forgejo/upload-artifact@v4
+        with:
+          name: birdpro-win-{{FORGEJO_SHA}}
+          path: |
+            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.msi
           if-no-files-found: warn
           retention-days: 90
