@@ -56,6 +56,7 @@
                 display: flex;
                 align-items: center;
                 gap: 8px;
+                height: 1.2rem;
             }
             user-select: none;
         }

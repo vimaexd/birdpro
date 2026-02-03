@@ -19,8 +19,6 @@ pub struct AppData {
   provider: TTSBackend,
   audio_setups: Vec<AudioSetup>,
   voice: Voice,
-  rate: f64,
-  pitch: f64
 }
 
 pub fn get_platform() -> TTSProviderPlatform {
@@ -65,9 +63,7 @@ pub fn run() {
             app.manage(AsyncMutex::new(AppData {
                 provider: TTSBackend::MsEdge,
                 audio_setups: vec![audio],
-                voice: MsEdgeTTSProvider::get_default_voice(),
-                rate: 1.0,
-                pitch: 0.0
+                voice: MsEdgeTTSProvider::get_default_voice()
             }));
             Ok(())
         })

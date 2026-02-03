@@ -11,7 +11,7 @@
     });
 </script>
 
-<ul style="height: {height};">
+<ul style="max-height: {height};">
     {@render children()}
 </ul>
 
@@ -24,7 +24,7 @@
         border: 1px var(--color-surface0) solid;
         border-radius: var(--rounding);
 
-        overflow: scroll;
+        overflow-y: auto;
 
         flex-shrink: 1;
 

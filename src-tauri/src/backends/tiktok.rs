@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use reqwest;
 use serde::Serialize;
 use serde_json::Value;
-use crate::{provider::{TTSProvider, TTSProviderPlatform}, voice::Voice};
+use crate::{provider::{TTSProvider}, voice::Voice};
 
 // TODO: fix all of this and make it work with a session id
 
@@ -10,9 +10,7 @@ static TTBASEURL: &'static str = "";
 static TTUA: &'static str = "com.zhiliaoapp.musically/2022600030 (Linux; U; Android 7.1.2; es_ES; SM-G988N; Build/NRD90M;tt-ok/3.12.13.1)";
 
 #[derive(Serialize)]
-struct TiktokResponse {
-
-}
+struct TiktokResponse {}
 
 
 pub struct TiktokTTSProvider {}

@@ -276,12 +276,12 @@
 
         max-height: calc(100vh - 24px);
 
-        overflow: scroll;
+        overflow-y: auto;
     }
 
     .history {
         margin-top: 4px;
-        max-height: 50%;
+        height: 50%;
         display: flex;
         gap: 8px;
 

@@ -1,10 +1,8 @@
 use rodio::cpal::traits::HostTrait;
-use rodio::{Decoder, DeviceTrait, cpal};
+use rodio::{DeviceTrait, cpal};
 use tauri::State;
 use tokio::sync::Mutex as AsyncMutex;
 use crate::audio::AudioSetup;
-use crate::backends::{msedge::{MsEdgeTTSProvider}};
-use crate::provider::{TTSBackend, TTSProvider};
 use crate::AppData;
 
 #[tauri::command]

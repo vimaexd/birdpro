@@ -1,20 +1,19 @@
 use std::io::Cursor;
-use rodio::{Decoder, DeviceTrait, Source, cpal};
+use rodio::{Decoder};
 use tauri::State;
-use tauri::{Manager};
 use tokio::sync::Mutex as AsyncMutex;
 
 #[cfg(windows)]
 use crate::backends::windows::WindowsTTSProvider;
-use crate::backends::tiktok::TiktokTTSProvider;
+// use crate::backends::tiktok::TiktokTTSProvider;
 use crate::backends::msedge::MsEdgeTTSProvider;
 use crate::provider::{TTS_BACKENDS, TTSBackend, TTSProvider, TTSBackendInfo};
-use crate::voice::{self, Voice};
+use crate::voice::{Voice};
 use crate::{AppData, get_platform};
 
 #[tauri::command]
 pub async fn tts_say(message: String, pitch: i32, rate: f64, state: State<'_, AsyncMutex<AppData>>) -> Result<(), ()> {
-    if(message.is_empty()) {
+    if message.is_empty() {
         // empty message so skip
         // this should be handled on frontend, this is just a failsafe to prevent weird errors
         return Ok(())
@@ -31,8 +30,8 @@ pub async fn tts_say(message: String, pitch: i32, rate: f64, state: State<'_, As
     let bytes: Result<Vec<u8>, ()> = match state.provider {
         TTSBackend::MsEdge => MsEdgeTTSProvider::get_speech_bytes(message.as_str(), &voice_final)
             .await,
-        TTSBackend::TikTok => TiktokTTSProvider::get_speech_bytes(message.as_str(), &voice_final)
-            .await,
+        // TTSBackend::TikTok => TiktokTTSProvider::get_speech_bytes(message.as_str(), &voice_final)
+        //     .await,
 
         #[cfg(windows)]
         TTSBackend::Windows => WindowsTTSProvider::get_speech_bytes(message.as_str(), &voice_final)
@@ -59,7 +58,7 @@ pub async fn tts_get_voicelist(state: State<'_, AsyncMutex<AppData>>) -> Result<
 
     let voices = match state.provider {
         TTSBackend::MsEdge => MsEdgeTTSProvider::get_voices(),
-        TTSBackend::TikTok => TiktokTTSProvider::get_voices(),
+        // TTSBackend::TikTok => TiktokTTSProvider::get_voices(),
 
         #[cfg(windows)]
         TTSBackend::Windows => WindowsTTSProvider::get_voices()
@@ -70,7 +69,7 @@ pub async fn tts_get_voicelist(state: State<'_, AsyncMutex<AppData>>) -> Result<
 
 #[tauri::command]
 pub async fn tts_get_voice(state: State<'_, AsyncMutex<AppData>>) -> Result<Voice, ()> {
-    let mut state = state.lock().await;
+    let state = state.lock().await;
     Ok(state.voice.clone())
 }
 
@@ -107,7 +106,7 @@ pub async fn tts_set_provider(provider: TTSBackend, state: State<'_, AsyncMutex<
 
     let default_voice = match state.provider {
         TTSBackend::MsEdge => MsEdgeTTSProvider::get_default_voice(),
-        TTSBackend::TikTok => TiktokTTSProvider::get_default_voice(),
+        // TTSBackend::TikTok => TiktokTTSProvider::get_default_voice(),
 
         #[cfg(windows)]
         TTSBackend::Windows => WindowsTTSProvider::get_default_voice()
