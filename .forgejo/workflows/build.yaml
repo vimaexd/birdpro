@@ -62,6 +62,6 @@ jobs:
         with:
           name: birdpro-linux
           path: |
-            target/release/bundle/appimage/*.AppImage
+            src-tauri/target/release/bundle/appimage/*.AppImage
           if-no-files-found: warn
           retention-days: 90
