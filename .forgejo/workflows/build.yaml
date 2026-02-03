@@ -34,7 +34,8 @@ jobs:
             libasound2-dev \
             libpulse-dev \
             libjack-dev \
-            libclang-dev
+            libclang-dev \
+            xdg-utils
 
       - name: install rust
         run: |
