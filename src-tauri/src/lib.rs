@@ -12,6 +12,7 @@ use crate::provider::{TTSBackend, TTSProvider, TTSProviderPlatform};
 use crate::voice::Voice;
 use log::*;
 use tauri::Manager;
+use tauri::window::Color;
 use tokio::sync::Mutex as AsyncMutex;
 
 pub struct AppData {
@@ -59,6 +60,10 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .setup(move |app| {
             info!("Bird Pro v{}", app.package_info().version);
+
+            // set background color to avoid flashes on startup
+            app.get_webview_window("main").unwrap()
+                .set_background_color(Some(Color::from([17, 18, 16]))).unwrap();
 
             let audio = AudioSetup::new();
             app.manage(AsyncMutex::new(AppData {
