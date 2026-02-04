@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { Snippet } from "svelte";
     import SettingsAudio from "./settings-audio.svelte";
     import SettingsPlaceholder from "./settings-placeholder.svelte";
     import SettingsAbout from "./settings-about.svelte";
@@ -36,12 +35,12 @@
         <h1>Settings</h1>
         <div class="categories">
             {#each Object.keys(pages) as page}
-                <a href="#"
-                    class={(selectedPage == page) ? "selected" : ""}
+                <button
+                    class={(selectedPage === page) ? "selected" : ""}
                     onclick={() => {
                       selectedPage = page
                     }}
-                >{page}</a>
+                >{page}</button>
             {/each}
         </div>
         <div class="settings-content">
@@ -104,7 +103,7 @@
         grid-template-columns: 180px 1fr;
         grid-auto-flow: column;
 
-        gap: 0px 16px;
+        gap: 0 16px;
 
         width: 900px;
         height: 600px;
@@ -112,7 +111,7 @@
         border-radius: var(--rounding);
         padding: 16px;
 
-        box-shadow: 0px 2px 24px rgba(0,0,0,0.6);
+        box-shadow: 0 2px 24px rgba(0,0,0,0.6);
 
 
         h1 {
@@ -158,12 +157,16 @@
         flex-direction: column;
         gap: 4px;
 
-        & a {
+        & button {
             color: var(--color-text);
             text-decoration: none;
             padding: 6px 12px;
             font-size: .9rem;
+            font-family: var(--font-family);
             border-radius: var(--rounding);
+            border: none;
+            background: transparent;
+            text-align: left;
 
             user-select: none;
 

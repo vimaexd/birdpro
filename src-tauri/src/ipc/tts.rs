@@ -74,9 +74,11 @@ pub async fn tts_say(
         }
     }
 
-    // put out to all initialised audio setups
+    // put out to all initialized audio setups
     for setup in target_setups {
-        let src = Decoder::try_from(Cursor::new(bytes.clone())).unwrap();
+        let src = Decoder::try_from(Cursor::new(bytes.clone()))
+            .map_err(|_| TTSBackendError::DecodeError)?;
+
         setup.stream_handle.mixer().add(src);
     }
 

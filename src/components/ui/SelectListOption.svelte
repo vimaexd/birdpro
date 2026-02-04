@@ -8,16 +8,22 @@
 
 </script>
 
-<li class={(selected) ? 'selected' : ''} onclick={() => {
+<button class={(selected) ? 'selected' : ''} onclick={() => {
   val.set(value)
-}} role="button">
+}}>
     {@render children()}
-</li>
+</button>
 
 <style>
-    li {
+    button {
         padding: 6px 16px;
-        font-size: .90rem;
+        font-size: .9rem;
+
+        background: transparent;
+        color: var(--color-text);
+        border: none;
+        font-family: var(--font-family);
+        text-align: left;
 
         will-change: background-color, filter;
         transition: background-color .2s var(--ease-out-expo), filter .07s var(--ease-out-expo);
@@ -37,7 +43,7 @@
         align-items: center;
     }
 
-    li.selected {
+    button.selected {
         background-color: var(--color-surface0);
     }
 </style>

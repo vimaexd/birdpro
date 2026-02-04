@@ -2,9 +2,9 @@
     let { children, onclick = undefined } = $props();
 </script>
 
-<div class="history-item" role="button" onclick={onclick} tabindex="0">
+<button class="history-item" onclick={onclick} tabindex="0">
     <p>{@render children()}</p>
-</div>
+</button>
 
 <style>
     .history-item {
@@ -14,7 +14,11 @@
         /*height: 1.2em;*/
         min-width: 0;
         font-size: 1.115rem;
+        font-family: var(--font-family);
+        color: var(--color-text);
+        text-align: left;
 
+        border: none;
         border-radius: var(--rounding);
         border-bottom-left-radius: 0;
 

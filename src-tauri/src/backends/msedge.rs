@@ -28,19 +28,11 @@ impl TTSProvider for MsEdgeTTSProvider {
         speech_config.pitch = voice.pitch.into();
         speech_config.rate = (voice.rate * 10.0).round() as i32;
 
-        let mut tts = match connect_async().await {
-            Ok(v) => v,
-            Err(_) => {
-                return Err(TTSBackendError::FetchError);
-            }
-        };
+        let mut tts = connect_async().await
+            .map_err(|_| TTSBackendError::FetchError)?;
 
-        let audio = match tts.synthesize(message, &speech_config).await {
-            Ok(v) => v,
-            Err(_) => {
-                return Err(TTSBackendError::FetchError);
-            }
-        };
+        let audio = tts.synthesize(message, &speech_config).await
+            .map_err(|_| TTSBackendError::FetchError)?;
 
         Ok(audio.audio_bytes)
     }

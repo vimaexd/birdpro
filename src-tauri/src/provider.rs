@@ -29,7 +29,10 @@ pub enum TTSBackendError {
     FetchError,
 
     // failed to synthesize
-    SynthesisFailure
+    SynthesisFailure,
+
+    // failed to decode audio
+    DecodeError,
 }
 
 impl fmt::Display for TTSBackendError {
@@ -43,6 +46,10 @@ impl fmt::Display for TTSBackendError {
             TTSBackendError::SynthesisFailure => write!(
                 f,
                 "Failed to synthesize text to speech"
+            ),
+            TTSBackendError::DecodeError => write!(
+                f,
+                "Failed to decode TTS audio"
             ),
         }
     }
@@ -81,6 +88,7 @@ pub enum TTSProviderPlatform {
 pub trait TTSProvider {
     fn name() -> &'static str;
 
+    #[allow(async_fn_in_trait)]
     async fn get_speech_bytes(message: &str, voice: &Voice) -> Result<Vec<u8>, TTSBackendError>;
     fn get_voices() -> Result<Vec<Voice>, TTSBackendError>;
     fn get_default_voice() -> Voice;

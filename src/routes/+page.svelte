@@ -143,9 +143,9 @@
 
         <div class="history">
             <div class="history-side">
-                <vr/>
+                <span class="vr"></span>
                 <h2 class="history-title">History</h2>
-                <vr/>
+                <span class="vr"></span>
             </div>
             <div class="history-items">
                 {#if $historyStore.length < 1}
@@ -306,10 +306,6 @@
         display: grid;
         grid-template-columns: 128px 1fr;
         gap: 8px;
-
-        & .preview {
-
-        }
     }
 
     .history {
@@ -328,7 +324,7 @@
 
             gap: 16px;
 
-            vr {
+            .vr {
                 height: 100%;
                 border-right: 1px var(--color-surface0) solid;
             }

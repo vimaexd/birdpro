@@ -36,16 +36,11 @@ impl TTSProvider for WindowsTTSProvider {
                 </prosody>
         </speak>");
 
-        let _speech_stream = synth
+        let speech_stream = synth
             .SynthesizeSsmlToStreamAsync(&HSTRING::from(ssml))
             .expect("failed to synthesize")
-            .await;
-
-        if _speech_stream.is_err() {
-            return Err(TTSBackendError::SynthesisFailure)
-        }
-
-        let speech_stream = _speech_stream.unwrap();
+            .await
+            .map_err(|_| TTSBackendError::SynthesisFailure)?;
 
         // microsoft I hate you
         let size = speech_stream.Size().unwrap() as u32;
