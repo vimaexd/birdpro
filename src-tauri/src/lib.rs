@@ -10,7 +10,6 @@ use crate::audio::AudioSetup;
 use crate::backends::msedge::MsEdgeTTSProvider;
 use crate::provider::{TTSBackend, TTSProvider, TTSProviderPlatform};
 use crate::voice::Voice;
-use fern::colors::{Color, ColoredLevelConfig};
 use log::*;
 use tauri::Manager;
 use tokio::sync::Mutex as AsyncMutex;
@@ -31,39 +30,34 @@ pub fn get_platform() -> TTSProviderPlatform {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let colors_line = ColoredLevelConfig::new()
-        .error(Color::Red)
-        .warn(Color::Yellow)
-        .info(Color::White)
-        .debug(Color::White)
-        .trace(Color::BrightBlack);
 
     tauri::Builder::default()
         .plugin(
             tauri_plugin_log::Builder::new()
+                .format(move |out, message, record| {
+                    out.finish(format_args!(
+                        "[{} {} {}] {}",
+                        humantime::format_rfc3339(std::time::SystemTime::now()),
+                        record.level(),
+                        record.module_path().unwrap(),
+                        message
+                    ))
+                })
+                .clear_targets()
                 .level(tauri_plugin_log::log::LevelFilter::Info)
+                .target(tauri_plugin_log::Target::new(
+                    tauri_plugin_log::TargetKind::Stdout,
+                ))
+                .target(tauri_plugin_log::Target::new(
+                    tauri_plugin_log::TargetKind::LogDir {
+                        file_name: Some("logs".to_string()),
+                    },
+                ))
                 .build(),
         )
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_opener::init())
         .setup(move |app| {
-            fern::Dispatch::new()
-                .format(move |out, message, record| {
-                    out.finish(format_args!(
-                        "[{} {} {}] {}",
-                        humantime::format_rfc3339(std::time::SystemTime::now()),
-                        colors_line.color(record.level()),
-                        record.module_path().unwrap(),
-                        message
-                    ))
-                })
-                // .filter(|m| m.target() == "birdcore")
-                .level(log::LevelFilter::Info)
-                .chain(std::io::stdout())
-                // .chain(fern::log_file(log_path)?)
-                .apply()
-                .unwrap();
-
             info!("Bird Pro v{}", app.package_info().version);
 
             let audio = AudioSetup::new();

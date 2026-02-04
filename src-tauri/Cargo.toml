@@ -26,7 +26,6 @@ rodio = { version = "0.21.1" }
 cpal = { version = "0.17.1", features = ["jack"] }
 tokio = "1.49.0"
 reqwest = { version = "0.13.1", features = ["json"] }
-fern = { version = "0.7.1", features = ["colored"] }
 humantime = "2.3.0"
 log = "0.4.29"
 tauri-plugin-fs = "2"
