@@ -14,18 +14,33 @@ impl TTSProvider for MsEdgeTTSProvider {
     async fn get_speech_bytes(message: &str, voice: &Voice) -> Result<Vec<u8>, TTSBackendError> {
         let voices = get_voices_list().unwrap();
 
-        let resolved_voice = voices
+        let _resolved_voice = voices
             .iter()
-            .find(|x| &x.name == &voice.id)
-            .expect("voice not found");
+            .find(|x| &x.name == &voice.id);
+
+        if _resolved_voice.is_none() {
+            return Err(TTSBackendError::VoiceNotFound);
+        }
+
+        let resolved_voice = _resolved_voice.unwrap();
 
         let mut speech_config = SpeechConfig::from(resolved_voice);
         speech_config.pitch = voice.pitch.into();
         speech_config.rate = (voice.rate * 10.0).round() as i32;
 
-        let mut tts = connect_async().await.unwrap();
-        let audio = tts.synthesize(message, &speech_config).await.unwrap();
-        // format is usually audio-24khz-48kbitrate-mono-mp3
+        let mut tts = match connect_async().await {
+            Ok(v) => v,
+            Err(_) => {
+                return Err(TTSBackendError::FetchError);
+            }
+        };
+
+        let audio = match tts.synthesize(message, &speech_config).await {
+            Ok(v) => v,
+            Err(_) => {
+                return Err(TTSBackendError::FetchError);
+            }
+        };
 
         Ok(audio.audio_bytes)
     }

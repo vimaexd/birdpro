@@ -27,7 +27,7 @@ pub enum TTSBackendError {
 
     // internet fetch error
     FetchError,
-    
+
     // failed to synthesize
     SynthesisFailure
 }
@@ -39,6 +39,10 @@ impl fmt::Display for TTSBackendError {
             TTSBackendError::FetchError => write!(
                 f,
                 "Couldn't connect to server - check your internet connection!"
+            ),
+            TTSBackendError::SynthesisFailure => write!(
+                f,
+                "Failed to synthesize text to speech"
             ),
         }
     }
