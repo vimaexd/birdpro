@@ -5,11 +5,11 @@
     const props = $props();
 </script>
 
-<button class="btn-say {props.active ? 'active' : ''}" {...props}>
+<button style="--btn-color: {props.color || 'var(--color-accent)'};" class="btn-say {props.active ? 'active' : ''}" {...props}>
 {#if props.loading}
     <LoadingSpinner/>
 {:else}
-    <IconEnter height={24} width={24}/> <span class="action">say</span>
+    {@render props.children()}
 {/if}
 </button>
 
@@ -21,11 +21,12 @@
         align-items: center;
 
         width: 100%;
-        background-color: var(--color-accent);
+        background-color: var(--btn-color);
         color: #fff;
         border: none;
 
         font-size: 1.25rem;
+        font-weight: 500;
         font-family: var(--font-family);
         height: 164px;
 
@@ -34,7 +35,7 @@
         transition: filter, transform .15s var(--ease-out-expo);
         will-change: filter;
 
-        box-shadow: 0px 4px color-mix(in srgb, var(--color-accent) 70%, white 30%);
+        box-shadow: 0px 4px color-mix(in srgb, var(--btn-color) 70%, white 30%);
 
         cursor: pointer;
 
@@ -44,19 +45,17 @@
 
         &:active, :global(&.active) {
             transform: translateY(4px);
-            box-shadow: 0px 0px color-mix(in srgb, var(--color-accent) 70%, white 30%);
+            box-shadow: 0px 0px color-mix(in srgb, var(--btn-color) 70%, white 30%);
             filter: brightness(0.90);
         }
 
         & :global(*) {
             user-select: none;
         }
-    }
 
-
-
-    .action {
-        margin-left: 8px;
+        & :global(.action) {
+            margin-left: 8px;
+        }
     }
 
 

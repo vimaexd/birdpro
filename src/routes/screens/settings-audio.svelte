@@ -44,7 +44,7 @@
         destroyAudioDevice(1)
       }
     }}>
-        Output 2
+        Preview Device
     </Checkbox>
 
     {#if showOutput2}

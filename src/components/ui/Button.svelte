@@ -10,6 +10,7 @@
         color: var(--color-text);
         padding: 8px 16px;
         font-size: 0.9rem;
+        font-family: var(--font-family);
         width: fit-content;
         border-radius: var(--rounding);
         cursor: pointer;

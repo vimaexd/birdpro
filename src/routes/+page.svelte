@@ -3,7 +3,7 @@
     import SidebarOscStatus from "../components/SidebarOscStatus.svelte";
     import StepToggle from "../components/StepToggle.svelte";
     import Voicebank from "../components/Voicebank.svelte";
-    import SayButton from "../components/SayButton.svelte";
+    import ClickyButton from "../components/ClickyButton.svelte";
     import SidebarItem from "../components/SidebarItem.svelte";
     import SelectList from "../components/ui/SelectList.svelte";
     import SelectListOption from "../components/ui/SelectListOption.svelte";
@@ -16,7 +16,8 @@
         setProvider,
         ttsVoices,
         ttsProviders,
-        resolveProvider
+        resolveProvider,
+        audioStore
     } from "$lib/bird";
     import { onMount } from "svelte";
     import Button from '@bird/components/ui/Button.svelte';
@@ -25,10 +26,13 @@
     import { getLastMessage, historyStore, pushHistory } from "$lib/history";
     import IconPitch from "../assets/icons/IconPitch.svelte";
     import IconRate from "../assets/icons/IconRate.svelte";
+    import IconEnter from "@bird/assets/icons/IconEnter.svelte";
+
     import Settings from "./screens/settings.svelte";
 
     let talkboxRef: HTMLTextAreaElement;
     let buttonIsDown = $state(false);
+    let buttonIsDownPreview = $state(false);
     let message = $state("");
 
     // TODO: refactor ALL of this
@@ -38,6 +42,7 @@
     }
 
     let isLoading = $state(false);
+    let isLoadingPreview = $state(false);
     let showSettings = $state(false);
 
     const sendMessage = async () => {
@@ -52,6 +57,15 @@
         await speakTts(msg);
         isLoading = false;
     };
+
+    const sendPreviewMessage = async () => {
+        if (!message) return;
+
+        isLoadingPreview = true;
+        await speakTts(message, true);
+        isLoadingPreview = false;
+    }
+
 
     const focusTextbox = () => {
       if(talkboxRef) {
@@ -110,7 +124,22 @@
             bind:value={message}
             bind:this={talkboxRef}
         ></textarea>
-        <SayButton onclick={sendMessage} loading={isLoading} active={buttonIsDown}/>
+        <div class="buttons">
+            {#if $audioStore.devices[1] !== undefined}
+                <ClickyButton onclick={sendPreviewMessage} loading={isLoadingPreview} active={buttonIsDownPreview} color="var(--color-surface2)">
+                    preview
+                </ClickyButton>
+            {/if}
+
+            <div style={($audioStore.devices[1] === undefined) ? "grid-column-start: 1; grid-column-end: 3;": ''}>
+                <ClickyButton
+                        onclick={sendMessage}
+                        loading={isLoading}
+                        active={buttonIsDown}>
+                    <IconEnter height={24} width={24}/> <span class="action">say</span>
+                </ClickyButton>
+            </div>
+        </div>
 
         <div class="history">
             <div class="history-side">
@@ -271,6 +300,16 @@
         max-height: calc(100vh - 24px);
 
         overflow-y: auto;
+    }
+
+    .buttons {
+        display: grid;
+        grid-template-columns: 128px 1fr;
+        gap: 8px;
+
+        & .preview {
+
+        }
     }
 
     .history {

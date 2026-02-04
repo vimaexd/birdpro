@@ -108,9 +108,9 @@ export async function destroyAudioDevice(idx: number) {
   await invoke("audio_destroy", { setupIdx: idx });
 }
 
-export async function speakTts(text: string) {
+export async function speakTts(text: string, preview: boolean = false) {
   let ttss = get(ttsStore);
-  await invoke("tts_say", { message: text, pitch: ttss.pitch, rate: ttss.rate });
+  await invoke("tts_say", { message: text, pitch: ttss.pitch, rate: ttss.rate, preview });
 }
 
 export async function getDeviceInfo(idx: number): Promise<AudioDevice> {

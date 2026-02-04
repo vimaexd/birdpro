@@ -62,6 +62,7 @@
         height: 100vh;
         background-color: rgba(0,0,0,0.40);
         backdrop-filter: blur(6px) brightness(0.80);
+        animation: settings-in .2s var(--ease-out-expo);
         z-index: 10;
         overflow: hidden;
 
@@ -72,7 +73,30 @@
         user-select: none;
     }
 
+    @keyframes settings-bg-in {
+        0% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    @keyframes settings-in {
+        0% {
+            transform: scale(0.98);
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
     .settings {
+        animation: settings-in .5s var(--ease-out-expo);
         position: relative;
 
         display: grid;

@@ -10,12 +10,14 @@ use crate::backends::msedge::MsEdgeTTSProvider;
 use crate::provider::{TTSBackend, TTSBackendError, TTSBackendInfo, TTSProvider, TTS_BACKENDS};
 use crate::voice::Voice;
 use crate::{get_platform, AppData};
+use crate::audio::AudioSetup;
 
 #[tauri::command]
 pub async fn tts_say(
     message: String,
     pitch: i32,
     rate: f64,
+    preview: Option<bool>,
     state: State<'_, AsyncMutex<AppData>>,
 ) -> Result<(), TTSBackendError> {
     if message.is_empty() {
@@ -54,13 +56,28 @@ pub async fn tts_say(
         Err(e) => return Err(e),
     };
 
-    for setup in &state.audio_setups {
-        if setup.is_none() {
-            continue;
+    let mut target_setups: Vec<&AudioSetup> = vec![];
+    if preview.is_some() && preview.unwrap() == true {
+        // currently hardcoded that setup index 1
+        // is the preview device, so put to that
+        if state.audio_setups.get(1).is_some() {
+            target_setups.push(&state.audio_setups.get(1).unwrap().as_ref().unwrap());
         }
+    } else {
+        for setup in &state.audio_setups {
+            if setup.is_none() {
+                continue;
+            }
 
+            let setup_ref = setup.as_ref().unwrap();
+            target_setups.push(setup_ref);
+        }
+    }
+
+    // put out to all initialised audio setups
+    for setup in target_setups {
         let src = Decoder::try_from(Cursor::new(bytes.clone())).unwrap();
-        setup.as_ref().unwrap().stream_handle.mixer().add(src);
+        setup.stream_handle.mixer().add(src);
     }
 
     Ok(())
