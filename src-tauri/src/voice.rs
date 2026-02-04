@@ -6,6 +6,7 @@ pub struct Voice {
     pub provider: TTSBackend,
     pub id: String,
     pub name: String,
+    pub lang: Option<String>,
 
     // rate, as decimal
     pub rate: f64,

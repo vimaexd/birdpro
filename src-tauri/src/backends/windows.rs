@@ -18,21 +18,19 @@ impl TTSProvider for WindowsTTSProvider {
         let voices = SpeechSynthesizer::AllVoices().unwrap();
         let resolved_voice = voices
             .into_iter()
-            .find(|x| &x.Id().unwrap().to_string() == &voice.id)
+            .find(|x| &x.DisplayName().unwrap().to_string() == &voice.name)
             .expect("couldnt resolve system voice");
 
         synth.SetVoice(&resolved_voice).unwrap();
 
-        let voice_name = voice.name.clone();
+        let lang = voice.lang.as_ref().unwrap();
         let pitch = voice.pitch;
         let rate = (voice.rate * 10.0).round() as i32;
 
-        let ssml = format!("<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xml:lang=\"en-US\">
-            <voice name=\"{voice_name}\">
+        let ssml = format!("<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xml:lang=\"{lang}\">
                 <prosody pitch=\"{pitch:+}%\" rate=\"{rate:+}%\">
                     {message}
                 </prosody>
-            </voice>
         </speak>");
 
         let speech_stream = synth
@@ -75,6 +73,7 @@ impl TTSProvider for WindowsTTSProvider {
                 provider: TTSBackend::Windows,
                 id: x.Id().unwrap().to_string(),
                 name: x.DisplayName().unwrap().to_string(),
+                lang: Some(x.Language().unwrap().to_string()),
                 rate: 1.0,
                 pitch: 0,
             })
@@ -87,6 +86,7 @@ impl TTSProvider for WindowsTTSProvider {
             provider: TTSBackend::Windows,
             id: default.Id().unwrap().to_string(),
             name: default.DisplayName().unwrap().to_string(),
+            lang: Some(default.Language().unwrap().to_string()),
             rate: 1.0,
             pitch: 0,
         }

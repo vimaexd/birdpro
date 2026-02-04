@@ -44,6 +44,7 @@ impl TTSProvider for MsEdgeTTSProvider {
                 provider: TTSBackend::MsEdge,
                 id: x.name.clone(),
                 name: x.friendly_name.clone().unwrap(),
+                lang: x.locale.clone(),
                 pitch: 0,
                 rate: 1.0,
             })
@@ -57,6 +58,7 @@ impl TTSProvider for MsEdgeTTSProvider {
             provider: TTSBackend::MsEdge,
             id: "Microsoft Server Speech Text to Speech Voice (en-US, EmmaNeural)".to_string(),
             name: "Microsoft Emma Online (Natural) - English (United States)".to_string(),
+            lang: Some("en-US".to_string()),
             pitch: 0,
             rate: 1.0,
         };
