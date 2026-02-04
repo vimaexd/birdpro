@@ -1,9 +1,9 @@
+use crate::provider::{TTSBackend, TTSProvider};
+use crate::voice::Voice;
 use windows::core::{Interface, HSTRING};
 use windows::Media::SpeechSynthesis::SpeechSynthesizer;
 use windows::Storage::Streams::{Buffer, InputStreamOptions};
 use windows::Win32::System::WinRT::IBufferByteAccess;
-use crate::provider::{TTSBackend, TTSProvider};
-use crate::voice::Voice;
 
 pub struct WindowsTTSProvider {}
 
@@ -16,9 +16,10 @@ impl TTSProvider for WindowsTTSProvider {
         let synth = SpeechSynthesizer::new().unwrap();
 
         let voices = SpeechSynthesizer::AllVoices().unwrap();
-        let resolved_voice = voices.into_iter().find(|x| {
-            &x.Id().unwrap().to_string() == &voice.id
-        }).expect("couldnt resolve system voice");
+        let resolved_voice = voices
+            .into_iter()
+            .find(|x| &x.Id().unwrap().to_string() == &voice.id)
+            .expect("couldnt resolve system voice");
 
         synth.SetVoice(&resolved_voice).unwrap();
 
@@ -34,7 +35,8 @@ impl TTSProvider for WindowsTTSProvider {
             </voice>
         </speak>");
 
-        let speech_stream = synth.SynthesizeSsmlToStreamAsync(&HSTRING::from(ssml))
+        let speech_stream = synth
+            .SynthesizeSsmlToStreamAsync(&HSTRING::from(ssml))
             .expect("failed to synthesize")
             .await
             .expect("failed to synthesize after async");
@@ -43,9 +45,9 @@ impl TTSProvider for WindowsTTSProvider {
         let size = speech_stream.Size().unwrap() as u32;
         let mut bytes = Vec::new();
 
-
         let buf = Buffer::Create(size).unwrap();
-        let ibuf = speech_stream.ReadAsync(&buf, size, InputStreamOptions::None)
+        let ibuf = speech_stream
+            .ReadAsync(&buf, size, InputStreamOptions::None)
             .expect("ibuf failed")
             .await
             .expect("ibuf failed post-async");
@@ -57,12 +59,8 @@ impl TTSProvider for WindowsTTSProvider {
         }
 
         let byte_access: IBufferByteAccess = ibuf.cast().unwrap();
-        let ptr = unsafe {
-            byte_access.Buffer().unwrap()
-        };
-        let slic = unsafe {
-            std::slice::from_raw_parts(ptr, len as usize).to_vec()
-        };
+        let ptr = unsafe { byte_access.Buffer().unwrap() };
+        let slic = unsafe { std::slice::from_raw_parts(ptr, len as usize).to_vec() };
 
         bytes.extend_from_slice(&slic);
 
@@ -71,15 +69,16 @@ impl TTSProvider for WindowsTTSProvider {
 
     fn get_voices() -> Vec<Voice> {
         let voices = SpeechSynthesizer::AllVoices().unwrap();
-        voices.into_iter().map(|x| {
-            Voice {
+        voices
+            .into_iter()
+            .map(|x| Voice {
                 provider: TTSBackend::Windows,
                 id: x.Id().unwrap().to_string(),
                 name: x.DisplayName().unwrap().to_string(),
                 rate: 1.0,
                 pitch: 0,
-            }
-        }).collect()
+            })
+            .collect()
     }
 
     fn get_default_voice() -> Voice {

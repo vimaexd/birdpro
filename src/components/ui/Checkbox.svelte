@@ -1,12 +1,13 @@
 <script>
     let {
       checked = $bindable(),
-      children
+      children,
+      onchange
     } = $props();
 </script>
 
 <div class="box">
-    <input type="checkbox" bind:checked={checked}>
+    <input type="checkbox" bind:checked={checked} {onchange}>
     <p>{@render children()}</p>
 </div>
 

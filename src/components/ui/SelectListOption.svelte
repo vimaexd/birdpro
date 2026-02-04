@@ -9,7 +9,6 @@
 </script>
 
 <li class={(selected) ? 'selected' : ''} onclick={() => {
-  console.log("clic")
   val.set(value)
 }} role="button">
     {@render children()}

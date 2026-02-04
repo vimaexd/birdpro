@@ -13,6 +13,12 @@ interface Voice {
   name: string;
 }
 
+interface AudioDevice {
+  name: string;
+  sample_rate: number;
+  bit_depth: number;
+}
+
 export let audioDevices = writable([]);
 export let ttsProviders = writable<Provider[]>([]);
 export let ttsVoices = writable<Voice[]>([]);
@@ -51,10 +57,10 @@ export async function initialiseStores() {
     rate: 1.0
   })
 
-  updateDeviceList();
+  updateAudioDeviceList();
   audioStore.set({
     devices: {
-      0: await invoke("audio_get_device", { setupIdx: 0 })
+      0: (await getDeviceInfo(0)).name
     }
   })
 
@@ -91,11 +97,23 @@ export async function updateVoiceList() {
   ttsVoices.set(await invoke("tts_get_voicelist"));
 }
 
-export async function updateDeviceList() {
+export async function updateAudioDeviceList() {
   audioDevices.set(await invoke("audio_get_devices"));
+}
+
+export async function destroyAudioDevice(idx: number) {
+  let as = get(audioStore);
+  delete as.devices[1];
+  audioStore.set(as)
+  await invoke("audio_destroy", { setupIdx: idx });
 }
 
 export async function speakTts(text: string) {
   let ttss = get(ttsStore);
   await invoke("tts_say", { message: text, pitch: ttss.pitch, rate: ttss.rate });
+}
+
+export async function getDeviceInfo(idx: number): Promise<AudioDevice> {
+  let info: AudioDevice = await invoke("audio_get_device", { setupIdx: idx });
+  return info;
 }

@@ -177,12 +177,6 @@
                         {/if}
                     </SelectListOption>
                 {/each}
-                <SelectListOption value={0}>
-                    Dummy Provider 1
-                </SelectListOption>
-                <SelectListOption value={0}>
-                    Dummy Provider 2
-                </SelectListOption>
             </SelectList>
 
             <p>Voice</p>

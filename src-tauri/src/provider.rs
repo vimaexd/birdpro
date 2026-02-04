@@ -1,5 +1,6 @@
-use serde::{Serialize, Deserialize};
-use crate::voice::{Voice};
+use crate::voice::Voice;
+use std::fmt;
+use serde::{Deserialize, Serialize};
 
 #[derive(Default, Clone, Copy, Serialize, Deserialize, Debug)]
 pub enum TTSBackend {
@@ -7,9 +8,8 @@ pub enum TTSBackend {
     MsEdge,
 
     // TikTok,
-
     #[cfg(windows)]
-    Windows
+    Windows,
 }
 
 #[derive(Clone, Copy, Serialize)]
@@ -17,7 +17,22 @@ pub struct TTSBackendInfo {
     pub id: TTSBackend,
     pub name: &'static str,
     pub supported_platforms: &'static [TTSProviderPlatform],
-    pub cloud: bool
+    pub cloud: bool,
+}
+
+#[derive(Debug, Clone, Copy, Serialize)]
+pub enum TTSBackendError {
+    VoiceNotFound,
+    FetchError,
+}
+
+impl fmt::Display for TTSBackendError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+       match *self {
+           TTSBackendError::VoiceNotFound => write!(f, "Requested voice was not found"),
+           TTSBackendError::FetchError => write!(f, "Couldn't connect to server - check your internet connection!"),
+       }
+    }
 }
 
 pub static TTS_BACKENDS: &[TTSBackendInfo] = &[
@@ -25,7 +40,7 @@ pub static TTS_BACKENDS: &[TTSBackendInfo] = &[
         id: TTSBackend::MsEdge,
         name: "Microsoft Edge TTS",
         supported_platforms: &[TTSProviderPlatform::Windows, TTSProviderPlatform::Linux],
-        cloud: true
+        cloud: true,
     },
     // TTSBackendInfo {
     //     id: TTSBackend::TikTok,
@@ -38,24 +53,22 @@ pub static TTS_BACKENDS: &[TTSBackendInfo] = &[
         id: TTSBackend::Windows,
         name: "Windows",
         supported_platforms: &[TTSProviderPlatform::Windows],
-        cloud: false
+        cloud: false,
     },
 ];
+
 #[derive(Clone, Copy, Serialize, PartialEq)]
 pub enum TTSProviderPlatform {
     Linux,
     Windows,
-    Unknown
-
-    // maybe in the future?
-    // MacOS,
+    Unknown, // maybe in the future?
+             // MacOS,
 }
 
 pub trait TTSProvider {
     fn name() -> &'static str;
 
-    #[allow(async_fn_in_trait)]
-    async fn get_speech_bytes(message: &str, voice: &Voice) -> Result<Vec<u8>, ()>;
-    fn get_voices() -> Vec<Voice>;
+    async fn get_speech_bytes(message: &str, voice: &Voice) -> Result<Vec<u8>, TTSBackendError>;
+    fn get_voices() -> Result<Vec<Voice>, TTSBackendError>;
     fn get_default_voice() -> Voice;
 }

@@ -10,6 +10,7 @@
       "Audio": SettingsAudio,
       "Behaviour": SettingsPlaceholder,
       "Providers": SettingsPlaceholder,
+      "OSC": SettingsPlaceholder,
       "About": SettingsAbout,
     }
 
@@ -81,8 +82,8 @@
 
         gap: 0px 16px;
 
-        width: 800px;
-        height: 450px;
+        width: 900px;
+        height: 600px;
         background-color: var(--color-bg);
         border-radius: var(--rounding);
         padding: 16px;

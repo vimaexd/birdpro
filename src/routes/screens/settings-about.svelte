@@ -1,10 +1,10 @@
 <script>
-    import logo from "@bird/assets/img/icon.png";
+    import logo from "@bird/assets/img/birdpro-logo.png";
     import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
 
 </script>
 <div class="about">
-    <img src={logo} class="logo"/>
+    <img src={logo} class="logo" alt="Bird Pro logo"/>
 
     <div class="text">
        	<p>Bird Pro v{#await getVersion() then ver}{ver}{/await}</p>

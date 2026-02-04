@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use crate::provider::TTSBackend;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Voice {
@@ -11,5 +11,5 @@ pub struct Voice {
     pub rate: f64,
 
     // pitch, as semitones
-    pub pitch: i32
+    pub pitch: i32,
 }

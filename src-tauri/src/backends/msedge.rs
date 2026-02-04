@@ -1,8 +1,8 @@
-use msedge_tts::voice::{get_voices_list};
-use msedge_tts::tts::SpeechConfig;
-use msedge_tts::tts::client::connect_async;
+use crate::provider::{TTSBackend, TTSBackendError, TTSProvider};
 use crate::voice::Voice;
-use crate::provider::{TTSProvider, TTSBackend};
+use msedge_tts::tts::client::connect_async;
+use msedge_tts::tts::SpeechConfig;
+use msedge_tts::voice::get_voices_list;
 
 pub struct MsEdgeTTSProvider {}
 
@@ -11,46 +11,45 @@ impl TTSProvider for MsEdgeTTSProvider {
         "Microsoft Edge TTS"
     }
 
-    async fn get_speech_bytes(message: &str, voice: &Voice) -> Result<Vec<u8>, ()> {
+    async fn get_speech_bytes(message: &str, voice: &Voice) -> Result<Vec<u8>, TTSBackendError> {
         let voices = get_voices_list().unwrap();
 
-        let resolved_voice = voices.iter().find(|x| {
-            &x.name == &voice.id
-        }).expect("voice not found");
+        let resolved_voice = voices
+            .iter()
+            .find(|x| &x.name == &voice.id)
+            .expect("voice not found");
 
         let mut speech_config = SpeechConfig::from(resolved_voice);
         speech_config.pitch = voice.pitch.into();
         speech_config.rate = (voice.rate * 10.0).round() as i32;
 
         let mut tts = connect_async().await.unwrap();
-        let audio = tts
-            .synthesize(message, &speech_config)
-            .await
-            .unwrap();
+        let audio = tts.synthesize(message, &speech_config).await.unwrap();
         // format is usually audio-24khz-48kbitrate-mono-mp3
 
         Ok(audio.audio_bytes)
     }
 
-    fn get_voices() -> Vec<Voice> {
+    fn get_voices() -> Result<Vec<Voice>, TTSBackendError> {
         let voices = match get_voices_list() {
             Ok(v) => v,
             Err(_) => {
-                log::error!("[MsEdge] Failed to fetch voices list");
-                return vec![];
+                log::error!("failed to fetch voices list");
+                return Ok(vec![]);
             }
         };
-        let mapped: Vec<Voice> = voices.iter().map(|x| {
-            Voice {
+        let mapped: Vec<Voice> = voices
+            .iter()
+            .map(|x| Voice {
                 provider: TTSBackend::MsEdge,
                 id: x.name.clone(),
                 name: x.friendly_name.clone().unwrap(),
                 pitch: 0,
-                rate: 1.0
-            }
-        }).collect();
+                rate: 1.0,
+            })
+            .collect();
 
-        mapped
+        Ok(mapped)
     }
 
     fn get_default_voice() -> Voice {
@@ -59,7 +58,7 @@ impl TTSProvider for MsEdgeTTSProvider {
             id: "Microsoft Server Speech Text to Speech Voice (en-US, EmmaNeural)".to_string(),
             name: "Microsoft Emma Online (Natural) - English (United States)".to_string(),
             pitch: 0,
-            rate: 1.0
-        }
+            rate: 1.0,
+        };
     }
 }
