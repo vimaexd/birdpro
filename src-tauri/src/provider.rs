@@ -22,8 +22,14 @@ pub struct TTSBackendInfo {
 
 #[derive(Debug, Clone, Copy, Serialize)]
 pub enum TTSBackendError {
+    // voice not found
     VoiceNotFound,
+
+    // internet fetch error
     FetchError,
+    
+    // failed to synthesize
+    SynthesisFailure
 }
 
 impl fmt::Display for TTSBackendError {

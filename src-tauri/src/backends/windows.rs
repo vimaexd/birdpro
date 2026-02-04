@@ -18,10 +18,13 @@ impl TTSProvider for WindowsTTSProvider {
         let voices = SpeechSynthesizer::AllVoices().unwrap();
         let resolved_voice = voices
             .into_iter()
-            .find(|x| &x.DisplayName().unwrap().to_string() == &voice.name)
-            .expect("couldnt resolve system voice");
+            .find(|x| &x.DisplayName().unwrap().to_string() == &voice.name);
 
-        synth.SetVoice(&resolved_voice).unwrap();
+        if resolved_voice.is_none() {
+            return Err(TTSBackendError::VoiceNotFound);
+        }
+
+        synth.SetVoice(&resolved_voice.unwrap()).unwrap();
 
         let lang = voice.lang.as_ref().unwrap();
         let pitch = voice.pitch;
@@ -33,22 +36,27 @@ impl TTSProvider for WindowsTTSProvider {
                 </prosody>
         </speak>");
 
-        let speech_stream = synth
+        let _speech_stream = synth
             .SynthesizeSsmlToStreamAsync(&HSTRING::from(ssml))
             .expect("failed to synthesize")
-            .await
-            .expect("failed to synthesize after async");
+            .await;
 
-        // microsoft i hate you
+        if _speech_stream.is_err() {
+            return Err(TTSBackendError::SynthesisFailure)
+        }
+
+        let speech_stream = _speech_stream.unwrap();
+
+        // microsoft I hate you
         let size = speech_stream.Size().unwrap() as u32;
         let mut bytes = Vec::new();
 
         let buf = Buffer::Create(size).unwrap();
         let ibuf = speech_stream
             .ReadAsync(&buf, size, InputStreamOptions::None)
-            .expect("ibuf failed")
+            .unwrap()
             .await
-            .expect("ibuf failed post-async");
+            .unwrap();
 
         let len = ibuf.Length().unwrap();
         if len == 0 {
