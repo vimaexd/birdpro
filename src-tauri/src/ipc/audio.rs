@@ -23,15 +23,15 @@ pub async fn audio_get_device(
     if state.audio_setups.get(setup_idx).is_none() {
         return Ok(None);
     }
-    let setup = state.audio_setups[setup_idx].as_ref().expect("failed to get audio setup");
+    let setup = state.audio_setups[setup_idx]
+        .as_ref()
+        .expect("failed to get audio setup");
 
-    Ok(Some(
-        AudioDeviceInfo {
-            name: setup.device.name().unwrap(),
-            sample_rate: setup.stream_handle.config().sample_rate(),
-            bit_depth: setup.stream_handle.config().sample_format().sample_size()
-        }
-    ))
+    Ok(Some(AudioDeviceInfo {
+        name: setup.device.name().unwrap(),
+        sample_rate: setup.stream_handle.config().sample_rate(),
+        bit_depth: setup.stream_handle.config().sample_format().sample_size(),
+    }))
 }
 
 #[tauri::command]
@@ -64,7 +64,7 @@ pub async fn audio_destroy(
 
     let target_setup = state.audio_setups.get(setup_idx);
     if target_setup.is_none() {
-        return Ok(())
+        return Ok(());
     }
 
     log::info!("destroying audio setup {}", setup_idx);
@@ -101,9 +101,14 @@ pub async fn audio_set_volume(
 
     let target_setup = state.audio_setups.get(setup_idx);
     if target_setup.is_none() {
-        return Ok(())
+        return Ok(());
     }
 
-    target_setup.unwrap().as_ref().unwrap().sink.set_volume(volume);
+    target_setup
+        .unwrap()
+        .as_ref()
+        .unwrap()
+        .sink
+        .set_volume(volume);
     Ok(())
 }

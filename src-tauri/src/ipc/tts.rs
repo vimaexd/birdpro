@@ -7,7 +7,7 @@ use tokio::sync::Mutex as AsyncMutex;
 use crate::backends::windows::WindowsTTSProvider;
 // use crate::backends::tiktok::TiktokTTSProvider;
 use crate::backends::msedge::MsEdgeTTSProvider;
-use crate::provider::{TTS_BACKENDS, TTSBackend, TTSBackendError, TTSBackendInfo, TTSProvider};
+use crate::provider::{TTSBackend, TTSBackendError, TTSBackendInfo, TTSProvider, TTS_BACKENDS};
 use crate::voice::Voice;
 use crate::{get_platform, AppData};
 
@@ -51,9 +51,7 @@ pub async fn tts_say(
 
     let bytes = match _bytes {
         Ok(v) => v,
-        Err(e) => {
-            return Err(e)
-        }
+        Err(e) => return Err(e),
     };
 
     for setup in &state.audio_setups {
@@ -69,7 +67,9 @@ pub async fn tts_say(
 }
 
 #[tauri::command]
-pub async fn tts_get_voicelist(state: State<'_, AsyncMutex<AppData>>) -> Result<Vec<Voice>, TTSBackendError> {
+pub async fn tts_get_voicelist(
+    state: State<'_, AsyncMutex<AppData>>,
+) -> Result<Vec<Voice>, TTSBackendError> {
     let state = state.lock().await;
 
     let _voices = match state.provider {
@@ -81,9 +81,7 @@ pub async fn tts_get_voicelist(state: State<'_, AsyncMutex<AppData>>) -> Result<
 
     let voices = match _voices {
         Ok(v) => v,
-        Err(e) => {
-            return Err(e)
-        }
+        Err(e) => return Err(e),
     };
 
     Ok(voices)

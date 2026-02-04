@@ -39,11 +39,14 @@ pub fn run() {
         .trace(Color::BrightBlack);
 
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .level(tauri_plugin_log::log::LevelFilter::Info)
+                .build(),
+        )
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_opener::init())
         .setup(move |app| {
-            let log_path = app.path().app_local_data_dir()?.join("output.log");
-
             fern::Dispatch::new()
                 .format(move |out, message, record| {
                     out.finish(format_args!(
@@ -57,12 +60,11 @@ pub fn run() {
                 // .filter(|m| m.target() == "birdcore")
                 .level(log::LevelFilter::Info)
                 .chain(std::io::stdout())
-                .chain(fern::log_file(log_path)?)
+                // .chain(fern::log_file(log_path)?)
                 .apply()
                 .unwrap();
 
             info!("Bird Pro v{}", app.package_info().version);
-
 
             let audio = AudioSetup::new();
             app.manage(AsyncMutex::new(AppData {

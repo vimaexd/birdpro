@@ -1,6 +1,6 @@
 use crate::voice::Voice;
-use std::fmt;
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 #[derive(Default, Clone, Copy, Serialize, Deserialize, Debug)]
 pub enum TTSBackend {
@@ -28,10 +28,13 @@ pub enum TTSBackendError {
 
 impl fmt::Display for TTSBackendError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-       match *self {
-           TTSBackendError::VoiceNotFound => write!(f, "Requested voice was not found"),
-           TTSBackendError::FetchError => write!(f, "Couldn't connect to server - check your internet connection!"),
-       }
+        match *self {
+            TTSBackendError::VoiceNotFound => write!(f, "Requested voice was not found"),
+            TTSBackendError::FetchError => write!(
+                f,
+                "Couldn't connect to server - check your internet connection!"
+            ),
+        }
     }
 }
 

@@ -69,18 +69,16 @@ impl TTSProvider for WindowsTTSProvider {
 
     fn get_voices() -> Result<Vec<Voice>, TTSBackendError> {
         let voices = SpeechSynthesizer::AllVoices().unwrap();
-        Ok(
-            voices
-                .into_iter()
-                .map(|x| Voice {
-                    provider: TTSBackend::Windows,
-                    id: x.Id().unwrap().to_string(),
-                    name: x.DisplayName().unwrap().to_string(),
-                    rate: 1.0,
-                    pitch: 0,
-                })
-                .collect()
-        )
+        Ok(voices
+            .into_iter()
+            .map(|x| Voice {
+                provider: TTSBackend::Windows,
+                id: x.Id().unwrap().to_string(),
+                name: x.DisplayName().unwrap().to_string(),
+                rate: 1.0,
+                pitch: 0,
+            })
+            .collect())
     }
 
     fn get_default_voice() -> Voice {
