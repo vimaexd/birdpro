@@ -1,4 +1,4 @@
-use crate::provider::{TTSBackend, TTSProvider};
+use crate::provider::{TTSBackend, TTSBackendError, TTSProvider};
 use crate::voice::Voice;
 use windows::core::{Interface, HSTRING};
 use windows::Media::SpeechSynthesis::SpeechSynthesizer;
@@ -12,7 +12,7 @@ impl TTSProvider for WindowsTTSProvider {
         "Windows"
     }
 
-    async fn get_speech_bytes(message: &str, voice: &Voice) -> Result<Vec<u8>, ()> {
+    async fn get_speech_bytes(message: &str, voice: &Voice) -> Result<Vec<u8>, TTSBackendError> {
         let synth = SpeechSynthesizer::new().unwrap();
 
         let voices = SpeechSynthesizer::AllVoices().unwrap();
@@ -67,18 +67,20 @@ impl TTSProvider for WindowsTTSProvider {
         Ok(bytes)
     }
 
-    fn get_voices() -> Vec<Voice> {
+    fn get_voices() -> Result<Vec<Voice>, TTSBackendError> {
         let voices = SpeechSynthesizer::AllVoices().unwrap();
-        voices
-            .into_iter()
-            .map(|x| Voice {
-                provider: TTSBackend::Windows,
-                id: x.Id().unwrap().to_string(),
-                name: x.DisplayName().unwrap().to_string(),
-                rate: 1.0,
-                pitch: 0,
-            })
-            .collect()
+        Ok(
+            voices
+                .into_iter()
+                .map(|x| Voice {
+                    provider: TTSBackend::Windows,
+                    id: x.Id().unwrap().to_string(),
+                    name: x.DisplayName().unwrap().to_string(),
+                    rate: 1.0,
+                    pitch: 0,
+                })
+                .collect()
+        )
     }
 
     fn get_default_voice() -> Voice {
