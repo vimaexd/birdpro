@@ -17,11 +17,11 @@
         ttsVoices,
         ttsProviders,
         resolveProvider,
-        audioStore
+        audioStore,
     } from "$lib/bird";
     import { invoke } from "@tauri-apps/api/core";
     import { onMount } from "svelte";
-    import Button from '@bird/components/ui/Button.svelte';
+    import Button from "@bird/components/ui/Button.svelte";
     import LoadingSpinner from "../components/LoadingSpinner.svelte";
     import IconCloud from "../assets/icons/IconCloud.svelte";
     import { getLastMessage, historyStore, pushHistory } from "$lib/history";
@@ -51,20 +51,20 @@
     let typingIndicatorTimeout: number;
 
     const onTyping = async () => {
-      if(typingIndicatorShowing) {
-        clearTimeout(typingIndicatorTimeout);
-        typingIndicatorTimeout = setTimeout(onTypingTimeout, 4000)
-      }
+        if (typingIndicatorShowing) {
+            clearTimeout(typingIndicatorTimeout);
+            typingIndicatorTimeout = setTimeout(onTypingTimeout, 4000);
+        }
 
-      await invoke("osc_typing_indicator", { typing: true });
-      typingIndicatorShowing = true;
-      typingIndicatorTimeout = setTimeout(onTypingTimeout, 4000)
-    }
+        await invoke("osc_typing_indicator", { typing: true });
+        typingIndicatorShowing = true;
+        typingIndicatorTimeout = setTimeout(onTypingTimeout, 4000);
+    };
 
     const onTypingTimeout = async () => {
-      console.log("typing timeout")
-      await invoke("osc_typing_indicator", { typing: false });
-    }
+        console.log("typing timeout");
+        await invoke("osc_typing_indicator", { typing: false });
+    };
 
     const sendMessage = async () => {
         if (!message) return;
@@ -85,57 +85,56 @@
         isLoadingPreview = true;
         await speakTts(message, true);
         isLoadingPreview = false;
-    }
-
+    };
 
     const focusTextbox = () => {
-      if(talkboxRef) {
-        talkboxRef.focus();
-      }
-    }
+        if (talkboxRef) {
+            talkboxRef.focus();
+        }
+    };
 
     onMount(async () => {
         await initialiseStores();
 
         // focus talk box if not focussed
-        document.body.addEventListener('keydown', (e) => {
-          switch(e.key) {
-            case "ArrowUp":
-              e.preventDefault();
-              if(message == "") {
-                message = getLastMessage()
-              }
-              focusTextbox();
-              break;
+        document.body.addEventListener("keydown", (e) => {
+            switch (e.key) {
+                case "ArrowUp":
+                    e.preventDefault();
+                    if (message == "") {
+                        message = getLastMessage();
+                    }
+                    focusTextbox();
+                    break;
 
-            // handled by events on text area,
-            // but
-            case "Enter":
-              e.preventDefault();
-              if(buttonIsDown) return;
-              sendMessage();
-              buttonIsDown = true;
-              break;
+                // handled by events on text area,
+                // but
+                case "Enter":
+                    e.preventDefault();
+                    if (buttonIsDown) return;
+                    sendMessage();
+                    buttonIsDown = true;
+                    break;
 
-            default:
-              focusTextbox();
-          }
+                default:
+                    focusTextbox();
+            }
         });
 
-        document.body.addEventListener('keyup', (e) => {
-          switch(e.key) {
-            case "Enter":
-              e.preventDefault();
-              buttonIsDown = false;
-              break;
-          }
+        document.body.addEventListener("keyup", (e) => {
+            switch (e.key) {
+                case "Enter":
+                    e.preventDefault();
+                    buttonIsDown = false;
+                    break;
+            }
         });
     });
 </script>
 
 <main class="app-container theme-dark">
     {#if showSettings}
-        <Settings onClose={() => showSettings = false}/>
+        <Settings onClose={() => (showSettings = false)} />
     {/if}
 
     <div class="app-left">
@@ -145,26 +144,37 @@
             bind:value={message}
             bind:this={talkboxRef}
             oninput={(e: any) => {
-              // don't count deleting as typing
-              if(typingIndicatorLastLength < e.target.value.length + 1) {
-                onTyping();
-              }
-              typingIndicatorLastLength = e.target.value.length;
+                // don't count deleting as typing
+                if (typingIndicatorLastLength < e.target.value.length + 1) {
+                    onTyping();
+                }
+                typingIndicatorLastLength = e.target.value.length;
             }}
         ></textarea>
         <div class="buttons">
             {#if $audioStore.devices[1] !== undefined}
-                <ClickyButton onclick={sendPreviewMessage} loading={isLoadingPreview} active={buttonIsDownPreview} color="var(--color-surface2)">
+                <ClickyButton
+                    onclick={sendPreviewMessage}
+                    loading={isLoadingPreview}
+                    active={buttonIsDownPreview}
+                    color="var(--color-surface2)"
+                >
                     preview
                 </ClickyButton>
             {/if}
 
-            <div style={($audioStore.devices[1] === undefined) ? "grid-column-start: 1; grid-column-end: 3;": ''}>
+            <div
+                style={$audioStore.devices[1] === undefined
+                    ? "grid-column-start: 1; grid-column-end: 3;"
+                    : ""}
+            >
                 <ClickyButton
-                        onclick={sendMessage}
-                        loading={isLoading}
-                        active={buttonIsDown}>
-                    <IconEnter height={24} width={24}/> <span class="action">say</span>
+                    onclick={sendMessage}
+                    loading={isLoading}
+                    active={buttonIsDown}
+                >
+                    <IconEnter height={24} width={24} />
+                    <span class="action">say</span>
                 </ClickyButton>
             </div>
         </div>
@@ -177,12 +187,16 @@
             </div>
             <div class="history-items">
                 {#if $historyStore.length < 1}
-                    <span class="history-empty">Say something, and it'll show up here!</span>
+                    <span class="history-empty"
+                        >Say something, and it'll show up here!</span
+                    >
                 {/if}
                 {#each $historyStore as item}
-                    <HistoryItem onclick={() => {
-                      message = item
-                    }}>{item}</HistoryItem>
+                    <HistoryItem
+                        onclick={() => {
+                            message = item;
+                        }}>{item}</HistoryItem
+                    >
                 {/each}
             </div>
         </div>
@@ -195,17 +209,18 @@
                 cloud={resolveProvider($ttsStore.providerId).cloud}
             />
         {:else}
-            <LoadingSpinner/>
+            <LoadingSpinner />
         {/if}
 
         <StepToggle
             majStep={5}
             minStep={1}
             initial={0}
-            min={-48} max={48}
+            min={-48}
+            max={48}
             bind:value={$ttsStore.pitch}
         >
-            <IconPitch width={24} height={24}/>
+            <IconPitch width={24} height={24} />
             <h2>Pitch</h2>
         </StepToggle>
 
@@ -213,24 +228,27 @@
             initial={0}
             majStep={1}
             minStep={0.5}
-            min={-8} max={8}
+            min={-8}
+            max={8}
             bind:value={$ttsStore.rate}
         >
-            <IconRate width={24} height={24}/>
+            <IconRate width={24} height={24} />
             <h2>Rate</h2>
-
         </StepToggle>
 
-        <Button onclick={() => showSettings = true}>Settings</Button>
+        <Button onclick={() => (showSettings = true)}>Settings</Button>
 
         <SidebarItem title="Debug">
             <p>Provider</p>
-            <SelectList bind:value={$ttsStore.providerId} onChange={() => setProvider($ttsStore.providerId)}>
+            <SelectList
+                bind:value={$ttsStore.providerId}
+                onChange={() => setProvider($ttsStore.providerId)}
+            >
                 {#each $ttsProviders as provider}
                     <SelectListOption value={provider.id}>
                         {provider.name}
                         {#if provider.cloud}
-                            <IconCloud width="16px" height="16px"/>
+                            <IconCloud width="16px" height="16px" />
                         {/if}
                     </SelectListOption>
                 {/each}
@@ -241,7 +259,7 @@
                 bind:value={$ttsStore.voice.id}
                 onChange={() => setVoice($ttsStore.voice.id)}
                 height="200px"
-                >
+            >
                 {#each $ttsVoices as voice}
                     <SelectListOption value={voice.id}>
                         {voice.name}
@@ -249,16 +267,16 @@
                 {/each}
             </SelectList>
         </SidebarItem>
-        <SidebarOscStatus>
-            Placeholder Status
-        </SidebarOscStatus>
+        <SidebarOscStatus>Placeholder Status</SidebarOscStatus>
     </div>
 </main>
 
 <style>
     .app-container {
+        --sidebar-width: 420px;
+
         display: grid;
-        grid-template-columns: minmax(0, 3fr) 420px;
+        grid-template-columns: minmax(0, 3fr) auto;
         grid-template-rows: 1fr;
         min-height: 100vh;
         max-height: 100vh;
@@ -285,7 +303,11 @@
             outline-color: var(--color-surface0);
         }
         20% {
-            outline-color: color-mix(in srgb, var(--color-surface0) 80%, #fff 20%);
+            outline-color: color-mix(
+                in srgb,
+                var(--color-surface0) 80%,
+                #fff 20%
+            );
         }
         100% {
             outline-color: var(--color-surface0);
@@ -305,12 +327,12 @@
         resize: none;
 
         will-change: outline-width;
-        transition: outline-width .1s var(--ease-out-expo);
+        transition: outline-width 0.1s var(--ease-out-expo);
     }
 
     #talkbox:focus {
         outline-offset: 0;
-        animation: flash .4s;
+        animation: flash 0.4s;
     }
 
     .app-left {
@@ -328,7 +350,20 @@
 
         max-height: calc(100vh - 24px);
 
+        width: var(--sidebar-width);
+
         overflow-y: auto;
+    }
+
+    /* compact mode */
+    @media screen and (max-width: 720px) {
+        .app-left {
+            grid-column-start: 1;
+            grid-column-end: 3;
+        }
+        .app-right {
+            display: none;
+        }
     }
 
     .buttons {
@@ -375,7 +410,7 @@
         }
 
         .history-empty {
-            opacity: .35;
+            opacity: 0.35;
             font-style: italic;
         }
     }
