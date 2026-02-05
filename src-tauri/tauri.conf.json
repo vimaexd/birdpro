@@ -3,6 +3,7 @@
   "productName": "Bird Pro",
   "version": "0.1.1",
   "identifier": "wtf.mae.birdpro",
+  "mainBinaryName": "birdpro",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1420",
