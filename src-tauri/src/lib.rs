@@ -34,8 +34,6 @@ pub fn get_platform() -> TTSProviderPlatform {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let args: Vec<String> = env::args().collect();
-
     tauri::Builder::default()
         .plugin(
             tauri_plugin_log::Builder::new()
