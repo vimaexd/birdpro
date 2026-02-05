@@ -11,7 +11,6 @@
         width: 100%;
         background-color: var(--color-surface0);
         padding: 12px 16px;
-        /*height: 1.2em;*/
         min-width: 0;
         font-size: 1.115rem;
         font-family: var(--font-family);

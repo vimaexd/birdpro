@@ -6,24 +6,24 @@
 * URL: https://www.fontshare.com/fonts/switzer
 * © 2026 Indian Type Foundry
 *
-* Switzer Thin 
-* Switzer ThinItalic 
-* Switzer Extralight 
-* Switzer ExtralightItalic 
-* Switzer Light 
-* Switzer LightItalic 
-* Switzer Regular 
-* Switzer Italic 
-* Switzer Medium 
-* Switzer MediumItalic 
-* Switzer Semibold 
-* Switzer SemiboldItalic 
-* Switzer Bold 
-* Switzer BoldItalic 
-* Switzer Extrabold 
-* Switzer ExtraboldItalic 
-* Switzer Black 
-* Switzer BlackItalic 
+* Switzer Thin
+* Switzer ThinItalic
+* Switzer Extralight
+* Switzer ExtralightItalic
+* Switzer Light
+* Switzer LightItalic
+* Switzer Regular
+* Switzer Italic
+* Switzer Medium
+* Switzer MediumItalic
+* Switzer Semibold
+* Switzer SemiboldItalic
+* Switzer Bold
+* Switzer BoldItalic
+* Switzer Extrabold
+* Switzer ExtraboldItalic
+* Switzer Black
+* Switzer BlackItalic
 * Switzer Variable (Variable font)
 * Switzer VariableItalic (Variable font)
 
@@ -31,9 +31,9 @@
 */
 @font-face {
   font-family: 'Switzer';
-  src: url('../../static/fonts/Switzer-Thin.woff2') format('woff2'),
-       url('../../static/fonts/Switzer-Thin.woff') format('woff'),
-       url('../../static/fonts/Switzer-Thin.ttf') format('truetype');
+  src: url('/fonts/Switzer-Thin.woff2') format('woff2'),
+       url('/fonts/Switzer-Thin.woff') format('woff'),
+       url('/fonts/Switzer-Thin.ttf') format('truetype');
   font-weight: 100;
   font-display: swap;
   font-style: normal;
@@ -225,4 +225,3 @@
   font-display: swap;
   font-style: italic;
 }
-

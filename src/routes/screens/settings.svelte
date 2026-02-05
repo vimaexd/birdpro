@@ -4,7 +4,6 @@
     import SettingsAbout from "./settings-about.svelte";
     import SettingsOsc from "./settings-osc.svelte";
 
-
     let selectedPage = $state("Audio");
     const pages: {[id: string]: any} = {
       "Audio": SettingsAudio,
@@ -51,7 +50,7 @@
     </div>
 </div>
 
-<style>
+<style lang="postcss">
     .settings-screen {
         padding: 0;
         margin: 0;
@@ -168,6 +167,8 @@
             border: none;
             background: transparent;
             text-align: left;
+
+            cursor: pointer;
 
             user-select: none;
 

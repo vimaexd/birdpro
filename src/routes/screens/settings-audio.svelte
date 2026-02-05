@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { audioStore, audioDevices, setAudioDevice, getDeviceInfo, destroyAudioDevice } from "$lib/bird";
+    import { audioDevices } from "@bird/lib/bird";
+    import { audioStore, setAudioDevice, getAudioDeviceInfo, destroyAudioDevice } from "@bird/lib/audio";
     import Checkbox from "@bird/components/ui/Checkbox.svelte";
     import SelectList from "@bird/components/ui/SelectList.svelte";
     import SelectListOption from "@bird/components/ui/SelectListOption.svelte"
+    import { configStore } from "@bird/lib/config";
 
     let showOutput2 = $state($audioStore.devices[1] !== undefined);
-
-
 
     $effect(() => {
       // hack to create effect dependency
@@ -33,21 +33,21 @@
     </SelectList>
 
     <p class="device-info">
-        {#await getDeviceInfo(0) then audioDevice}
+        {#await getAudioDeviceInfo(0) then audioDevice}
             {audioDevice.sample_rate}Hz
             {audioDevice.bit_depth ** 2}bit
         {/await}
     </p>
 
-    <Checkbox bind:checked={showOutput2} onchange={() => {
-      if(!showOutput2) {
+    <Checkbox bind:checked={$configStore.audio.usePreviewOutput} onchange={() => {
+      if(!$configStore.audio.usePreviewOutput) {
         destroyAudioDevice(1)
       }
     }}>
         Preview Device
     </Checkbox>
 
-    {#if showOutput2}
+    {#if $configStore.audio.usePreviewOutput}
         <SelectList onChange={() => setAudioDevice($audioStore.devices[1], 1)} bind:value={$audioStore.devices[1]}>
             {#each $audioDevices as device}
                 <SelectListOption value={device}>
@@ -57,7 +57,7 @@
         </SelectList>
         {#if $audioStore.devices[1]}
             <p class="device-info">
-                {#await getDeviceInfo(1) then audioDevice}
+                {#await getAudioDeviceInfo(1) then audioDevice}
                     {audioDevice.sample_rate}Hz
                     {audioDevice.bit_depth ** 2}bit
                 {/await}

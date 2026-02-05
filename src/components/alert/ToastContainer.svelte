@@ -1,8 +1,9 @@
-<script>
+<script lang="ts">
     import { toastStore } from "@bird/lib/toast";
     import { expoOut } from "svelte/easing";
     import { fade } from "svelte/transition";
 </script>
+
 <div class="toasts">
     {#each $toastStore as toast}
         <div class="toast" out:fade={{easing: expoOut, duration: 300}}>
@@ -12,7 +13,7 @@
     {/each}
 </div>
 
-<style>
+<style lang="postcss">
     .toasts {
         position: absolute;
         top: 0;

@@ -1,4 +1,5 @@
 use crate::AppData;
+use log::info;
 use tauri::{AppHandle, Emitter, State};
 use tokio::sync::Mutex as AsyncMutex;
 use vrchat_osc::{ServiceType, VRChatOSC,};
@@ -12,14 +13,29 @@ pub async fn osc_start(
     let mut state = state.lock().await;
     let osc = VRChatOSC::new(None).await.unwrap();
 
+    info!("starting OSC");
+
     osc.on_connect(move |svc| {
         if let ServiceType::Osc(str, addr) = svc {
-            log::info!("connected to OSC ({} on port {})", str, addr);
+            log::info!("discovered OSC service ({} on port {})", str, addr);
             app.emit("osc-connected", "").unwrap();
         }
     }).await;
 
     state.vrc_osc = Some(osc);
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn osc_stop(
+    state: State<'_, AsyncMutex<AppData>>,
+) -> Result<(), ()> {
+    let mut state = state.lock().await;
+    if state.vrc_osc.is_some() {
+        info!("stopping OSC");
+        state.vrc_osc.as_ref().unwrap().shutdown().await.unwrap();
+        state.vrc_osc = None;
+    }
     Ok(())
 }
 

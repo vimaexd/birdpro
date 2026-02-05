@@ -20,7 +20,7 @@ pub struct TTSBackendInfo {
     pub cloud: bool,
 }
 
-#[derive(Debug, Clone, Copy, Serialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum TTSBackendError {
     // voice not found
     VoiceNotFound,

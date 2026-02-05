@@ -43,7 +43,7 @@ pub fn run() {
                         "[{} {} {}] {}",
                         humantime::format_rfc3339(std::time::SystemTime::now()),
                         record.level(),
-                        record.module_path().unwrap(),
+                        record.module_path().unwrap_or("unk"),
                         message
                     ))
                 })
@@ -92,7 +92,9 @@ pub fn run() {
             crate::ipc::audio::audio_get_volume,
             crate::ipc::audio::audio_set_volume,
             crate::ipc::osc::osc_start,
-            crate::ipc::osc::osc_typing_indicator
+            crate::ipc::osc::osc_stop,
+            crate::ipc::osc::osc_typing_indicator,
+            crate::ipc::error::get_error_text
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

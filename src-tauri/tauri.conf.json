@@ -2,7 +2,7 @@
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Bird Pro",
   "version": "0.1.1",
-  "identifier": "wtf.mae.birdpro",
+  "identifier": "birdpro",
   "mainBinaryName": "birdpro",
   "build": {
     "beforeDevCommand": "bun run dev",

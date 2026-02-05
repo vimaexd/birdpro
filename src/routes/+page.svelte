@@ -11,16 +11,15 @@
     import {
         speakTts,
         ttsStore,
-        initialiseStores,
         setVoice,
         setProvider,
         ttsVoices,
         ttsProviders,
-        resolveProvider,
-        audioStore,
+        resolveProvider
     } from "$lib/bird";
     import { invoke } from "@tauri-apps/api/core";
     import { onMount } from "svelte";
+    import { fade } from "svelte/transition";
     import Button from "@bird/components/ui/Button.svelte";
     import LoadingSpinner from "../components/LoadingSpinner.svelte";
     import IconCloud from "../assets/icons/IconCloud.svelte";
@@ -31,6 +30,7 @@
 
     import Settings from "./screens/settings.svelte";
     import { showError } from "@bird/lib/toast";
+    import { configStore, initialiseConfig } from "@bird/lib/config";
 
     let talkboxRef: HTMLTextAreaElement;
     let buttonIsDown = $state(false);
@@ -43,7 +43,7 @@
         name: string;
     }
 
-    let isLoading = $state(false);
+    let isLoadingTts = $state(false);
     let isLoadingPreview = $state(false);
     let showSettings = $state(false);
 
@@ -75,9 +75,9 @@
 
         pushHistory(msg);
 
-        isLoading = true;
+        isLoadingTts = true;
         await speakTts(msg);
-        isLoading = false;
+        isLoadingTts = false;
     };
 
     const sendPreviewMessage = async () => {
@@ -94,12 +94,14 @@
         }
     };
 
-    onMount(async () => {
-        await initialiseStores();
-
-        // focus talk box if not focussed
+    onMount(() => {
         document.body.addEventListener("keydown", (e) => {
             switch (e.key) {
+                case ",":
+                    if(e.ctrlKey) {
+                      showSettings = true;
+                    }
+
                 case "ArrowUp":
                     e.preventDefault();
                     if (message == "") {
@@ -108,24 +110,30 @@
                     focusTextbox();
                     break;
 
-                // handled by events on text area,
-                // but
                 case "Enter":
                     e.preventDefault();
-                    if (buttonIsDown) return;
-                    sendMessage();
-                    buttonIsDown = true;
+                    if(e.altKey && $configStore.audio.usePreviewOutput) {
+                      // preview mode!
+                      if (buttonIsDownPreview) return;
+                      sendPreviewMessage();
+                      buttonIsDownPreview = true;
+                    } else {
+                      if (buttonIsDown) return;
+                      sendMessage();
+                      buttonIsDown = true;
+                    }
                     break;
 
                 default:
                     focusTextbox();
             }
-        });
+        })
 
         document.body.addEventListener("keyup", (e) => {
             switch (e.key) {
                 case "Enter":
                     e.preventDefault();
+                    buttonIsDownPreview = false;
                     buttonIsDown = false;
                     break;
             }
@@ -133,7 +141,7 @@
     });
 </script>
 
-<main class="app-container theme-dark">
+<main class="app-container theme-dark" in:fade={{ duration: 300 }}>
     {#if showSettings}
         <Settings onClose={() => (showSettings = false)} />
     {/if}
@@ -153,7 +161,7 @@
             }}
         ></textarea>
         <div class="buttons">
-            {#if $audioStore.devices[1] !== undefined}
+            {#if $configStore.audio.usePreviewOutput}
                 <ClickyButton
                     onclick={sendPreviewMessage}
                     loading={isLoadingPreview}
@@ -165,13 +173,13 @@
             {/if}
 
             <div
-                style={$audioStore.devices[1] === undefined
+                style={!$configStore.audio.usePreviewOutput
                     ? "grid-column-start: 1; grid-column-end: 3;"
                     : ""}
             >
                 <ClickyButton
                     onclick={sendMessage}
-                    loading={isLoading}
+                    loading={isLoadingTts}
                     active={buttonIsDown}
                 >
                     <IconEnter height={24} width={24} />

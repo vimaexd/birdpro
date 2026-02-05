@@ -11,9 +11,7 @@
     <p>{@render children()}</p>
 </div>
 
- <!-- bind:checked={checked} -->
-
-<style>
+<style lang="postcss">
     .box {
         display: flex;
         align-items: center;

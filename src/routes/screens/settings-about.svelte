@@ -1,20 +1,33 @@
 <script>
     import logo from "@bird/assets/img/birdpro-logo.png";
     import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
+    import { openUrl } from "@tauri-apps/plugin-opener";
 
 </script>
 <div class="about">
     <img src={logo} class="logo" alt="Bird Pro logo"/>
 
     <div class="text">
-       	<p>Bird Pro v{#await getVersion() then ver}{ver}{/await}</p>
-       	<p>Tauri v{#await getTauriVersion() then tv}{tv}{/await}</p>
-        <br/>
-        <p>Written by vimae</p>
+        <h2>Bird Pro</h2>
+       	<p>
+            v{#await getVersion() then ver}{ver}{/await}
+            • {(import.meta.env.DEV) ? "Debug" : "Release"}
+        </p>
+        <p>Tauri v{#await getTauriVersion() then tv}{tv}{/await}</p>
+
+        <p class="credit">
+            <!-- svelte-ignore a11y_click_events_have_key_events -->
+            made with 💜 by <span class="link" role="link" tabindex="0" onclick={() => {
+              openUrl("https://mae.wtf")
+            }}>vimae</span>
+        </p>
     </div>
 </div>
 
 <style>
+    h2 {
+        font-size: 3rem;
+    }
     .about {
         padding: 16px;
         display: flex;
@@ -31,5 +44,17 @@
 
     .text {
         text-align: center;
+    }
+
+    .credit {
+        margin-top: 3rem;
+        & .link {
+            color: white;
+            font-weight: 600;
+            text-decoration-line: underline;
+            text-decoration-style: wavy;
+            text-decoration-color: #cba6f7;
+            cursor: pointer;
+        }
     }
 </style>
