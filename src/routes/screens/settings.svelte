@@ -2,6 +2,7 @@
     import SettingsAudio from "./settings-audio.svelte";
     import SettingsPlaceholder from "./settings-placeholder.svelte";
     import SettingsAbout from "./settings-about.svelte";
+    import SettingsOsc from "./settings-osc.svelte";
 
 
     let selectedPage = $state("Audio");
@@ -9,7 +10,7 @@
       "Audio": SettingsAudio,
       "Behaviour": SettingsPlaceholder,
       "Providers": SettingsPlaceholder,
-      "OSC": SettingsPlaceholder,
+      "OSC": SettingsOsc,
       "About": SettingsAbout,
     }
 

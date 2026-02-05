@@ -19,6 +19,7 @@
         resolveProvider,
         audioStore
     } from "$lib/bird";
+    import { invoke } from "@tauri-apps/api/core";
     import { onMount } from "svelte";
     import Button from '@bird/components/ui/Button.svelte';
     import LoadingSpinner from "../components/LoadingSpinner.svelte";
@@ -44,6 +45,26 @@
     let isLoading = $state(false);
     let isLoadingPreview = $state(false);
     let showSettings = $state(false);
+
+    let typingIndicatorLastLength = 0;
+    let typingIndicatorShowing = false;
+    let typingIndicatorTimeout: number;
+
+    const onTyping = async () => {
+      if(typingIndicatorShowing) {
+        clearTimeout(typingIndicatorTimeout);
+        typingIndicatorTimeout = setTimeout(onTypingTimeout, 4000)
+      }
+
+      await invoke("osc_typing_indicator", { typing: true });
+      typingIndicatorShowing = true;
+      typingIndicatorTimeout = setTimeout(onTypingTimeout, 4000)
+    }
+
+    const onTypingTimeout = async () => {
+      console.log("typing timeout")
+      await invoke("osc_typing_indicator", { typing: false });
+    }
 
     const sendMessage = async () => {
         if (!message) return;
@@ -123,6 +144,13 @@
             placeholder="type something to say"
             bind:value={message}
             bind:this={talkboxRef}
+            oninput={(e: any) => {
+              // don't count deleting as typing
+              if(typingIndicatorLastLength < e.target.value.length + 1) {
+                onTyping();
+              }
+              typingIndicatorLastLength = e.target.value.length;
+            }}
         ></textarea>
         <div class="buttons">
             {#if $audioStore.devices[1] !== undefined}
@@ -212,7 +240,8 @@
             <SelectList
                 bind:value={$ttsStore.voice.id}
                 onChange={() => setVoice($ttsStore.voice.id)}
-                height="200px">
+                height="200px"
+                >
                 {#each $ttsVoices as voice}
                     <SelectListOption value={voice.id}>
                         {voice.name}

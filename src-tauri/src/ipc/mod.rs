@@ -2,3 +2,5 @@
 pub mod audio;
 #[macro_use]
 pub mod tts;
+#[macro_use]
+pub mod osc;

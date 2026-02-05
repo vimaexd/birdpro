@@ -1,4 +1,5 @@
 use rodio::Decoder;
+use vrchat_osc::rosc::{OscMessage, OscPacket, OscType};
 use std::io::Cursor;
 use tauri::State;
 use tokio::sync::Mutex as AsyncMutex;
@@ -80,6 +81,21 @@ pub async fn tts_say(
             .map_err(|_| TTSBackendError::DecodeError)?;
 
         setup.stream_handle.mixer().add(src);
+    }
+
+    // if vrcosc is active, send the message there
+    if state.vrc_osc.is_some() {
+        let msg = OscMessage {
+            addr: "/chatbox/input".to_string(),
+            args: vec![
+                OscType::String(message),
+                OscType::Bool(true) // send immediately
+            ]
+        };
+
+        state.vrc_osc.as_ref().unwrap()
+            .send(OscPacket::Message(msg), "VRChat-Client-*")
+            .await.unwrap();
     }
 
     Ok(())
