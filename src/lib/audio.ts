@@ -65,9 +65,13 @@ export async function _setAudioDeviceBackend(device: string, idx: number = 0) {
 
 export async function destroyAudioDevice(idx: number) {
   let as = get(audioStore);
-  delete as.devices[1];
+  delete as.devices[idx];
   audioStore.set(as);
   await invoke("audio_destroy", { setupIdx: idx });
+
+  let cs = get(configStore);
+  delete cs.audio.devices[idx];
+  configStore.set(cs);
 }
 
 export async function getAudioDeviceInfo(idx: number): Promise<AudioDevice> {
