@@ -20,14 +20,12 @@
       onChange?: () => any;
     }>();
 
-    console.log(value)
 
     /**
      * Adjusts value with capping
      * @param newValue the new value to set
      */
     function adjValue(newValue: number) {
-      console.log(value)
         value = Math.min(Math.max(value+newValue, min), max)
 
         if(onChange) onChange()

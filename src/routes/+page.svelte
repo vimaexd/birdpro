@@ -30,6 +30,7 @@
     import IconEnter from "@bird/assets/icons/IconEnter.svelte";
 
     import Settings from "./screens/settings.svelte";
+    import { showError } from "@bird/lib/toast";
 
     let talkboxRef: HTMLTextAreaElement;
     let buttonIsDown = $state(false);
@@ -236,9 +237,12 @@
             <h2>Rate</h2>
         </StepToggle>
 
-        <Button onclick={() => (showSettings = true)}>Settings</Button>
-
         <SidebarItem title="Debug">
+            <div>
+                <Button onclick={() => (showSettings = true)}>Settings</Button>
+                <Button onclick={() => showError("TestError", "Something went wrong, please try again later")}>Trigger Error</Button>
+            </div>
+
             <p>Provider</p>
             <SelectList
                 bind:value={$ttsStore.providerId}

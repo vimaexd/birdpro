@@ -64,8 +64,8 @@ export async function initialiseStores() {
     }
   })
 
-  console.log(get(ttsVoices));
-  console.log(get(ttsProviders))
+  console.log("voices", get(ttsVoices));
+  console.log("providers", get(ttsProviders))
 }
 
 export async function setProvider(providerId: string) {
