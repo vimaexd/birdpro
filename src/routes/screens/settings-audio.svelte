@@ -24,7 +24,7 @@
 <div class="devices">
 
     <p>Output Device</p>
-    <SelectList onChange={() => setAudioDevice($audioStore.devices[0], 0)} bind:value={$audioStore.devices[0]} height="400px">
+    <SelectList onChange={() => setAudioDevice($audioStore.devices[0], 0)} bind:value={$audioStore.devices[0]} maxHeight="400px">
         {#each $audioDevices as device}
             <SelectListOption value={device}>
                 {device}
@@ -48,7 +48,7 @@
     </Checkbox>
 
     {#if $configStore.audio.usePreviewOutput}
-        <SelectList onChange={() => setAudioDevice($audioStore.devices[1], 1)} bind:value={$audioStore.devices[1]}>
+        <SelectList onChange={() => setAudioDevice($audioStore.devices[1], 1)} bind:value={$audioStore.devices[1]} maxHeight="400px">
             {#each $audioDevices as device}
                 <SelectListOption value={device}>
                     {device}

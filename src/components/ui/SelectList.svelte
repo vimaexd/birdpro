@@ -1,6 +1,6 @@
 <script lang="ts">
     import { setContext } from 'svelte';
-    let { children, value = $bindable(), onChange, height = "auto" } = $props();
+    let { children, value = $bindable(), onChange, height = "auto", maxHeight = "auto" } = $props();
 
    	setContext('selectlist-value', {
           get current() { return value; },
@@ -11,7 +11,7 @@
     });
 </script>
 
-<ul style="max-height: {height};">
+<ul style="height: {height}; max-height: {maxHeight};">
     {@render children()}
 </ul>
 

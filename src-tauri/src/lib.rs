@@ -34,6 +34,7 @@ pub fn get_platform() -> TTSProviderPlatform {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let args: Vec<String> = env::args().collect();
 
     tauri::Builder::default()
         .plugin(
@@ -65,8 +66,8 @@ pub fn run() {
             info!("Bird Pro v{}", app.package_info().version);
 
             // set background color to avoid flashes on startup
-            app.get_webview_window("main").unwrap()
-                .set_background_color(Some(Color::from([17, 18, 16]))).unwrap();
+            let win = app.get_webview_window("main").unwrap();
+            win.set_background_color(Some(Color::from([17, 18, 16]))).unwrap();
 
             let audio = AudioSetup::new();
             app.manage(AsyncMutex::new(AppData {

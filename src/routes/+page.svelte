@@ -20,10 +20,12 @@
     import { invoke } from "@tauri-apps/api/core";
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
+    import SvelteVirtualList from '@humanspeak/svelte-virtual-list'
     import Button from "@bird/components/ui/Button.svelte";
     import LoadingSpinner from "../components/LoadingSpinner.svelte";
-    import IconCloud from "../assets/icons/IconCloud.svelte";
     import { getLastMessage, historyStore, pushHistory } from "$lib/history";
+
+    import IconCloud from "../assets/icons/IconCloud.svelte";
     import IconPitch from "../assets/icons/IconPitch.svelte";
     import IconRate from "../assets/icons/IconRate.svelte";
     import IconEnter from "@bird/assets/icons/IconEnter.svelte";
@@ -272,11 +274,13 @@
                 onChange={() => setVoice($ttsStore.voice.id)}
                 height="200px"
             >
-                {#each $ttsVoices as voice}
-                    <SelectListOption value={voice.id}>
-                        {voice.name}
-                    </SelectListOption>
-                {/each}
+                <SvelteVirtualList items={$ttsVoices}>
+                    {#snippet renderItem(voice)}
+                        <SelectListOption value={voice.id}>
+                            {voice.name}
+                        </SelectListOption>
+                    {/snippet}
+                </SvelteVirtualList>
             </SelectList>
         </SidebarItem>
         <SidebarOscStatus>Placeholder Status</SidebarOscStatus>
