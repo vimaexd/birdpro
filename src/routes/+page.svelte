@@ -271,13 +271,15 @@
             <h2>Rate</h2>
         </StepToggle>
 
-        <hr/>
-
-        <!-- <div>
+        <div>
             <Button onclick={() => (showSettings = true)}>
                 <IconSettings width="20px" height="20px"/> Settings
             </Button>
-        </div> -->
+        </div>
+
+        <hr/>
+
+
 
         <SplitMenus/>
 
