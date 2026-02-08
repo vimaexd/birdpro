@@ -13,7 +13,6 @@
         ttsStore,
         setVoice,
         setProvider,
-        ttsVoices,
         ttsProviders,
         resolveProvider
     } from "$lib/bird";
@@ -33,6 +32,8 @@
     import Settings from "./screens/settings.svelte";
     import { showError } from "@bird/lib/toast";
     import { configStore, initialiseConfig } from "@bird/lib/config";
+    import IconSettings from "@bird/assets/icons/IconSettings.svelte";
+    import SplitMenus from "@bird/components/SplitMenus.svelte";
 
     let talkboxRef: HTMLTextAreaElement;
     let buttonIsDown = $state(false);
@@ -49,6 +50,9 @@
     let isLoadingPreview = $state(false);
     let showSettings = $state(false);
 
+    let barSize = $state(380);
+    let resizeBar = $state(false);
+
     let typingIndicatorLastLength = 0;
     let typingIndicatorShowing = false;
     let typingIndicatorTimeout: number;
@@ -57,6 +61,7 @@
         if (typingIndicatorShowing) {
             clearTimeout(typingIndicatorTimeout);
             typingIndicatorTimeout = setTimeout(onTypingTimeout, 4000);
+            return;
         }
 
         await invoke("osc_typing_indicator", { typing: true });
@@ -95,6 +100,13 @@
             talkboxRef.focus();
         }
     };
+
+    const trackMouseAndResizeBar = (e: MouseEvent) => {
+      if(!resizeBar) return;
+      console.log("rsz")
+      let newWidth = (window.innerWidth - e.pageX);
+      barSize = Math.min(Math.max(newWidth, 400), 800) - 18
+    }
 
     onMount(() => {
         document.body.addEventListener("keydown", (e) => {
@@ -143,7 +155,12 @@
     });
 </script>
 
-<main class="app-container theme-dark" in:fade={{ duration: 300 }}>
+<!--svelte-ignore a11y_no_noninteractive_element_interactions -->
+<main class="app-container theme-dark"
+    style="--sidebar-width: {barSize}px"
+    onmousemove={trackMouseAndResizeBar}
+    onmouseup={() => { resizeBar = false }}
+    in:fade={{ duration: 300 }}>
     {#if showSettings}
         <Settings onClose={() => (showSettings = false)} />
     {/if}
@@ -212,6 +229,13 @@
             </div>
         </div>
     </div>
+
+    <!--svelte-ignore a11y_no_static_element_interactions -->
+    <div class="divider"
+        onmousedown={() => { resizeBar = true }}
+        >
+        <span class="vr"></span>
+    </div>
     <div class="app-right">
         {#if $ttsStore.providerId}
             <Voicebank
@@ -247,52 +271,25 @@
             <h2>Rate</h2>
         </StepToggle>
 
-        <SidebarItem title="Debug">
-            <div>
-                <Button onclick={() => (showSettings = true)}>Settings</Button>
-                <Button onclick={() => showError("TestError", "Something went wrong, please try again later")}>Trigger Error</Button>
-            </div>
+        <hr/>
 
-            <p>Provider</p>
-            <SelectList
-                bind:value={$ttsStore.providerId}
-                onChange={() => setProvider($ttsStore.providerId)}
-            >
-                {#each $ttsProviders as provider}
-                    <SelectListOption value={provider.id}>
-                        {provider.name}
-                        {#if provider.cloud}
-                            <IconCloud width="16px" height="16px" />
-                        {/if}
-                    </SelectListOption>
-                {/each}
-            </SelectList>
+        <!-- <div>
+            <Button onclick={() => (showSettings = true)}>
+                <IconSettings width="20px" height="20px"/> Settings
+            </Button>
+        </div> -->
 
-            <p>Voice</p>
-            <SelectList
-                bind:value={$ttsStore.voice.id}
-                onChange={() => setVoice($ttsStore.voice.id)}
-                height="200px"
-            >
-                <SvelteVirtualList items={$ttsVoices}>
-                    {#snippet renderItem(voice)}
-                        <SelectListOption value={voice.id}>
-                            {voice.name}
-                        </SelectListOption>
-                    {/snippet}
-                </SvelteVirtualList>
-            </SelectList>
-        </SidebarItem>
-        <SidebarOscStatus>Placeholder Status</SidebarOscStatus>
+        <SplitMenus/>
+
+        <!-- <SidebarItem title="Debug">
+             -->
     </div>
 </main>
 
 <style>
     .app-container {
-        --sidebar-width: 420px;
-
         display: grid;
-        grid-template-columns: minmax(0, 3fr) auto;
+        grid-template-columns: minmax(0, 3fr) auto auto;
         grid-template-rows: 1fr;
         min-height: 100vh;
         max-height: 100vh;
@@ -301,11 +298,30 @@
         height: 100%;
         width: 100%;
 
-        gap: 16px;
+        gap: 4px;
         padding: 12px;
         background: var(--color-bg);
 
         overflow: hidden;
+    }
+
+    .divider {
+        padding: 0 4px;
+        display: flex;
+
+        &:hover {
+            cursor: w-resize;
+            .vr {
+                border-right-color: var(--color-surface2);
+            }
+        }
+
+        .vr {
+            width: 1px;
+            height: 100%;
+
+            border-right: 1px transparent solid;
+        }
     }
 
     /* set general text color */
@@ -378,6 +394,9 @@
             grid-column-end: 3;
         }
         .app-right {
+            display: none;
+        }
+        .divider {
             display: none;
         }
     }

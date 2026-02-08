@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import '../assets/main.css'
   import '../assets/switzer.css'
 
@@ -8,16 +8,21 @@
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   import { initialiseConfig } from '@bird/lib/config';
-  import { initialiseStores } from '@bird/lib/bird';
+  import { initialiseApp } from '@bird/lib/bird';
   import LoadingSpinner from '@bird/components/LoadingSpinner.svelte';
   import logo from "@bird/assets/img/birdpro-logo.png";
+  import { showError } from '@bird/lib/toast';
 
   let ready = $state(false);
 
   onMount(async () => {
+    try {
       await initialiseConfig();
-      await initialiseStores();
+      await initialiseApp();
       ready = true;
+    } catch(e: any) {
+      showError("Startup Error", e);
+    }
   })
 </script>
 

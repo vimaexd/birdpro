@@ -16,12 +16,6 @@
         {/if}
         </p>
     </div>
-
-    <div class="arrow">
-        <p>
-            ›
-        </p>
-    </div>
 </div>
 
 <style>
@@ -42,8 +36,8 @@
             justify-content: center;
 
             flex-grow: 0;
-
             min-width: 0;
+            font-size: 0.9rem;
 
             & h2 {
                 font-size: 1em;

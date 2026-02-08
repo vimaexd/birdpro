@@ -18,6 +18,8 @@ pub async fn tts_say(
     message: String,
     pitch: i32,
     rate: f64,
+    provider: TTSBackend,
+    voice: Voice,
     preview: Option<bool>,
     state: State<'_, AsyncMutex<AppData>>,
 ) -> Result<(), TTSBackendError> {
@@ -36,11 +38,11 @@ pub async fn tts_say(
     let state = state.lock().await;
 
     // add pitch and rate to voice
-    let mut voice_final = state.voice.clone();
+    let mut voice_final = voice;
     voice_final.pitch = pitch;
     voice_final.rate = rate;
 
-    let _bytes: Result<Vec<u8>, TTSBackendError> = match state.provider {
+    let _bytes: Result<Vec<u8>, TTSBackendError> = match provider {
         TTSBackend::MsEdge => {
             MsEdgeTTSProvider::get_speech_bytes(message.as_str(), &voice_final).await
         }
@@ -103,11 +105,9 @@ pub async fn tts_say(
 
 #[tauri::command]
 pub async fn tts_get_voicelist(
-    state: State<'_, AsyncMutex<AppData>>,
+    provider_id: TTSBackend,
 ) -> Result<Vec<Voice>, TTSBackendError> {
-    let state = state.lock().await;
-
-    let _voices = match state.provider {
+    let _voices = match provider_id {
         TTSBackend::MsEdge => MsEdgeTTSProvider::get_voices(),
         // TTSBackend::TikTok => TiktokTTSProvider::get_voices(),
         #[cfg(windows)]
