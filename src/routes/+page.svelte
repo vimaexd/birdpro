@@ -23,6 +23,7 @@
     import Button from "@bird/components/ui/Button.svelte";
     import LoadingSpinner from "../components/LoadingSpinner.svelte";
     import { getLastMessage, historyStore, pushHistory } from "$lib/history";
+    import { isSettingsOpen } from "@bird/lib/modal";
 
     import IconCloud from "../assets/icons/IconCloud.svelte";
     import IconPitch from "../assets/icons/IconPitch.svelte";
@@ -34,6 +35,7 @@
     import { configStore, initialiseConfig } from "@bird/lib/config";
     import IconSettings from "@bird/assets/icons/IconSettings.svelte";
     import SplitMenus from "@bird/components/SplitMenus.svelte";
+    import StatusBar from "@bird/components/StatusBar.svelte";
 
     let talkboxRef: HTMLTextAreaElement;
     let buttonIsDown = $state(false);
@@ -113,7 +115,7 @@
             switch (e.key) {
                 case ",":
                     if(e.ctrlKey) {
-                      showSettings = true;
+                      $isSettingsOpen = true;
                     }
 
                 case "ArrowUp":
@@ -161,8 +163,8 @@
     onmousemove={trackMouseAndResizeBar}
     onmouseup={() => { resizeBar = false }}
     in:fade={{ duration: 300 }}>
-    {#if showSettings}
-        <Settings onClose={() => (showSettings = false)} />
+    {#if $isSettingsOpen}
+        <Settings onClose={() => ($isSettingsOpen = false)} />
     {/if}
 
     <div class="app-left">
@@ -271,20 +273,16 @@
             <h2>Rate</h2>
         </StepToggle>
 
-        <div>
-            <Button onclick={() => (showSettings = true)}>
-                <IconSettings width="20px" height="20px"/> Settings
-            </Button>
-        </div>
-
         <hr/>
-
-
 
         <SplitMenus/>
 
         <!-- <SidebarItem title="Debug">
              -->
+
+        <div class="bottom">
+            <StatusBar/>
+        </div>
     </div>
 </main>
 
@@ -382,11 +380,16 @@
         flex-grow: 0;
         gap: 8px;
 
-        max-height: calc(100vh - 24px);
+        max-height: 100vh;
 
         width: var(--sidebar-width);
 
         overflow-y: auto;
+
+        .bottom {
+            margin-top: auto;
+        }
+
     }
 
     /* compact mode */
