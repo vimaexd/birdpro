@@ -6,7 +6,6 @@ use tokio::sync::Mutex as AsyncMutex;
 
 #[cfg(windows)]
 use crate::backends::windows::WindowsTTSProvider;
-// use crate::backends::tiktok::TiktokTTSProvider;
 use crate::backends::msedge::MsEdgeTTSProvider;
 use crate::provider::{TTSBackend, TTSBackendError, TTSBackendInfo, TTSProvider, TTS_BACKENDS};
 use crate::voice::Voice;
@@ -46,8 +45,6 @@ pub async fn tts_say(
         TTSBackend::MsEdge => {
             MsEdgeTTSProvider::get_speech_bytes(message.as_str(), &voice_final).await
         }
-        // TTSBackend::TikTok => TiktokTTSProvider::get_speech_bytes(message.as_str(), &voice_final)
-        //     .await,
         #[cfg(windows)]
         TTSBackend::Windows => {
             WindowsTTSProvider::get_speech_bytes(message.as_str(), &voice_final).await
@@ -109,7 +106,6 @@ pub async fn tts_get_voicelist(
 ) -> Result<Vec<Voice>, TTSBackendError> {
     let _voices = match provider_id {
         TTSBackend::MsEdge => MsEdgeTTSProvider::get_voices(),
-        // TTSBackend::TikTok => TiktokTTSProvider::get_voices(),
         #[cfg(windows)]
         TTSBackend::Windows => WindowsTTSProvider::get_voices(),
     };
@@ -162,7 +158,6 @@ pub async fn tts_set_provider(
 
     let default_voice = match state.provider {
         TTSBackend::MsEdge => MsEdgeTTSProvider::get_default_voice(),
-        // TTSBackend::TikTok => TiktokTTSProvider::get_default_voice(),
         #[cfg(windows)]
         TTSBackend::Windows => WindowsTTSProvider::get_default_voice(),
     };

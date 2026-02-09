@@ -7,7 +7,6 @@ pub enum TTSBackend {
     #[default]
     MsEdge,
 
-    // TikTok,
     #[cfg(windows)]
     Windows,
 }
@@ -62,12 +61,6 @@ pub static TTS_BACKENDS: &[TTSBackendInfo] = &[
         supported_platforms: &[TTSProviderPlatform::Windows, TTSProviderPlatform::Linux],
         cloud: true,
     },
-    // TTSBackendInfo {
-    //     id: TTSBackend::TikTok,
-    //     name: "TikTok",
-    //     supported_platforms: &[],
-    //     cloud: true
-    // },
     #[cfg(windows)]
     TTSBackendInfo {
         id: TTSBackend::Windows,
