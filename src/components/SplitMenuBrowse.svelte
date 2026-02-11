@@ -4,7 +4,7 @@
     import SvelteVirtualList from '@humanspeak/svelte-virtual-list';
     import IconCloud from '@bird/assets/icons/IconCloud.svelte';
     import Button from './ui/Button.svelte';
-    import { resolveProvider, ttsProviders, ttsStore, type Voice, setProvider, setVoice, getErrorText } from '@bird/lib/bird';
+    import { resolveProvider, ttsProviders, ttsStore, type Voice, setProvider, getErrorText } from '@bird/lib/bird';
     import { invoke } from '@tauri-apps/api/core';
     import LoadingSpinner from './LoadingSpinner.svelte';
     import { showError } from '@bird/lib/toast';

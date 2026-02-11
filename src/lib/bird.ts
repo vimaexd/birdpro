@@ -70,6 +70,14 @@ export async function initialiseApp() {
     });
   }
 
+  // save updates to current voice to config
+  ttsStore.subscribe(t => {
+    let cs = get(configStore);
+    cs["last"] = t;
+
+    configStore.set(cs);
+  })
+
   console.log("providers", get(ttsProviders));
 }
 
@@ -84,13 +92,6 @@ export async function setProvider(providerId: string) {
 
 export function resolveProvider(providerId: string): Provider {
   return get(ttsProviders).find(p => p.id == providerId)!
-}
-
-export async function setVoice(voice: Voice) {
-  await invoke("tts_set_voice", { voice });
-
-  let cs = get(configStore);
-  cs["last"] = get(ttsStore);
 }
 
 export async function updateAudioDeviceList() {
