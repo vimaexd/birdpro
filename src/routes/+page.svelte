@@ -241,19 +241,17 @@
                 cloud={resolveProvider($ttsStore.providerId).cloud}
             />
 
-            {#if provider.supported_features.includes("Pitch")}
-                <StepToggle
-                    majStep={5}
-                    minStep={1}
-                    initial={0}
-                    min={-48}
-                    max={48}
-                    bind:value={$ttsStore.pitch}
-                >
-                    <IconPitch width={24} height={24} />
-                    <h2>Pitch</h2>
-                </StepToggle>
-            {/if}
+            <StepToggle
+                majStep={5}
+                minStep={1}
+                initial={0}
+                min={-64}
+                max={100}
+                bind:value={$ttsStore.pitch}
+            >
+                <IconPitch width={24} height={24} />
+                <h2>Pitch</h2>
+            </StepToggle>
 
             {#if provider.supported_features.includes("Rate")}
                 <StepToggle

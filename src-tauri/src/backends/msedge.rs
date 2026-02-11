@@ -15,7 +15,7 @@ impl TTSProvider for MsEdgeTTSProvider {
     async fn get_speech_bytes(
         message: &str,
         voice: &Voice,
-        config: &Value,
+        _config: &Value,
     ) -> Result<Vec<u8>, TTSBackendError> {
         let voices = get_voices_list().unwrap();
 
@@ -28,7 +28,6 @@ impl TTSProvider for MsEdgeTTSProvider {
         let resolved_voice = _resolved_voice.unwrap();
 
         let mut speech_config = SpeechConfig::from(resolved_voice);
-        speech_config.pitch = voice.pitch.into();
         speech_config.rate = (voice.rate * 10.0).round() as i32;
 
         let mut tts = connect_async()
@@ -43,7 +42,7 @@ impl TTSProvider for MsEdgeTTSProvider {
         Ok(audio.audio_bytes)
     }
 
-    async fn get_voices(config: &Value) -> Result<Vec<Voice>, TTSBackendError> {
+    async fn get_voices(_config: &Value) -> Result<Vec<Voice>, TTSBackendError> {
         let voices = match get_voices_list() {
             Ok(v) => v,
             Err(_) => {

@@ -115,6 +115,7 @@ pub trait TTSProvider {
         voice: &Voice,
         config: &Value,
     ) -> Result<Vec<u8>, TTSBackendError>;
+    #[allow(async_fn_in_trait)]
     async fn get_voices(config: &Value) -> Result<Vec<Voice>, TTSBackendError>;
     fn get_default_voice() -> Voice;
 }

@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use reqwest::StatusCode;
 use serde_json::Value;
 

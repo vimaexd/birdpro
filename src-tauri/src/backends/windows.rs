@@ -36,7 +36,7 @@ impl TTSProvider for WindowsTTSProvider {
         let rate = (voice.rate * 10.0).round() as i32;
 
         let ssml = format!("<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xml:lang=\"{lang}\">
-                <prosody pitch=\"{pitch:+}%\" rate=\"{rate:+}%\">
+                <prosody rate=\"{rate:+}%\">
                     {message}
                 </prosody>
         </speak>");

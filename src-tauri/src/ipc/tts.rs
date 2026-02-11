@@ -1,4 +1,4 @@
-use rodio::Decoder;
+use rodio::{Decoder, Source};
 use std::io::Cursor;
 use tauri::State;
 use tokio::sync::Mutex as AsyncMutex;
@@ -80,10 +80,13 @@ pub async fn tts_say(
         }
     }
 
+    let speed = 1.0 + (pitch as f32 / 100.0);
+
     // put out to all initialized audio setups
     for setup in target_setups {
         let src = Decoder::try_from(Cursor::new(bytes.clone()))
-            .map_err(|_| TTSBackendError::DecodeError)?;
+            .map_err(|_| TTSBackendError::DecodeError)?
+            .speed(speed);
 
         setup.stream_handle.mixer().add(src);
     }
