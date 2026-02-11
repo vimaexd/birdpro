@@ -22,12 +22,14 @@ export interface Voice {
 export let audioDevices = writable([]);
 export let ttsProviders = writable<Provider[]>([]);
 
-export let ttsStore = writable<{
+export interface TTSStore {
   providerId: string;
   voice: Voice;
   pitch: number;
   rate: number;
-}>({
+}
+
+export let ttsStore = writable<TTSStore>({
   providerId: "",
   voice: {
     provider: "",
@@ -57,13 +59,16 @@ export async function initialiseApp() {
   ttsProviders.set(await invoke("tts_get_providerlist"));
   updateAudioDeviceList();
 
-  // Initialise TTS store with defaults from the backend
-  ttsStore.set({
-    providerId: await invoke("tts_get_provider"),
-    voice: await invoke("tts_get_voice"),
-    pitch: 0,
-    rate: 0.0
-  });
+  if (config["last"] != undefined) {
+    ttsStore.set(config["last"])
+  } else {
+    ttsStore.set({
+      providerId: await invoke("tts_get_provider"),
+      voice: await invoke("tts_get_voice"),
+      pitch: 0,
+      rate: 0.0
+    });
+  }
 
   console.log("providers", get(ttsProviders));
 }
@@ -83,6 +88,9 @@ export function resolveProvider(providerId: string): Provider {
 
 export async function setVoice(voice: Voice) {
   await invoke("tts_set_voice", { voice });
+
+  let cs = get(configStore);
+  cs["last"] = get(ttsStore);
 }
 
 export async function updateAudioDeviceList() {

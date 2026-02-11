@@ -5,6 +5,7 @@ import { writable, type Writable, get } from "svelte/store";
 import { error, info } from '@tauri-apps/plugin-log';
 import { showError } from "./toast";
 import type { AudioDevice } from "./audio";
+import type { TTSStore } from "./bird";
 
 interface BirdProConfig {
   "vrcOsc": boolean;
@@ -14,6 +15,7 @@ interface BirdProConfig {
       [idx: number]: string;
     }
   }
+  "last": TTSStore | undefined;
   "txtoutput": boolean;
   "txtoutput.clear": boolean;
   "txtoutput.clearTimeout": number;
@@ -37,6 +39,7 @@ export async function initialiseConfig() {
         0: (await invoke("audio_get_device", { setupIdx: 0 }) as AudioDevice).name
       }
     },
+    "last": undefined,
     "txtoutput": false,
     "txtoutput.clear": false,
     "txtoutput.clearTimeout": 10,
