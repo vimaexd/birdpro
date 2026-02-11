@@ -121,7 +121,7 @@ pub async fn tts_get_voicelist(
         TTSBackend::MsEdge => MsEdgeTTSProvider::get_voices(&state.config).await,
         TTSBackend::ElevenLabs => ElevenlabsTTSProvider::get_voices(&state.config).await,
         #[cfg(windows)]
-        TTSBackend::Windows => WindowsTTSProvider::get_voices().await,
+        TTSBackend::Windows => WindowsTTSProvider::get_voices(&state.config).await,
     };
 
     let voices = match _voices {
