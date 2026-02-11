@@ -10,7 +10,7 @@
 </script>
 <SettingsPage>
     <h3> ElevenLabs </h3>
-    <TextInput bind:value={$configStore["elevenlabs.apikey"]}>
+    <TextInput bind:value={$configStore["elevenlabs.apikey"]} secret>
         API Key
     </TextInput>
 
