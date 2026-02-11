@@ -4,6 +4,7 @@ use std::io::Cursor;
 use tauri::State;
 use tokio::sync::Mutex as AsyncMutex;
 
+use crate::backends::elevenlabs::ElevenlabsTTSProvider;
 #[cfg(windows)]
 use crate::backends::windows::WindowsTTSProvider;
 use crate::backends::msedge::MsEdgeTTSProvider;
@@ -43,11 +44,14 @@ pub async fn tts_say(
 
     let _bytes: Result<Vec<u8>, TTSBackendError> = match provider {
         TTSBackend::MsEdge => {
-            MsEdgeTTSProvider::get_speech_bytes(message.as_str(), &voice_final).await
+            MsEdgeTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config).await
+        }
+        TTSBackend::ElevenLabs => {
+            ElevenlabsTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config).await
         }
         #[cfg(windows)]
         TTSBackend::Windows => {
-            WindowsTTSProvider::get_speech_bytes(message.as_str(), &voice_final).await
+            WindowsTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config).await
         }
     };
 
@@ -103,11 +107,15 @@ pub async fn tts_say(
 #[tauri::command]
 pub async fn tts_get_voicelist(
     provider_id: TTSBackend,
+    state: State<'_, AsyncMutex<AppData>>
 ) -> Result<Vec<Voice>, TTSBackendError> {
+    let state = state.lock().await;
+
     let _voices = match provider_id {
-        TTSBackend::MsEdge => MsEdgeTTSProvider::get_voices(),
+        TTSBackend::MsEdge => MsEdgeTTSProvider::get_voices(&state.config).await,
+        TTSBackend::ElevenLabs => ElevenlabsTTSProvider::get_voices(&state.config).await,
         #[cfg(windows)]
-        TTSBackend::Windows => WindowsTTSProvider::get_voices(),
+        TTSBackend::Windows => WindowsTTSProvider::get_voices().await,
     };
 
     let voices = match _voices {
@@ -158,6 +166,7 @@ pub async fn tts_set_provider(
 
     let default_voice = match state.provider {
         TTSBackend::MsEdge => MsEdgeTTSProvider::get_default_voice(),
+        TTSBackend::ElevenLabs => ElevenlabsTTSProvider::get_default_voice(),
         #[cfg(windows)]
         TTSBackend::Windows => WindowsTTSProvider::get_default_voice(),
     };

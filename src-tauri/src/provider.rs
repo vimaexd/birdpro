@@ -1,11 +1,13 @@
 use crate::voice::Voice;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::fmt;
 
 #[derive(Default, Clone, Copy, Serialize, Deserialize, Debug)]
 pub enum TTSBackend {
     #[default]
     MsEdge,
+    ElevenLabs,
 
     #[cfg(windows)]
     Windows,
@@ -17,6 +19,14 @@ pub struct TTSBackendInfo {
     pub name: &'static str,
     pub supported_platforms: &'static [TTSProviderPlatform],
     pub cloud: bool,
+    pub uses_credits: bool,
+    pub supported_features: &'static [TTSFeature]
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub enum TTSFeature {
+    Rate,
+    Pitch
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -32,6 +42,9 @@ pub enum TTSBackendError {
 
     // failed to decode audio
     DecodeError,
+
+    // provider needs api key
+    AuthorizationRequired
 }
 
 impl fmt::Display for TTSBackendError {
@@ -50,6 +63,10 @@ impl fmt::Display for TTSBackendError {
                 f,
                 "Failed to decode TTS audio"
             ),
+            TTSBackendError::AuthorizationRequired => write!(
+                f,
+                "You need to specify an API key in Settings to use this provider"
+            )
         }
     }
 }
@@ -60,6 +77,16 @@ pub static TTS_BACKENDS: &[TTSBackendInfo] = &[
         name: "Microsoft Edge TTS",
         supported_platforms: &[TTSProviderPlatform::Windows, TTSProviderPlatform::Linux],
         cloud: true,
+        uses_credits: false,
+        supported_features: &[TTSFeature::Pitch, TTSFeature::Rate]
+    },
+    TTSBackendInfo {
+        id: TTSBackend::ElevenLabs,
+        name: "ElevenLabs",
+        supported_platforms: &[TTSProviderPlatform::Windows, TTSProviderPlatform::Linux],
+        cloud: true,
+        uses_credits: true,
+        supported_features: &[TTSFeature::Rate]
     },
     #[cfg(windows)]
     TTSBackendInfo {
@@ -67,6 +94,8 @@ pub static TTS_BACKENDS: &[TTSBackendInfo] = &[
         name: "Windows",
         supported_platforms: &[TTSProviderPlatform::Windows],
         cloud: false,
+        uses_credits: false,
+        supported_features: &[TTSFeature::Pitch, TTSFeature::Rate]
     },
 ];
 
@@ -74,15 +103,17 @@ pub static TTS_BACKENDS: &[TTSBackendInfo] = &[
 pub enum TTSProviderPlatform {
     Linux,
     Windows,
-    Unknown, // maybe in the future?
-             // MacOS,
+    Unknown,
+
+    // maybe in the future?
+    // MacOS,
 }
 
 pub trait TTSProvider {
     fn name() -> &'static str;
 
     #[allow(async_fn_in_trait)]
-    async fn get_speech_bytes(message: &str, voice: &Voice) -> Result<Vec<u8>, TTSBackendError>;
-    fn get_voices() -> Result<Vec<Voice>, TTSBackendError>;
+    async fn get_speech_bytes(message: &str, voice: &Voice, config: &Value) -> Result<Vec<u8>, TTSBackendError>;
+    async fn get_voices(config: &Value) -> Result<Vec<Voice>, TTSBackendError>;
     fn get_default_voice() -> Voice;
 }

@@ -11,7 +11,7 @@
     });
 </script>
 
-<ul style="height: {height}; max-height: {maxHeight};">
+<ul style="height: {height}; max-height: {maxHeight}; overflow-y: {(maxHeight !== 'auto') ? 'scroll' : 'none'}">
     {@render children()}
 </ul>
 
@@ -25,13 +25,9 @@
         border: 1px var(--color-surface0) solid;
         border-radius: var(--rounding);
 
-        overflow-y: auto;
-
-        flex-shrink: 1;
 
         display: flex;
         flex-direction: column;
-        flex-grow: 0;
 
     }
 

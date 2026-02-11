@@ -3,12 +3,12 @@
     import SettingsPlaceholder from "./settings-placeholder.svelte";
     import SettingsAbout from "./settings-about.svelte";
     import SettingsOsc from "./settings-osc.svelte";
+    import SettingsProviders from "./settings-providers.svelte";
 
     let selectedPage = $state("Audio");
     const pages: {[id: string]: any} = {
       "Audio": SettingsAudio,
-      "Behaviour": SettingsPlaceholder,
-      "Providers": SettingsPlaceholder,
+      "Providers": SettingsProviders,
       "OSC": SettingsOsc,
       "About": SettingsAbout,
     }

@@ -1,4 +1,6 @@
 <script>
+    import SettingsExplainerText from "@bird/components/feat/settings/SettingsExplainerText.svelte";
+    import SettingsPage from "@bird/components/feat/settings/SettingsPage.svelte";
     import Button from "@bird/components/ui/Button.svelte";
     import Checkbox from "@bird/components/ui/Checkbox.svelte";
     import { configStore } from "@bird/lib/config";
@@ -15,21 +17,16 @@
     }
 </script>
 
-<Checkbox onchange={connectOsc} bind:checked={$configStore.vrcOsc}>
-    Enable VRChat OSC
-</Checkbox>
+<SettingsPage>
+    <Checkbox onchange={connectOsc} bind:checked={$configStore.vrcOsc}>
+        Enable VRChat OSC
+    </Checkbox>
 
-<p class="explainer">
-    Enabling VRChat OSC will send TTS messages to the VRChat textbox, and sync the typing indicator.
-</p>
-
-<!-- <Button onclick={connectOsc}>
-    Connect OSC
-</Button> -->
+    <SettingsExplainerText>
+        Enabling VRChat OSC will send TTS messages to the VRChat textbox, and sync the typing indicator.
+    </SettingsExplainerText>
+</SettingsPage>
 
 <style>
-    p {
-        font-size: .9rem;
-        opacity: .75;
-    }
+
 </style>

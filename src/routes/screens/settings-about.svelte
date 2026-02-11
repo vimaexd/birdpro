@@ -1,7 +1,9 @@
 <script>
     import logo from "@bird/assets/img/birdpro-logo.png";
+    import Button from "@bird/components/ui/Button.svelte";
     import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
-    import { openUrl } from "@tauri-apps/plugin-opener";
+    import { openPath, openUrl } from "@tauri-apps/plugin-opener";
+    import { path } from "@tauri-apps/api";
 
 </script>
 <div class="about">
@@ -22,6 +24,13 @@
             }}>vimae</span>
         </p>
     </div>
+</div>
+
+<div class="bottom">
+    <Button onclick={async () => {
+      let cfgDir = await path.appConfigDir();
+      openPath(cfgDir);
+    }}>Logs</Button>
 </div>
 
 <style>
@@ -56,5 +65,9 @@
             text-decoration-color: #cba6f7;
             cursor: pointer;
         }
+    }
+
+    .bottom {
+        margin-top: auto;
     }
 </style>

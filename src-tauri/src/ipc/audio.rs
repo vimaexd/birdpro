@@ -39,14 +39,17 @@ pub async fn audio_set_device(
     setup_idx: usize,
     device_name: String,
     state: State<'_, AsyncMutex<AppData>>,
-) -> Result<(), ()> {
+) -> Result<(), String> {
     let mut state = state.lock().await;
 
     //find the device based on the name
     let mut devices = cpal::default_host().output_devices().unwrap();
-    let device = devices
-        .find(|x| x.name().unwrap() == device_name)
-        .expect("failed to resolve device");
+    let device = match devices.find(|x| x.name().unwrap() == device_name) {
+        Some(d) => d,
+        None => {
+            return Err(format!("Device '{}' isn't available", device_name));
+        }
+    };
 
     log::info!("Audio setup update (setup {})", setup_idx);
     let setup = AudioSetup::from_device(device);

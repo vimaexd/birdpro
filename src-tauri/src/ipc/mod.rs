@@ -6,3 +6,5 @@ pub mod tts;
 pub mod osc;
 #[macro_use]
 pub mod error;
+#[macro_use]
+pub mod config;

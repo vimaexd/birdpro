@@ -1,39 +1,27 @@
 <script lang="ts">
     import HistoryItem from "../components/HistoryItem.svelte";
-    import SidebarOscStatus from "../components/SidebarOscStatus.svelte";
     import StepToggle from "../components/StepToggle.svelte";
     import Voicebank from "../components/Voicebank.svelte";
     import ClickyButton from "../components/ClickyButton.svelte";
-    import SidebarItem from "../components/SidebarItem.svelte";
-    import SelectList from "../components/ui/SelectList.svelte";
-    import SelectListOption from "../components/ui/SelectListOption.svelte";
 
     import {
         speakTts,
         ttsStore,
-        setVoice,
-        setProvider,
-        ttsProviders,
         resolveProvider
     } from "$lib/bird";
     import { invoke } from "@tauri-apps/api/core";
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
-    import SvelteVirtualList from '@humanspeak/svelte-virtual-list'
-    import Button from "@bird/components/ui/Button.svelte";
     import LoadingSpinner from "../components/LoadingSpinner.svelte";
     import { getLastMessage, historyStore, pushHistory } from "$lib/history";
     import { isSettingsOpen } from "@bird/lib/modal";
 
-    import IconCloud from "../assets/icons/IconCloud.svelte";
     import IconPitch from "../assets/icons/IconPitch.svelte";
     import IconRate from "../assets/icons/IconRate.svelte";
     import IconEnter from "@bird/assets/icons/IconEnter.svelte";
 
     import Settings from "./screens/settings.svelte";
-    import { showError } from "@bird/lib/toast";
     import { configStore, initialiseConfig } from "@bird/lib/config";
-    import IconSettings from "@bird/assets/icons/IconSettings.svelte";
     import SplitMenus from "@bird/components/SplitMenus.svelte";
     import StatusBar from "@bird/components/StatusBar.svelte";
 
@@ -42,15 +30,8 @@
     let buttonIsDownPreview = $state(false);
     let message = $state("");
 
-    // TODO: refactor ALL of this
-    interface Provider {
-        id: number;
-        name: string;
-    }
-
     let isLoadingTts = $state(false);
     let isLoadingPreview = $state(false);
-    let showSettings = $state(false);
 
     let barSize = $state(380);
     let resizeBar = $state(false);
@@ -112,11 +93,18 @@
 
     onMount(() => {
         document.body.addEventListener("keydown", (e) => {
+            // dont capture strokes if settings is shown
+            // the user needs that to type stuff!!!
+            if($isSettingsOpen) {
+              return;
+            }
+
             switch (e.key) {
                 case ",":
                     if(e.ctrlKey) {
                       $isSettingsOpen = true;
                     }
+                    break;
 
                 case "ArrowUp":
                     e.preventDefault();

@@ -16,6 +16,7 @@
 
 <style>
     button {
+        width: 100%;
         padding: 6px 16px;
         font-size: .9rem;
 

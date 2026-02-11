@@ -5,66 +5,57 @@
     import SelectList from "@bird/components/ui/SelectList.svelte";
     import SelectListOption from "@bird/components/ui/SelectListOption.svelte"
     import { configStore } from "@bird/lib/config";
+    import SettingsPage from "@bird/components/feat/settings/SettingsPage.svelte";
 
     let showOutput2 = $state($audioStore.devices[1] !== undefined);
-
-    $effect(() => {
-      // hack to create effect dependency
-      const outputShown = showOutput2;
-
-      console.log("awa")
-
-      if(!outputShown) {
-        console.log("destroying")
-      }
-    })
-
 </script>
 
-<div class="devices">
+<SettingsPage>
+    <div class="devices">
 
-    <p>Output Device</p>
-    <SelectList onChange={() => setAudioDevice($audioStore.devices[0], 0)} bind:value={$audioStore.devices[0]} maxHeight="400px">
-        {#each $audioDevices as device}
-            <SelectListOption value={device}>
-                {device}
-            </SelectListOption>
-        {/each}
-    </SelectList>
-
-    <p class="device-info">
-        {#await getAudioDeviceInfo(0) then audioDevice}
-            {audioDevice.sample_rate}Hz
-            {audioDevice.bit_depth ** 2}bit
-        {/await}
-    </p>
-
-    <Checkbox bind:checked={$configStore.audio.usePreviewOutput} onchange={() => {
-      if(!$configStore.audio.usePreviewOutput) {
-        destroyAudioDevice(1)
-      }
-    }}>
-        Preview Device
-    </Checkbox>
-
-    {#if $configStore.audio.usePreviewOutput}
-        <SelectList onChange={() => setAudioDevice($audioStore.devices[1], 1)} bind:value={$audioStore.devices[1]} maxHeight="400px">
+        <p>Output Device</p>
+        <SelectList onChange={() => setAudioDevice($audioStore.devices[0], 0)} bind:value={$audioStore.devices[0]} maxHeight="400px">
             {#each $audioDevices as device}
                 <SelectListOption value={device}>
                     {device}
                 </SelectListOption>
             {/each}
         </SelectList>
-        {#if $audioStore.devices[1]}
-            <p class="device-info">
-                {#await getAudioDeviceInfo(1) then audioDevice}
-                    {audioDevice.sample_rate}Hz
-                    {audioDevice.bit_depth ** 2}bit
-                {/await}
-            </p>
+
+        <p class="device-info">
+            {#await getAudioDeviceInfo(0) then audioDevice}
+                {audioDevice.sample_rate}Hz
+                {audioDevice.bit_depth ** 2}bit
+            {/await}
+        </p>
+
+        <Checkbox bind:checked={$configStore.audio.usePreviewOutput} onchange={() => {
+          if(!$configStore.audio.usePreviewOutput) {
+            destroyAudioDevice(1)
+          }
+        }}>
+            Preview Device
+        </Checkbox>
+
+        {#if $configStore.audio.usePreviewOutput}
+            <SelectList onChange={() => setAudioDevice($audioStore.devices[1], 1)} bind:value={$audioStore.devices[1]} maxHeight="400px">
+                {#each $audioDevices as device}
+                    <SelectListOption value={device}>
+                        {device}
+                    </SelectListOption>
+                {/each}
+            </SelectList>
+            {#if $audioStore.devices[1]}
+                <p class="device-info">
+                    {#await getAudioDeviceInfo(1) then audioDevice}
+                        {audioDevice.sample_rate}Hz
+                        {audioDevice.bit_depth ** 2}bit
+                    {/await}
+                </p>
+            {/if}
         {/if}
-    {/if}
-</div>
+    </div>
+</SettingsPage>
 
 
 <style>

@@ -4,26 +4,38 @@
     import SvelteVirtualList from '@humanspeak/svelte-virtual-list';
     import IconCloud from '@bird/assets/icons/IconCloud.svelte';
     import Button from './ui/Button.svelte';
-    import { resolveProvider, ttsProviders, ttsStore, type Voice, setProvider, setVoice } from '@bird/lib/bird';
+    import { resolveProvider, ttsProviders, ttsStore, type Voice, setProvider, setVoice, getErrorText } from '@bird/lib/bird';
     import { invoke } from '@tauri-apps/api/core';
     import LoadingSpinner from './LoadingSpinner.svelte';
+    import { showError } from '@bird/lib/toast';
+    import { onMount } from 'svelte';
 
     let provider = $state<string>($ttsStore.providerId);
     let ttsVoices = $state<Voice[]>([]);
     let selectedVoice = $state("");
 
     const updateVoices = async () => {
-      ttsVoices = await invoke("tts_get_voicelist", { providerId: provider })
+      try {
+        ttsVoices = await invoke("tts_get_voicelist", { providerId: provider })
+      } catch(e: any) {
+        let err = await getErrorText(e);
+        showError(e, err);
+      }
     }
 
-    updateVoices();
+    onMount(() => {
+      updateVoices();
+    })
 </script>
 
 <h2>Provider</h2>
 <SelectList
     bind:value={provider}
-    onChange={() => updateVoices()}
-    height="200px"
+    onChange={() => {
+      ttsVoices = []
+      selectedVoice = ""
+    }}
+    height="fit-content"
 >
     {#each $ttsProviders as provider}
         <SelectListOption value={provider.id}>

@@ -12,12 +12,14 @@ use crate::provider::{TTSBackend, TTSProvider, TTSProviderPlatform};
 use crate::voice::Voice;
 use std::sync::Arc;
 use log::*;
+use serde_json::Value;
 use tauri::Manager;
 use tauri::window::Color;
 use tokio::sync::Mutex as AsyncMutex;
 use vrchat_osc::VRChatOSC;
 
 pub struct AppData {
+    config: Value,
     provider: TTSBackend,
     audio_setups: Vec<Option<AudioSetup>>,
     voice: Voice,
@@ -69,6 +71,7 @@ pub fn run() {
 
             let audio = AudioSetup::new();
             app.manage(AsyncMutex::new(AppData {
+                config: Value::from(0), // will be updated by frontend
                 provider: TTSBackend::MsEdge,
                 audio_setups: vec![Some(audio), None, None, None],
                 voice: MsEdgeTTSProvider::get_default_voice(),
@@ -93,7 +96,8 @@ pub fn run() {
             crate::ipc::osc::osc_start,
             crate::ipc::osc::osc_stop,
             crate::ipc::osc::osc_typing_indicator,
-            crate::ipc::error::get_error_text
+            crate::ipc::error::get_error_text,
+            crate::ipc::config::update_config
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

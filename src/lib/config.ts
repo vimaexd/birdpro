@@ -14,6 +14,7 @@ interface BirdProConfig {
       [idx: number]: string;
     }
   }
+  "elevenlabs.apikey": string;
 }
 
 export let configStore: Writable<BirdProConfig>;
@@ -32,7 +33,8 @@ export async function initialiseConfig() {
       devices: {
         0: (await invoke("audio_get_device", { setupIdx: 0 }) as AudioDevice).name
       }
-    }
+    },
+    "elevenlabs.apikey": ""
   }
 
   let cfgPath = await getConfigPath();
@@ -45,18 +47,31 @@ export async function initialiseConfig() {
 
   if (cfg) {
     try {
-      initialConfig = JSON.parse(new TextDecoder().decode(cfg));
+      let readConfig = JSON.parse(new TextDecoder().decode(cfg));
       info(`using config at ${cfgPath}`)
+
+      // fill config keys that arent filled
+      let keysEx = Object.keys(initialConfig);
+      let keysActual = Object.keys(readConfig);
+
+      keysEx.forEach(k => {
+        if (!keysActual.includes(k)) {
+          readConfig[k] = (initialConfig as any)[k]
+        }
+      })
+
+      initialConfig = readConfig;
+
     } catch {
       error("failed to parse config file");
       showError("Failed to parse config file", "");
     }
-
   }
 
   configStore = writable<BirdProConfig>(initialConfig);
 
   configStore.subscribe(async c => {
+    info("cfg change")
     const configDir = await path.appConfigDir();
     const configPath = await getConfigPath();
 
@@ -76,6 +91,8 @@ export async function initialiseConfig() {
     } catch (e: any) {
       showError("Failed to save config", e);
     }
+
+    await invoke("update_config", { config: c })
   })
 }
 

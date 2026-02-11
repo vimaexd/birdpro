@@ -1,5 +1,6 @@
 use crate::provider::{TTSBackend, TTSBackendError, TTSProvider};
 use crate::voice::Voice;
+use serde_json::Value;
 use windows::core::{Interface, HSTRING};
 use windows::Media::SpeechSynthesis::SpeechSynthesizer;
 use windows::Storage::Streams::{Buffer, InputStreamOptions};
@@ -12,7 +13,7 @@ impl TTSProvider for WindowsTTSProvider {
         "Windows"
     }
 
-    async fn get_speech_bytes(message: &str, voice: &Voice) -> Result<Vec<u8>, TTSBackendError> {
+    async fn get_speech_bytes(message: &str, voice: &Voice, config: &Value) -> Result<Vec<u8>, TTSBackendError> {
         let synth = SpeechSynthesizer::new().unwrap();
 
         let voices = SpeechSynthesizer::AllVoices().unwrap();
@@ -68,7 +69,7 @@ impl TTSProvider for WindowsTTSProvider {
         Ok(bytes)
     }
 
-    fn get_voices() -> Result<Vec<Voice>, TTSBackendError> {
+    async fn get_voices(config: &Value) -> Result<Vec<Voice>, TTSBackendError> {
         let voices = SpeechSynthesizer::AllVoices().unwrap();
         Ok(voices
             .into_iter()

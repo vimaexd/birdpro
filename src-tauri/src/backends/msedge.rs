@@ -3,6 +3,7 @@ use crate::voice::Voice;
 use msedge_tts::tts::client::connect_async;
 use msedge_tts::tts::SpeechConfig;
 use msedge_tts::voice::get_voices_list;
+use serde_json::Value;
 
 pub struct MsEdgeTTSProvider {}
 
@@ -11,7 +12,7 @@ impl TTSProvider for MsEdgeTTSProvider {
         "Microsoft Edge TTS"
     }
 
-    async fn get_speech_bytes(message: &str, voice: &Voice) -> Result<Vec<u8>, TTSBackendError> {
+    async fn get_speech_bytes(message: &str, voice: &Voice, config: &Value) -> Result<Vec<u8>, TTSBackendError> {
         let voices = get_voices_list().unwrap();
 
         let _resolved_voice = voices
@@ -37,7 +38,7 @@ impl TTSProvider for MsEdgeTTSProvider {
         Ok(audio.audio_bytes)
     }
 
-    fn get_voices() -> Result<Vec<Voice>, TTSBackendError> {
+    async fn get_voices(config: &Value) -> Result<Vec<Voice>, TTSBackendError> {
         let voices = match get_voices_list() {
             Ok(v) => v,
             Err(_) => {

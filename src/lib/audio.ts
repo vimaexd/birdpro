@@ -38,7 +38,7 @@ export async function tryResurrectAudioConfig() {
     } catch (e: any) {
       error(e);
       showError(
-        `Failed to set audiosetup ${entr[i][0]} (${entr[i][1]}) from config`,
+        `Audio setup failure`,
         e,
       );
     }
