@@ -10,11 +10,11 @@ use crate::audio::AudioSetup;
 use crate::backends::msedge::MsEdgeTTSProvider;
 use crate::provider::{TTSBackend, TTSProvider, TTSProviderPlatform};
 use crate::voice::Voice;
-use std::sync::Arc;
 use log::*;
 use serde_json::Value;
-use tauri::Manager;
+use std::sync::Arc;
 use tauri::window::Color;
+use tauri::Manager;
 use tokio::sync::Mutex as AsyncMutex;
 use vrchat_osc::VRChatOSC;
 
@@ -23,7 +23,7 @@ pub struct AppData {
     provider: TTSBackend,
     audio_setups: Vec<Option<AudioSetup>>,
     voice: Voice,
-    vrc_osc: Option<Arc<VRChatOSC>>
+    vrc_osc: Option<Arc<VRChatOSC>>,
 }
 
 pub fn get_platform() -> TTSProviderPlatform {
@@ -37,6 +37,7 @@ pub fn get_platform() -> TTSProviderPlatform {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(
             tauri_plugin_log::Builder::new()
                 .format(move |out, message, record| {
@@ -67,7 +68,8 @@ pub fn run() {
 
             // set background color to avoid flashes on startup
             let win = app.get_webview_window("main").unwrap();
-            win.set_background_color(Some(Color::from([17, 18, 16]))).unwrap();
+            win.set_background_color(Some(Color::from([17, 18, 16])))
+                .unwrap();
 
             let audio = AudioSetup::new();
             app.manage(AsyncMutex::new(AppData {
@@ -75,7 +77,7 @@ pub fn run() {
                 provider: TTSBackend::MsEdge,
                 audio_setups: vec![Some(audio), None, None, None],
                 voice: MsEdgeTTSProvider::get_default_voice(),
-                vrc_osc: None
+                vrc_osc: None,
             }));
             Ok(())
         })

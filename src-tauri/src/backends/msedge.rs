@@ -12,12 +12,14 @@ impl TTSProvider for MsEdgeTTSProvider {
         "Microsoft Edge TTS"
     }
 
-    async fn get_speech_bytes(message: &str, voice: &Voice, config: &Value) -> Result<Vec<u8>, TTSBackendError> {
+    async fn get_speech_bytes(
+        message: &str,
+        voice: &Voice,
+        config: &Value,
+    ) -> Result<Vec<u8>, TTSBackendError> {
         let voices = get_voices_list().unwrap();
 
-        let _resolved_voice = voices
-            .iter()
-            .find(|x| &x.name == &voice.id);
+        let _resolved_voice = voices.iter().find(|x| &x.name == &voice.id);
 
         if _resolved_voice.is_none() {
             return Err(TTSBackendError::VoiceNotFound);
@@ -29,10 +31,13 @@ impl TTSProvider for MsEdgeTTSProvider {
         speech_config.pitch = voice.pitch.into();
         speech_config.rate = (voice.rate * 10.0).round() as i32;
 
-        let mut tts = connect_async().await
+        let mut tts = connect_async()
+            .await
             .map_err(|_| TTSBackendError::FetchError)?;
 
-        let audio = tts.synthesize(message, &speech_config).await
+        let audio = tts
+            .synthesize(message, &speech_config)
+            .await
             .map_err(|_| TTSBackendError::FetchError)?;
 
         Ok(audio.audio_bytes)

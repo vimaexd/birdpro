@@ -30,6 +30,11 @@
     <Button onclick={async () => {
       let cfgDir = await path.appConfigDir();
       openPath(cfgDir);
+    }}>Config</Button>
+
+    <Button onclick={async () => {
+      let cfgDir = await path.appDataDir();
+      openPath(cfgDir);
     }}>Logs</Button>
 </div>
 
@@ -69,5 +74,7 @@
 
     .bottom {
         margin-top: auto;
+        display: flex;
+        gap: 8px;
     }
 </style>

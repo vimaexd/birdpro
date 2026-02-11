@@ -12,9 +12,20 @@
     "log:default",
     "fs:allow-appconfig-read-recursive",
     "fs:allow-appconfig-write-recursive",
+    "fs:allow-appdata-read-recursive",
+    "fs:allow-appdata-write-recursive",
     {
       "identifier": "opener:allow-open-path",
-      "allow": [{ "path": "$APPCONFIG" }]
-    }
+      "allow": [
+        {
+          "path": "$APPCONFIG"
+        },
+        {
+          "path": "$APPDATA"
+        }
+      ]
+    },
+    "clipboard-manager:allow-write-text",
+    "clipboard-manager:default"
   ]
 }

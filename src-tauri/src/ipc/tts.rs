@@ -1,17 +1,17 @@
 use rodio::Decoder;
-use vrchat_osc::rosc::{OscMessage, OscPacket, OscType};
 use std::io::Cursor;
 use tauri::State;
 use tokio::sync::Mutex as AsyncMutex;
+use vrchat_osc::rosc::{OscMessage, OscPacket, OscType};
 
+use crate::audio::AudioSetup;
 use crate::backends::elevenlabs::ElevenlabsTTSProvider;
+use crate::backends::msedge::MsEdgeTTSProvider;
 #[cfg(windows)]
 use crate::backends::windows::WindowsTTSProvider;
-use crate::backends::msedge::MsEdgeTTSProvider;
 use crate::provider::{TTSBackend, TTSBackendError, TTSBackendInfo, TTSProvider, TTS_BACKENDS};
 use crate::voice::Voice;
 use crate::{get_platform, AppData};
-use crate::audio::AudioSetup;
 
 #[tauri::command]
 pub async fn tts_say(
@@ -47,11 +47,13 @@ pub async fn tts_say(
             MsEdgeTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config).await
         }
         TTSBackend::ElevenLabs => {
-            ElevenlabsTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config).await
+            ElevenlabsTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config)
+                .await
         }
         #[cfg(windows)]
         TTSBackend::Windows => {
-            WindowsTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config).await
+            WindowsTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config)
+                .await
         }
     };
 
@@ -92,13 +94,17 @@ pub async fn tts_say(
             addr: "/chatbox/input".to_string(),
             args: vec![
                 OscType::String(message),
-                OscType::Bool(true) // send immediately
-            ]
+                OscType::Bool(true), // send immediately
+            ],
         };
 
-        state.vrc_osc.as_ref().unwrap()
+        state
+            .vrc_osc
+            .as_ref()
+            .unwrap()
             .send(OscPacket::Message(msg), "VRChat-Client-*")
-            .await.unwrap();
+            .await
+            .unwrap();
     }
 
     Ok(())
@@ -107,7 +113,7 @@ pub async fn tts_say(
 #[tauri::command]
 pub async fn tts_get_voicelist(
     provider_id: TTSBackend,
-    state: State<'_, AsyncMutex<AppData>>
+    state: State<'_, AsyncMutex<AppData>>,
 ) -> Result<Vec<Voice>, TTSBackendError> {
     let state = state.lock().await;
 

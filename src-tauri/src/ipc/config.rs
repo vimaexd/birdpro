@@ -1,8 +1,8 @@
+use crate::AppData;
 use log::info;
+use serde_json::Value;
 use tauri::State;
 use tokio::sync::Mutex as AsyncMutex;
-use serde_json::Value;
-use crate::AppData;
 
 // Updates a copy of the config on the backend so that native functions
 // can access the most up to date config without having to

@@ -7,13 +7,16 @@ import { showError } from "./toast";
 import type { AudioDevice } from "./audio";
 
 interface BirdProConfig {
-  vrcOsc: boolean;
+  "vrcOsc": boolean;
   audio: {
     usePreviewOutput: boolean;
     devices: {
       [idx: number]: string;
     }
   }
+  "txtoutput": boolean;
+  "txtoutput.clear": boolean;
+  "txtoutput.clearTimeout": number;
   "elevenlabs.apikey": string;
 }
 
@@ -27,13 +30,16 @@ async function getConfigPath() {
 
 export async function initialiseConfig() {
   let initialConfig: BirdProConfig = {
-    vrcOsc: false,
+    "vrcOsc": false,
     audio: {
       usePreviewOutput: false,
       devices: {
         0: (await invoke("audio_get_device", { setupIdx: 0 }) as AudioDevice).name
       }
     },
+    "txtoutput": false,
+    "txtoutput.clear": false,
+    "txtoutput.clearTimeout": 10,
     "elevenlabs.apikey": ""
   }
 

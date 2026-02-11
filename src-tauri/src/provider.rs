@@ -20,13 +20,13 @@ pub struct TTSBackendInfo {
     pub supported_platforms: &'static [TTSProviderPlatform],
     pub cloud: bool,
     pub uses_credits: bool,
-    pub supported_features: &'static [TTSFeature]
+    pub supported_features: &'static [TTSFeature],
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum TTSFeature {
     Rate,
-    Pitch
+    Pitch,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -43,10 +43,10 @@ pub enum TTSBackendError {
     // failed to decode audio
     DecodeError,
 
-    AuthorizationRequired,      // provider needs api key
-    AuthorizationInvalid,        // api key is invalid or expired
+    AuthorizationRequired, // provider needs api key
+    AuthorizationInvalid,  // api key is invalid or expired
 
-    OutOfCredits
+    OutOfCredits,
 }
 
 impl fmt::Display for TTSBackendError {
@@ -57,26 +57,14 @@ impl fmt::Display for TTSBackendError {
                 f,
                 "Couldn't connect to server - check your internet connection!"
             ),
-            TTSBackendError::SynthesisFailure => write!(
-                f,
-                "Failed to synthesize text to speech"
-            ),
-            TTSBackendError::DecodeError => write!(
-                f,
-                "Failed to decode TTS audio"
-            ),
+            TTSBackendError::SynthesisFailure => write!(f, "Failed to synthesize text to speech"),
+            TTSBackendError::DecodeError => write!(f, "Failed to decode TTS audio"),
             TTSBackendError::AuthorizationRequired => write!(
                 f,
                 "You need to specify an API key in Settings to use this provider"
             ),
-            TTSBackendError::AuthorizationInvalid => write!(
-                f,
-                "The API key provided is invalid"
-            ),
-            TTSBackendError::OutOfCredits => write!(
-                f,
-                "You're out of credits! :("
-            ),
+            TTSBackendError::AuthorizationInvalid => write!(f, "The API key provided is invalid"),
+            TTSBackendError::OutOfCredits => write!(f, "You're out of credits! :("),
         }
     }
 }
@@ -88,7 +76,7 @@ pub static TTS_BACKENDS: &[TTSBackendInfo] = &[
         supported_platforms: &[TTSProviderPlatform::Windows, TTSProviderPlatform::Linux],
         cloud: true,
         uses_credits: false,
-        supported_features: &[TTSFeature::Pitch, TTSFeature::Rate]
+        supported_features: &[TTSFeature::Pitch, TTSFeature::Rate],
     },
     TTSBackendInfo {
         id: TTSBackend::ElevenLabs,
@@ -96,7 +84,7 @@ pub static TTS_BACKENDS: &[TTSBackendInfo] = &[
         supported_platforms: &[TTSProviderPlatform::Windows, TTSProviderPlatform::Linux],
         cloud: true,
         uses_credits: true,
-        supported_features: &[TTSFeature::Rate]
+        supported_features: &[TTSFeature::Rate],
     },
     #[cfg(windows)]
     TTSBackendInfo {
@@ -105,7 +93,7 @@ pub static TTS_BACKENDS: &[TTSBackendInfo] = &[
         supported_platforms: &[TTSProviderPlatform::Windows],
         cloud: false,
         uses_credits: false,
-        supported_features: &[TTSFeature::Pitch, TTSFeature::Rate]
+        supported_features: &[TTSFeature::Pitch, TTSFeature::Rate],
     },
 ];
 
@@ -114,7 +102,6 @@ pub enum TTSProviderPlatform {
     Linux,
     Windows,
     Unknown,
-
     // maybe in the future?
     // MacOS,
 }
@@ -123,7 +110,11 @@ pub trait TTSProvider {
     fn name() -> &'static str;
 
     #[allow(async_fn_in_trait)]
-    async fn get_speech_bytes(message: &str, voice: &Voice, config: &Value) -> Result<Vec<u8>, TTSBackendError>;
+    async fn get_speech_bytes(
+        message: &str,
+        voice: &Voice,
+        config: &Value,
+    ) -> Result<Vec<u8>, TTSBackendError>;
     async fn get_voices(config: &Value) -> Result<Vec<Voice>, TTSBackendError>;
     fn get_default_voice() -> Voice;
 }

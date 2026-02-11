@@ -3,11 +3,14 @@ import { writable, get } from "svelte/store";
 import { showError } from "./toast";
 import { tryResurrectAudioConfig } from "./audio";
 import { configStore } from "./config";
+import { setTextFileContents, startClearTimeout, textTimeout } from "./txtoutput";
 
 export interface Provider {
   id: string;
   name: string;
   cloud: boolean;
+  supported_platforms: string[];
+  supported_features: string[]
 }
 
 export interface Voice {
@@ -97,6 +100,18 @@ export async function speakTts(text: string, preview: boolean = false) {
       voice: ttss.voice,
       preview
     });
+
+    // txt file output
+    let cs = get(configStore);
+    if (cs.txtoutput) {
+      await setTextFileContents(text);
+      if (cs["txtoutput.clear"]) {
+        if (textTimeout) {
+          clearTimeout(textTimeout)
+        }
+        startClearTimeout(cs["txtoutput.clearTimeout"])
+      }
+    }
   } catch (e: any) {
     showError(e, await getErrorText(e))
   }

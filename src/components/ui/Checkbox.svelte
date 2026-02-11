@@ -2,12 +2,17 @@
     let {
       checked = $bindable(),
       children,
-      onchange
+      onchange = undefined,
+      disabled = false
     } = $props();
 </script>
 
-<div class="box">
-    <input type="checkbox" bind:checked={checked} {onchange}>
+<div class="box {(disabled) ? 'disabled' : ''}">
+    <input type="checkbox" disabled={disabled} bind:checked={checked} onchange={() => {
+      if(onchange && !disabled) {
+        onchange()
+      }
+    }}>
     <p>{@render children()}</p>
 </div>
 
@@ -16,6 +21,11 @@
         display: flex;
         align-items: center;
         gap: 8px;
+
+        &.disabled {
+            opacity: 0.4;
+            user-select: none;
+        }
     }
 
     p {

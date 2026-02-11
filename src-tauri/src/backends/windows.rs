@@ -13,7 +13,11 @@ impl TTSProvider for WindowsTTSProvider {
         "Windows"
     }
 
-    async fn get_speech_bytes(message: &str, voice: &Voice, config: &Value) -> Result<Vec<u8>, TTSBackendError> {
+    async fn get_speech_bytes(
+        message: &str,
+        voice: &Voice,
+        config: &Value,
+    ) -> Result<Vec<u8>, TTSBackendError> {
         let synth = SpeechSynthesizer::new().unwrap();
 
         let voices = SpeechSynthesizer::AllVoices().unwrap();

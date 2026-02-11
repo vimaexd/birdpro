@@ -2,14 +2,14 @@
     import SettingsAudio from "./settings-audio.svelte";
     import SettingsPlaceholder from "./settings-placeholder.svelte";
     import SettingsAbout from "./settings-about.svelte";
-    import SettingsOsc from "./settings-osc.svelte";
+    import SettingsIntegrations from "./settings-integrations.svelte";
     import SettingsProviders from "./settings-providers.svelte";
 
     let selectedPage = $state("Audio");
     const pages: {[id: string]: any} = {
       "Audio": SettingsAudio,
       "Providers": SettingsProviders,
-      "OSC": SettingsOsc,
+      "Integrations": SettingsIntegrations,
       "About": SettingsAbout,
     }
 

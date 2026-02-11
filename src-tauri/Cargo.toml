@@ -31,6 +31,7 @@ log = "0.4.29"
 tauri-plugin-fs = "2"
 tauri-plugin-log = "2"
 vrchat_osc = "2.1.0"
+tauri-plugin-clipboard-manager = "2"
 
 [target.'cfg(windows)'.dependencies.windows]
 version = ">=0.59, <=0.62"

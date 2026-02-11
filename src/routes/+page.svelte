@@ -7,7 +7,10 @@
     import {
         speakTts,
         ttsStore,
-        resolveProvider
+        resolveProvider,
+
+        type Provider
+
     } from "$lib/bird";
     import { invoke } from "@tauri-apps/api/core";
     import { onMount } from "svelte";
@@ -24,6 +27,10 @@
     import { configStore, initialiseConfig } from "@bird/lib/config";
     import SplitMenus from "@bird/components/SplitMenus.svelte";
     import StatusBar from "@bird/components/StatusBar.svelte";
+
+    let provider: Provider = $derived.by(() => {
+      return resolveProvider($ttsStore.providerId)
+    });
 
     let talkboxRef: HTMLTextAreaElement;
     let buttonIsDown = $state(false);
@@ -233,33 +240,37 @@
                 provider={resolveProvider($ttsStore.providerId).name}
                 cloud={resolveProvider($ttsStore.providerId).cloud}
             />
+
+            {#if provider.supported_features.includes("Pitch")}
+                <StepToggle
+                    majStep={5}
+                    minStep={1}
+                    initial={0}
+                    min={-48}
+                    max={48}
+                    bind:value={$ttsStore.pitch}
+                >
+                    <IconPitch width={24} height={24} />
+                    <h2>Pitch</h2>
+                </StepToggle>
+            {/if}
+
+            {#if provider.supported_features.includes("Rate")}
+                <StepToggle
+                    initial={0}
+                    majStep={1}
+                    minStep={0.5}
+                    min={-8}
+                    max={8}
+                    bind:value={$ttsStore.rate}
+                >
+                    <IconRate width={24} height={24} />
+                    <h2>Rate</h2>
+                </StepToggle>
+            {/if}
         {:else}
             <LoadingSpinner />
         {/if}
-
-        <StepToggle
-            majStep={5}
-            minStep={1}
-            initial={0}
-            min={-48}
-            max={48}
-            bind:value={$ttsStore.pitch}
-        >
-            <IconPitch width={24} height={24} />
-            <h2>Pitch</h2>
-        </StepToggle>
-
-        <StepToggle
-            initial={0}
-            majStep={1}
-            minStep={0.5}
-            min={-8}
-            max={8}
-            bind:value={$ttsStore.rate}
-        >
-            <IconRate width={24} height={24} />
-            <h2>Rate</h2>
-        </StepToggle>
 
         <hr/>
 

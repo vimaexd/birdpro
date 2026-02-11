@@ -1,4 +1,3 @@
-
 use std::collections::HashMap;
 
 use reqwest::StatusCode;
@@ -16,7 +15,11 @@ impl TTSProvider for ElevenlabsTTSProvider {
         "ElevenLabs"
     }
 
-    async fn get_speech_bytes(message: &str, voice: &Voice, config: &Value) -> Result<Vec<u8>, TTSBackendError> {
+    async fn get_speech_bytes(
+        message: &str,
+        voice: &Voice,
+        config: &Value,
+    ) -> Result<Vec<u8>, TTSBackendError> {
         let apikey = match config["elevenlabs.apikey"].as_str() {
             Some(a) => a,
             None => {
@@ -29,24 +32,43 @@ impl TTSProvider for ElevenlabsTTSProvider {
         }
 
         let client = reqwest::Client::new();
-        let mut body = HashMap::new();
-        body.insert("text", message);
-        body.insert("model", "eleven_flash_v2_5");
 
-        let _req = client.post(ELEVENLABS_BASE_URL.to_owned() + "/v1/text-to-speech/" + voice.id.as_str())
+        // elevenlabs speed only goes from 0.7 to 1.2
+        let speed_mapped = 0.7 + ((voice.rate + 8.0) / 16.0) * 0.5;
+
+        let body = serde_json::json!({
+            "text": message,
+            "model_id": "eleven_flash_v2_5",
+            "voice_settings": {
+                "speed": speed_mapped,
+            }
+        });
+
+        let _req = client
+            .post(ELEVENLABS_BASE_URL.to_owned() + "/v1/text-to-speech/" + voice.id.as_str())
             .json(&body)
             .header("xi-api-key", apikey)
             .send()
-            .await.map_err(|_| TTSBackendError::FetchError)
+            .await
+            .map_err(|_| TTSBackendError::FetchError)
             .unwrap();
 
-        match _req.status() {
+        let status = _req.status();
+        match status {
             StatusCode::UNAUTHORIZED => return Err(TTSBackendError::AuthorizationInvalid),
             StatusCode::PAYMENT_REQUIRED => return Err(TTSBackendError::OutOfCredits),
+            _ if status != StatusCode::OK => {
+                println!("{}", _req.text().await.unwrap());
+                return Err(TTSBackendError::FetchError);
+            }
             _ => {}
         }
 
-        let bytes = _req.bytes().await.map_err(|_| TTSBackendError::DecodeError).unwrap();
+        let bytes = _req
+            .bytes()
+            .await
+            .map_err(|_| TTSBackendError::DecodeError)
+            .unwrap();
         Ok(Vec::from(bytes))
     }
 
@@ -63,10 +85,12 @@ impl TTSProvider for ElevenlabsTTSProvider {
         }
 
         let client = reqwest::Client::new();
-        let _req = client.get(ELEVENLABS_BASE_URL.to_owned() + "/v2/voices?page_size=100")
+        let _req = client
+            .get(ELEVENLABS_BASE_URL.to_owned() + "/v2/voices?page_size=100")
             .header("xi-api-key", apikey)
             .send()
-            .await.map_err(|_| TTSBackendError::FetchError)
+            .await
+            .map_err(|_| TTSBackendError::FetchError)
             .unwrap();
 
         match _req.status() {
@@ -78,16 +102,19 @@ impl TTSProvider for ElevenlabsTTSProvider {
 
         let voices: Vec<Value> = j["voices"].as_array().unwrap().clone();
 
-        voices.into_iter().map(|v|
-            Ok(Voice {
-                provider: TTSBackend::ElevenLabs,
-                id: v["voice_id"].as_str().unwrap().to_owned(),
-                name: v["name"].as_str().unwrap().to_owned(),
-                lang: v["language"].as_str().map(str::to_owned),
-                pitch: 0,
-                rate: 0.0
+        voices
+            .into_iter()
+            .map(|v| {
+                Ok(Voice {
+                    provider: TTSBackend::ElevenLabs,
+                    id: v["voice_id"].as_str().unwrap().to_owned(),
+                    name: v["name"].as_str().unwrap().to_owned(),
+                    lang: v["language"].as_str().map(str::to_owned),
+                    pitch: 0,
+                    rate: 0.0,
+                })
             })
-        ).collect()
+            .collect()
     }
 
     fn get_default_voice() -> Voice {
