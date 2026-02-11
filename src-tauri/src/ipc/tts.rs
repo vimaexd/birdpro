@@ -88,7 +88,8 @@ pub async fn tts_say(
             .map_err(|_| TTSBackendError::DecodeError)?
             .speed(speed);
 
-        setup.stream_handle.mixer().add(src);
+        // setup.stream_handle.mixer().add(src);
+        setup.sink.append(src);
     }
 
     // if vrcosc is active, send the message there

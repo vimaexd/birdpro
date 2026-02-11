@@ -115,3 +115,18 @@ pub async fn audio_set_volume(
         .set_volume(volume);
     Ok(())
 }
+
+#[tauri::command]
+pub async fn audio_stop_all(
+    state: State<'_, AsyncMutex<AppData>>,
+) -> Result<(), ()> {
+    let st = state.lock().await;
+
+    for setup in &st.audio_setups {
+        if setup.is_none() {
+            continue;
+        }
+        setup.as_ref().unwrap().sink.stop();
+    }
+    Ok(())
+}

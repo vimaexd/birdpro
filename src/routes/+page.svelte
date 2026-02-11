@@ -27,6 +27,8 @@
     import { configStore, initialiseConfig } from "@bird/lib/config";
     import SplitMenus from "@bird/components/SplitMenus.svelte";
     import StatusBar from "@bird/components/StatusBar.svelte";
+    import IconStop from "@bird/assets/icons/IconStop.svelte";
+    import IconHeadphones from "@bird/assets/icons/IconHeadphones.svelte";
 
     let provider: Provider = $derived.by(() => {
       return resolveProvider($ttsStore.providerId)
@@ -184,7 +186,8 @@
                     active={buttonIsDownPreview}
                     color="var(--color-surface2)"
                 >
-                    preview
+                    <IconHeadphones height={24} width={24}/>
+                    <span class="action">preview</span>
                 </ClickyButton>
             {/if}
 
@@ -202,6 +205,15 @@
                     <span class="action">say</span>
                 </ClickyButton>
             </div>
+            <ClickyButton
+                onclick={async () => {
+                  await invoke("audio_stop_all")
+                }}
+                color="var(--color-danger)"
+            >
+                <IconStop height={24} width={24}/>
+                <span class="action">stop</span>
+            </ClickyButton>
         </div>
 
         <div class="history">
@@ -405,7 +417,7 @@
 
     .buttons {
         display: grid;
-        grid-template-columns: 128px 1fr;
+        grid-template-columns: 128px 1fr 128px;
         gap: 8px;
     }
 

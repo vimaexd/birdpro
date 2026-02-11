@@ -95,6 +95,7 @@ pub fn run() {
             crate::ipc::audio::audio_destroy,
             crate::ipc::audio::audio_get_volume,
             crate::ipc::audio::audio_set_volume,
+            crate::ipc::audio::audio_stop_all,
             crate::ipc::osc::osc_start,
             crate::ipc::osc::osc_stop,
             crate::ipc::osc::osc_typing_indicator,

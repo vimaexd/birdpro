@@ -12,7 +12,10 @@
 
     let provider = $state<string>($ttsStore.providerId);
     let ttsVoices = $state<Voice[]>([]);
+    let justApplied = $state(false);
     let selectedVoice = $state("");
+
+    let enableUseButton = $derived(!justApplied && selectedVoice !== "")
 
     const updateVoices = async () => {
       try {
@@ -51,6 +54,9 @@
 <h2>Voice</h2>
 <SelectList
     bind:value={selectedVoice}
+    onChange={() => {
+      justApplied = false
+    }}
     height="100%"
 >
     {#await updateVoices() }
@@ -69,16 +75,15 @@
 </SelectList>
 
 <div class="buttons">
-    <!-- {#if selectedVoice == ""} -->
-    <Button disabled={selectedVoice == ""} type="accent"
+    <Button style="width: 100%;justify-content: center;" disabled={!enableUseButton} type="accent"
         onclick={() => {
-          if(selectedVoice == "") return;
+          if(!enableUseButton) return;
           $ttsStore.providerId = provider;
           $ttsStore.voice = ttsVoices.find((v: Voice) => (v.id == selectedVoice))!;
+          justApplied = true;
         }}
     >Use Voice
     </Button>
-    <!-- {/if} -->
 </div>
 
 <style>
