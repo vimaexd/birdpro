@@ -1,6 +1,7 @@
 
 use std::collections::HashMap;
 
+use reqwest::StatusCode;
 use serde_json::Value;
 
 use crate::provider::{TTSBackend, TTSBackendError, TTSProvider};
@@ -39,12 +40,13 @@ impl TTSProvider for ElevenlabsTTSProvider {
             .await.map_err(|_| TTSBackendError::FetchError)
             .unwrap();
 
-        let req = _req.error_for_status()
-            .map_err(|e| {
-                TTSBackendError::FetchError
-            })?;
+        match _req.status() {
+            StatusCode::UNAUTHORIZED => return Err(TTSBackendError::AuthorizationInvalid),
+            StatusCode::PAYMENT_REQUIRED => return Err(TTSBackendError::OutOfCredits),
+            _ => {}
+        }
 
-        let bytes = req.bytes().await.map_err(|_| TTSBackendError::DecodeError).unwrap();
+        let bytes = _req.bytes().await.map_err(|_| TTSBackendError::DecodeError).unwrap();
         Ok(Vec::from(bytes))
     }
 
@@ -66,6 +68,11 @@ impl TTSProvider for ElevenlabsTTSProvider {
             .send()
             .await.map_err(|_| TTSBackendError::FetchError)
             .unwrap();
+
+        match _req.status() {
+            StatusCode::UNAUTHORIZED => return Err(TTSBackendError::AuthorizationInvalid),
+            _ => {}
+        }
 
         let j = _req.json::<Value>().await.unwrap();
 

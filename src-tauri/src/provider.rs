@@ -43,8 +43,10 @@ pub enum TTSBackendError {
     // failed to decode audio
     DecodeError,
 
-    // provider needs api key
-    AuthorizationRequired
+    AuthorizationRequired,      // provider needs api key
+    AuthorizationInvalid,        // api key is invalid or expired
+
+    OutOfCredits
 }
 
 impl fmt::Display for TTSBackendError {
@@ -66,7 +68,15 @@ impl fmt::Display for TTSBackendError {
             TTSBackendError::AuthorizationRequired => write!(
                 f,
                 "You need to specify an API key in Settings to use this provider"
-            )
+            ),
+            TTSBackendError::AuthorizationInvalid => write!(
+                f,
+                "The API key provided is invalid"
+            ),
+            TTSBackendError::OutOfCredits => write!(
+                f,
+                "You're out of credits! :("
+            ),
         }
     }
 }
