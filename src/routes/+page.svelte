@@ -29,6 +29,7 @@
     import StatusBar from "@bird/components/StatusBar.svelte";
     import IconStop from "@bird/assets/icons/IconStop.svelte";
     import IconHeadphones from "@bird/assets/icons/IconHeadphones.svelte";
+    import { getCurrentWindow } from "@tauri-apps/api/window";
 
     let provider: Provider = $derived.by(() => {
       return resolveProvider($ttsStore.providerId)
@@ -101,6 +102,12 @@
     }
 
     onMount(() => {
+        getCurrentWindow().listen('tauri://focus', () => {
+          if(!$isSettingsOpen) {
+            focusTextbox();
+          }
+        })
+
         document.body.addEventListener("keydown", (e) => {
             // dont capture strokes if settings is shown
             // the user needs that to type stuff!!!
