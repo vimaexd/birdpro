@@ -15,7 +15,8 @@ use rodio::{Sink};
 use serde_json::Value;
 use std::sync::Arc;
 use tauri::window::Color;
-use tauri::Manager;
+use tauri::{Event, Listener, Manager};
+use tauri::WindowEvent::Focused;
 use tokio::sync::Mutex as AsyncMutex;
 use vrchat_osc::VRChatOSC;
 

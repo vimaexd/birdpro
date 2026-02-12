@@ -29,7 +29,8 @@
     import StatusBar from "@bird/components/StatusBar.svelte";
     import IconStop from "@bird/assets/icons/IconStop.svelte";
     import IconHeadphones from "@bird/assets/icons/IconHeadphones.svelte";
-    import { getCurrentWindow } from "@tauri-apps/api/window";
+    import {getAllWindows, getCurrentWindow} from "@tauri-apps/api/window";
+    import {getCurrentWebviewWindow} from "@tauri-apps/api/webviewWindow";
 
     let provider: Provider = $derived.by(() => {
       return resolveProvider($ttsStore.providerId)
@@ -101,11 +102,11 @@
       barSize = Math.min(Math.max(newWidth, 400), 800) - 18
     }
 
-    onMount(() => {
-        getCurrentWindow().listen('tauri://focus', () => {
-          if(!$isSettingsOpen) {
-            focusTextbox();
-          }
+    onMount(async () => {
+        await getCurrentWindow().listen("tauri://focus", () => {
+            if (!$isSettingsOpen) {
+                focusTextbox()
+            }
         })
 
         document.body.addEventListener("keydown", (e) => {
