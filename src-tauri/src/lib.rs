@@ -11,6 +11,7 @@ use crate::backends::msedge::MsEdgeTTSProvider;
 use crate::provider::{TTSBackend, TTSProvider, TTSProviderPlatform};
 use crate::voice::Voice;
 use log::*;
+use rodio::{Sink};
 use serde_json::Value;
 use std::sync::Arc;
 use tauri::window::Color;
@@ -22,6 +23,7 @@ pub struct AppData {
     config: Value,
     provider: TTSBackend,
     audio_setups: Vec<Option<AudioSetup>>,
+    audio_sinks: Vec<Sink>,
     voice: Voice,
     vrc_osc: Option<Arc<VRChatOSC>>,
 }
@@ -76,6 +78,7 @@ pub fn run() {
                 config: Value::from(0), // will be updated by frontend
                 provider: TTSBackend::MsEdge,
                 audio_setups: vec![Some(audio), None, None, None],
+                audio_sinks: vec![],
                 voice: MsEdgeTTSProvider::get_default_voice(),
                 vrc_osc: None,
             }));

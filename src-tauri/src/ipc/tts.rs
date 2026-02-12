@@ -1,4 +1,4 @@
-use rodio::{Decoder, Source};
+use rodio::{Decoder, Sink, Source};
 use std::io::Cursor;
 use tauri::State;
 use tokio::sync::Mutex as AsyncMutex;
@@ -35,7 +35,7 @@ pub async fn tts_say(
         pitch,
         rate
     );
-    let state = state.lock().await;
+    let mut state = state.lock().await;
 
     // add pitch and rate to voice
     let mut voice_final = voice;
@@ -62,34 +62,37 @@ pub async fn tts_say(
         Err(e) => return Err(e),
     };
 
-    let mut target_setups: Vec<&AudioSetup> = vec![];
-    if preview.is_some() && preview.unwrap() == true {
+    // clean up previous finished sinks
+    state.audio_sinks.retain(|sink| !sink.empty());
+
+
+    let mut target_setup_ids: Vec<usize> = vec![];
+    if preview.unwrap_or(false) {
         // currently hardcoded that setup index 1
         // is the preview device, so put to that
         if state.audio_setups.get(1).is_some() {
-            target_setups.push(&state.audio_setups.get(1).unwrap().as_ref().unwrap());
+            target_setup_ids.push(1);
         }
     } else {
-        for setup in &state.audio_setups {
-            if setup.is_none() {
-                continue;
+        for (i, setup) in state.audio_setups.iter().enumerate() {
+            if setup.is_some() {
+                target_setup_ids.push(i);
             }
-
-            let setup_ref = setup.as_ref().unwrap();
-            target_setups.push(setup_ref);
         }
     }
 
     let speed = 1.0 + (pitch as f32 / 100.0);
 
     // put out to all initialized audio setups
-    for setup in target_setups {
+    for setup in target_setup_ids {
+        let setup = state.audio_setups[setup].as_ref().unwrap();
         let src = Decoder::try_from(Cursor::new(bytes.clone()))
             .map_err(|_| TTSBackendError::DecodeError)?
             .speed(speed);
 
-        // setup.stream_handle.mixer().add(src);
-        setup.sink.append(src);
+        let sink = Sink::connect_new(&setup.stream_handle.mixer());
+        sink.append(src);
+        state.audio_sinks.push(sink);
     }
 
     // if vrcosc is active, send the message there

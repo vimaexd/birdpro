@@ -122,11 +122,8 @@ pub async fn audio_stop_all(
 ) -> Result<(), ()> {
     let st = state.lock().await;
 
-    for setup in &st.audio_setups {
-        if setup.is_none() {
-            continue;
-        }
-        setup.as_ref().unwrap().sink.stop();
+    for sink in &st.audio_sinks {
+        sink.stop();
     }
     Ok(())
 }
