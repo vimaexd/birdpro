@@ -1,4 +1,4 @@
-![Bird Pro header image](https://codeberg.org/vimae/birdpro/raw/branch/main/.forgejo/birdpro-header.png)
+![Bird Pro header image](https://codeberg.org/vimae/birdpro/raw/branch/main/.forgejo/assets/birdpro-header.png)
 
 # Bird Pro
 
