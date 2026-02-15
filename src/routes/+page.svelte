@@ -31,6 +31,8 @@
     import IconHeadphones from "@bird/assets/icons/IconHeadphones.svelte";
     import {getAllWindows, getCurrentWindow} from "@tauri-apps/api/window";
     import {getCurrentWebviewWindow} from "@tauri-apps/api/webviewWindow";
+    import { setTextFileContents, setTextTypingIndicator } from "@bird/lib/txtoutput";
+    import { info } from "@tauri-apps/plugin-log";
 
     let provider: Provider = $derived.by(() => {
       return resolveProvider($ttsStore.providerId)
@@ -52,20 +54,31 @@
     let typingIndicatorTimeout: number;
 
     const onTyping = async () => {
+        // if the indicator is already showing, extend the timeout by 4s
         if (typingIndicatorShowing) {
             clearTimeout(typingIndicatorTimeout);
             typingIndicatorTimeout = setTimeout(onTypingTimeout, 4000);
             return;
         }
+        info("Showing typing indicator");
 
+        // set osc and txt typing indicators
         await invoke("osc_typing_indicator", { typing: true });
+        if($configStore["txtoutput"] && $configStore["txtoutput.typingIndicator"]) {
+          await setTextTypingIndicator($configStore["txtoutput.typingIndicatorText"]);
+        }
+
+        // prevent this from being called until we time out
         typingIndicatorShowing = true;
         typingIndicatorTimeout = setTimeout(onTypingTimeout, 4000);
     };
 
+    // clear after the timeout from not typing has run
     const onTypingTimeout = async () => {
-        console.log("typing timeout");
+        info("Hiding typing indicator");
         await invoke("osc_typing_indicator", { typing: false });
+        await setTextTypingIndicator("");
+        typingIndicatorShowing = false;
     };
 
     const sendMessage = async () => {
@@ -77,7 +90,15 @@
         pushHistory(msg);
 
         isLoadingTts = true;
+
         await speakTts(msg);
+
+        // clear typing indicators
+        if(typingIndicatorTimeout) {
+          clearTimeout(typingIndicatorTimeout);
+          onTypingTimeout();
+        }
+
         isLoadingTts = false;
     };
 

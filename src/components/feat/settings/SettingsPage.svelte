@@ -14,6 +14,8 @@
         flex-direction: column;
         justify-content: center;
 
+        overflow-y: scroll;
+
         gap: 16px;
     }
 

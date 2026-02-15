@@ -50,6 +50,8 @@ pub async fn osc_typing_indicator(
             ],
         };
 
+        println!("sending OSC typing indicator");
+
         state
             .vrc_osc
             .as_ref()

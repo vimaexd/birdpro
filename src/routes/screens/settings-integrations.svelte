@@ -4,8 +4,9 @@
     import SettingsSectionTitle from "@bird/components/feat/settings/SettingsSectionTitle.svelte";
     import Button from "@bird/components/ui/Button.svelte";
     import Checkbox from "@bird/components/ui/Checkbox.svelte";
+    import TextInput from "@bird/components/ui/TextInput.svelte";
     import { configStore } from "@bird/lib/config";
-    import { getTextFilePath } from "@bird/lib/txtoutput";
+    import { getTextFilePath, getTypingIndicatorTextFilePath } from "@bird/lib/txtoutput";
     import { invoke } from "@tauri-apps/api/core";
     import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 
@@ -40,25 +41,52 @@
             Text file output
         </SettingsSectionTitle>
         <Checkbox bind:checked={$configStore.txtoutput}>
-            Enable .txt file output
+            Enable text file output
         </Checkbox>
-        {#if $configStore.txtoutput}
-            {#await getTextFilePath() then path}
-                <SettingsExplainerText>
-                    Text will be output to <code>{path}</code>
-                </SettingsExplainerText>
-                <Button onclick={async () => {
-                  await writeText(path);
-                }}>Copy path</Button>
-            {/await}
-        {/if}
         <Checkbox bind:checked={$configStore["txtoutput.clear"]} disabled={!$configStore.txtoutput}>
-            Clear text file after time
+            Clear after time
         </Checkbox>
         <div class="num {(!$configStore.txtoutput) ? 'disabled' : ''}">
             <input name="txttimeout" type="number" min="0" max="30" bind:value={$configStore["txtoutput.clearTimeout"]}>
             <label for="txttimeout">second timeout before clearing</label>
         </div>
+    </div>
+    {#if $configStore.txtoutput}
+        {#await getTextFilePath() then path}
+            <div>
+                <h4>
+                    Text file path
+                </h4>
+                <SettingsExplainerText>
+                    <code>{path}</code>
+                </SettingsExplainerText>
+            </div>
+        {/await}
+    {/if}
+
+    <div class="option">
+        <SettingsSectionTitle>
+            Text typing indicator
+        </SettingsSectionTitle>
+        <Checkbox bind:checked={$configStore["txtoutput.typingIndicator"]}>
+            Enable .txt typing indicator
+        </Checkbox>
+        {#if $configStore["txtoutput.typingIndicator"]}
+            <TextInput bind:value={$configStore["txtoutput.typingIndicatorText"]}>
+                Typing indicator text
+            </TextInput>
+            {#await getTypingIndicatorTextFilePath() then path}
+                <div>
+                    <h4>
+                        Typing indicator path
+                    </h4>
+                    <SettingsExplainerText>
+                        <code>{path}</code>
+                    </SettingsExplainerText>
+                </div>
+            {/await}
+
+        {/if}
     </div>
 </SettingsPage>
 
@@ -75,5 +103,10 @@
         &.disabled {
             opacity: 0.4;
         }
+    }
+
+    h4 {
+        font-size: .9rem;
+        font-weight: 400;
     }
 </style>

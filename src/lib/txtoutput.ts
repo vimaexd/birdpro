@@ -18,3 +18,16 @@ export async function setTextFileContents(content: string) {
   let path = await getTextFilePath();
   await writeTextFile(path, content);
 }
+
+/*
+  typing indicator
+*/
+export async function getTypingIndicatorTextFilePath(): Promise<string> {
+  let appdata = await path.appDataDir();
+  return path.join(appdata, "tts-typing-indicator.txt")
+}
+
+export async function setTextTypingIndicator(content: string) {
+  let path = await getTypingIndicatorTextFilePath();
+  await writeTextFile(path, content);
+}

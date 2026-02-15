@@ -20,6 +20,8 @@ interface BirdProConfig {
   "txtoutput": boolean;
   "txtoutput.clear": boolean;
   "txtoutput.clearTimeout": number;
+  "txtoutput.typingIndicator": boolean;
+  "txtoutput.typingIndicatorText": string;
   "elevenlabs.apikey": string;
 }
 
@@ -45,6 +47,8 @@ export async function initialiseConfig() {
     "txtoutput": false,
     "txtoutput.clear": false,
     "txtoutput.clearTimeout": 10,
+    "txtoutput.typingIndicator": false,
+    "txtoutput.typingIndicatorText": "[* typing *]",
     "elevenlabs.apikey": ""
   }
 
