@@ -6,8 +6,11 @@
     import SelectListOption from "@bird/components/ui/SelectListOption.svelte"
     import { configStore } from "@bird/lib/config";
     import SettingsPage from "@bird/components/feat/settings/SettingsPage.svelte";
+    import { invoke } from "@tauri-apps/api/core";
 
-    let showOutput2 = $state($audioStore.devices[1] !== undefined);
+    const adjustVolume = async (setup: number, amount: number) => {
+      await invoke("audio_set_volume", { setupIdx: setup, volume: amount })
+    }
 </script>
 
 <SettingsPage>
@@ -22,16 +25,30 @@
             {/each}
         </SelectList>
 
-        <p class="device-info">
-            {#await getAudioDeviceInfo(0) then audioDevice}
-                {audioDevice.sample_rate}Hz
-                {audioDevice.bit_depth ** 2}bit
-            {/await}
-        </p>
+        <div class="extractrl">
+            <label for="vol0">Main Volume</label>
+            <input type="range" name="vol0" width="100%" bind:value={$configStore.volumes[0]} onchange={() => {
+              adjustVolume(0, $configStore.volumes[0])
+            }} min={0} max={1} step={0.01}>
+
+            <p class="device-info">
+                {#await getAudioDeviceInfo(0) then audioDevice}
+                    {audioDevice.sample_rate}Hz
+                    {audioDevice.bit_depth ** 2}bit
+                {/await}
+            </p>
+        </div>
 
         <Checkbox bind:checked={$configStore.audio.usePreviewOutput} onchange={() => {
           if(!$configStore.audio.usePreviewOutput) {
+            // if we just disabled, destroy audio device
             destroyAudioDevice(1)
+          } else if (!$audioStore.devices[1]) {
+            // if we just enabled and theres no device
+            // set device 0 as device 1 to prevent there being no device
+            // which causes errors
+            $audioStore.devices[1] = $audioStore.devices[0]
+            setAudioDevice($audioStore.devices[0], 1)
           }
         }}>
             Preview Device
@@ -46,12 +63,19 @@
                 {/each}
             </SelectList>
             {#if $audioStore.devices[1]}
-                <p class="device-info">
-                    {#await getAudioDeviceInfo(1) then audioDevice}
-                        {audioDevice.sample_rate}Hz
-                        {audioDevice.bit_depth ** 2}bit
-                    {/await}
-                </p>
+                <div class="extractrl">
+                    <label for="vol0">Preview Volume</label>
+                    <input type="range" name="vol0" width="100%" bind:value={$configStore.volumes[1]} onchange={() => {
+                      adjustVolume(1, $configStore.volumes[1])
+                    }} min={0} max={1} step={0.01}>
+
+                    <p class="device-info">
+                        {#await getAudioDeviceInfo(1) then audioDevice}
+                            {audioDevice.sample_rate}Hz
+                            {audioDevice.bit_depth ** 2}bit
+                        {/await}
+                    </p>
+                </div>
             {/if}
         {/if}
     </div>
@@ -73,5 +97,13 @@
         padding: 4px;
 
         opacity: .5;
+    }
+
+    .extractrl {
+        width: 100%;
+
+        input[type=range] {
+            width: 100%;
+        }
     }
 </style>

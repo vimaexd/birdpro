@@ -15,6 +15,7 @@ interface BirdProConfig {
       [idx: number]: string;
     }
   }
+  volumes: number[];
   "last": TTSStore | undefined;
   "txtoutput": boolean;
   "txtoutput.clear": boolean;
@@ -39,6 +40,7 @@ export async function initialiseConfig() {
         0: (await invoke("audio_get_device", { setupIdx: 0 }) as AudioDevice).name
       }
     },
+    "volumes": [1.0, 1.0],
     "last": undefined,
     "txtoutput": false,
     "txtoutput.clear": false,

@@ -102,17 +102,20 @@ pub async fn audio_set_volume(
 ) -> Result<(), ()> {
     let state = state.lock().await;
 
+    log::info!("{:#?}", volume);
+
     let target_setup = state.audio_setups.get(setup_idx);
     if target_setup.is_none() {
         return Ok(());
     }
 
-    target_setup
-        .unwrap()
-        .as_ref()
-        .unwrap()
-        .sink
-        .set_volume(volume);
+    // set current sinks to that volume
+    for sink in &state.audio_sinks {
+        if sink.setup_index == setup_idx {
+            sink.sink.set_volume(volume);
+        }
+    }
+
     Ok(())
 }
 
@@ -123,7 +126,7 @@ pub async fn audio_stop_all(
     let st = state.lock().await;
 
     for sink in &st.audio_sinks {
-        sink.stop();
+        sink.sink.stop();
     }
     Ok(())
 }

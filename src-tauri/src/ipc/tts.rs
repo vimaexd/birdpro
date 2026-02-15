@@ -1,10 +1,11 @@
 use rodio::{Decoder, Sink, Source};
+use serde_json::Value;
 use std::io::Cursor;
 use tauri::State;
 use tokio::sync::Mutex as AsyncMutex;
 use vrchat_osc::rosc::{OscMessage, OscPacket, OscType};
 
-use crate::audio::AudioSetup;
+use crate::audio::{BirdSink};
 use crate::backends::elevenlabs::ElevenlabsTTSProvider;
 use crate::backends::msedge::MsEdgeTTSProvider;
 #[cfg(windows)]
@@ -63,8 +64,7 @@ pub async fn tts_say(
     };
 
     // clean up previous finished sinks
-    state.audio_sinks.retain(|sink| !sink.empty());
-
+    state.audio_sinks.retain(|sink| !sink.sink.empty());
 
     let mut target_setup_ids: Vec<usize> = vec![];
     if preview.unwrap_or(false) {
@@ -85,14 +85,22 @@ pub async fn tts_say(
 
     // put out to all initialized audio setups
     for setup in target_setup_ids {
-        let setup = state.audio_setups[setup].as_ref().unwrap();
+        let audiosetup = state.audio_setups[setup].as_ref().unwrap();
         let src = Decoder::try_from(Cursor::new(bytes.clone()))
             .map_err(|_| TTSBackendError::DecodeError)?
             .speed(speed);
 
-        let sink = Sink::connect_new(&setup.stream_handle.mixer());
+        let sink = Sink::connect_new(&audiosetup.stream_handle.mixer());
         sink.append(src);
-        state.audio_sinks.push(sink);
+
+        // get sink volume level
+        let vols = state.config["volumes"].as_array().unwrap();
+        sink.set_volume(vols[setup].as_f64().unwrap_or(1.0) as f32);
+
+        state.audio_sinks.push(BirdSink {
+            sink: sink,
+            setup_index: setup
+        });
     }
 
     // if vrcosc is active, send the message there

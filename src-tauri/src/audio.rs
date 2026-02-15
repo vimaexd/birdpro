@@ -45,3 +45,10 @@ impl AudioSetup {
         }
     }
 }
+
+// helper to be able to differenciate different tts sinks to
+// different audio outputs
+pub struct BirdSink {
+    pub sink: rodio::Sink,
+    pub setup_index: usize
+}

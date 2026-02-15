@@ -6,17 +6,15 @@ pub mod voice;
 #[macro_use]
 pub mod ipc;
 
-use crate::audio::AudioSetup;
+use crate::audio::{AudioSetup, BirdSink};
 use crate::backends::msedge::MsEdgeTTSProvider;
 use crate::provider::{TTSBackend, TTSProvider, TTSProviderPlatform};
 use crate::voice::Voice;
 use log::*;
-use rodio::{Sink};
 use serde_json::Value;
 use std::sync::Arc;
 use tauri::window::Color;
-use tauri::{Event, Listener, Manager};
-use tauri::WindowEvent::Focused;
+use tauri::{Manager};
 use tokio::sync::Mutex as AsyncMutex;
 use vrchat_osc::VRChatOSC;
 
@@ -24,7 +22,7 @@ pub struct AppData {
     config: Value,
     provider: TTSBackend,
     audio_setups: Vec<Option<AudioSetup>>,
-    audio_sinks: Vec<Sink>,
+    audio_sinks: Vec<BirdSink>,
     voice: Voice,
     vrc_osc: Option<Arc<VRChatOSC>>,
 }
