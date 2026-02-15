@@ -50,7 +50,7 @@ pub async fn osc_typing_indicator(
             ],
         };
 
-        println!("sending OSC typing indicator");
+        log::info!("sending OSC typing indicator");
 
         state
             .vrc_osc
