@@ -2,8 +2,8 @@ use crate::provider::{TTSBackend, TTSBackendError, TTSProvider};
 use crate::voice::Voice;
 use serde_json::Value;
 use windows::core::{Interface, HSTRING};
-use windows::Media::SpeechSynthesis::SpeechSynthesizer;
-use windows::Storage::Streams::{Buffer, InputStreamOptions};
+use windows::Media::SpeechSynthesis::{SpeechSynthesisStream, SpeechSynthesizer};
+use windows::Storage::Streams::{Buffer, IBuffer, InputStreamOptions};
 use windows::Win32::System::WinRT::IBufferByteAccess;
 
 pub struct WindowsTTSProvider {}
@@ -41,10 +41,10 @@ impl TTSProvider for WindowsTTSProvider {
                 </prosody>
         </speak>");
 
-        let speech_stream = synth
+        let speech_stream: SpeechSynthesisStream = synth
             .SynthesizeSsmlToStreamAsync(&HSTRING::from(ssml))
             .expect("failed to synthesize")
-            .await
+            .get()
             .map_err(|_| TTSBackendError::SynthesisFailure)?;
 
         // microsoft I hate you
@@ -52,11 +52,9 @@ impl TTSProvider for WindowsTTSProvider {
         let mut bytes = Vec::new();
 
         let buf = Buffer::Create(size).unwrap();
-        let ibuf = speech_stream
+        let ibuf: IBuffer = speech_stream
             .ReadAsync(&buf, size, InputStreamOptions::None)
-            .unwrap()
-            .await
-            .unwrap();
+            .unwrap().get().unwrap();
 
         let len = ibuf.Length().unwrap();
         if len == 0 {
