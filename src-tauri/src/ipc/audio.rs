@@ -1,8 +1,11 @@
-use crate::audio::{AudioDeviceInfo, AudioSetup};
+use std::io::{Cursor, Read};
+
+use crate::audio::{AudioDeviceInfo, AudioSetup, BirdSink};
 use crate::AppData;
 use rodio::cpal::traits::HostTrait;
-use rodio::{cpal, DeviceTrait};
-use tauri::State;
+use rodio::{cpal, DeviceTrait, Source};
+use tauri::path::BaseDirectory;
+use tauri::{Manager, State};
 use tokio::sync::Mutex as AsyncMutex;
 
 #[tauri::command]
@@ -128,5 +131,63 @@ pub async fn audio_stop_all(
     for sink in &st.audio_sinks {
         sink.sink.stop();
     }
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn audio_typingindicator_start(
+    state: State<'_, AsyncMutex<AppData>>,
+    handle: tauri::AppHandle
+) -> Result<(), ()> {
+    let mut st = state.lock().await;
+
+    // load sound
+    let file_path = handle.path().resolve("assets/snd_talking.wav", BaseDirectory::Resource).unwrap();
+    let audio_data = std::fs::read(&file_path).unwrap();
+
+    for i in 0..st.audio_setups.len() {
+        let setup = &st.audio_setups[i];
+        if setup.is_some() {
+            let sink = rodio::Sink::connect_new(&setup.as_ref().unwrap().stream_handle.mixer());
+            let src = rodio::Decoder::try_from(Cursor::new(audio_data.clone())).unwrap();
+            sink.set_volume(0.8);
+            sink.append(src.repeat_infinite());
+            sink.play();
+
+            let bs = BirdSink {
+                setup_index: i,
+                sink: sink
+            };
+
+            st.audio_sinks_typingindicator.push(bs);
+        }
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn audio_typingindicator_stop(
+    state: State<'_, AsyncMutex<AppData>>,
+) -> Result<(), ()> {
+    let mut st = state.lock().await;
+
+    for ti in st.audio_sinks_typingindicator.drain(..) {
+        tokio::spawn(async move {
+            let fade_duration = std::time::Duration::from_millis(300);
+            let steps = 20;
+            let step_duration = fade_duration / steps;
+            let current_vol = ti.sink.volume();
+
+            for i in (0..steps).rev() {
+                let new_vol = current_vol * (i as f32 / steps as f32);
+                ti.sink.set_volume(new_vol);
+                tokio::time::sleep(step_duration).await;
+            }
+
+            ti.sink.stop();
+        });
+    }
+    st.audio_sinks_typingindicator = vec![];
     Ok(())
 }

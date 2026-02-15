@@ -23,6 +23,7 @@ pub struct AppData {
     provider: TTSBackend,
     audio_setups: Vec<Option<AudioSetup>>,
     audio_sinks: Vec<BirdSink>,
+    audio_sinks_typingindicator: Vec<BirdSink>,
     voice: Voice,
     vrc_osc: Option<Arc<VRChatOSC>>,
 }
@@ -78,6 +79,7 @@ pub fn run() {
                 provider: TTSBackend::MsEdge,
                 audio_setups: vec![Some(audio), None, None, None],
                 audio_sinks: vec![],
+                audio_sinks_typingindicator: vec![],
                 voice: MsEdgeTTSProvider::get_default_voice(),
                 vrc_osc: None,
             }));
@@ -98,6 +100,8 @@ pub fn run() {
             crate::ipc::audio::audio_get_volume,
             crate::ipc::audio::audio_set_volume,
             crate::ipc::audio::audio_stop_all,
+            crate::ipc::audio::audio_typingindicator_start,
+            crate::ipc::audio::audio_typingindicator_stop,
             crate::ipc::osc::osc_start,
             crate::ipc::osc::osc_stop,
             crate::ipc::osc::osc_typing_indicator,

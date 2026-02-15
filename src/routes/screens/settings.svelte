@@ -4,10 +4,12 @@
     import SettingsAbout from "./settings-about.svelte";
     import SettingsIntegrations from "./settings-integrations.svelte";
     import SettingsProviders from "./settings-providers.svelte";
+    import SettingsBehaviour from "./settings-behaviour.svelte";
 
     let selectedPage = $state("Audio");
     const pages: {[id: string]: any} = {
       "Audio": SettingsAudio,
+      "Behaviour": SettingsBehaviour,
       "Providers": SettingsProviders,
       "Integrations": SettingsIntegrations,
       "About": SettingsAbout,

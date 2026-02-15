@@ -1,5 +1,4 @@
 use rodio::{Decoder, Sink, Source};
-use serde_json::Value;
 use std::io::Cursor;
 use tauri::State;
 use tokio::sync::Mutex as AsyncMutex;

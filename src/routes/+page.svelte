@@ -33,6 +33,7 @@
     import {getCurrentWebviewWindow} from "@tauri-apps/api/webviewWindow";
     import { setTextFileContents, setTextTypingIndicator } from "@bird/lib/txtoutput";
     import { info } from "@tauri-apps/plugin-log";
+    import Checkbox from "@bird/components/ui/Checkbox.svelte";
 
     let provider: Provider = $derived.by(() => {
       return resolveProvider($ttsStore.providerId)
@@ -50,16 +51,21 @@
     let resizeBar = $state(false);
 
     let typingIndicatorLastLength = 0;
-    let typingIndicatorShowing = false;
+    let typingIndicatorShowing = $state(false);
     let typingIndicatorTimeout: number;
 
     const onTyping = async () => {
         // if the indicator is already showing, extend the timeout by 4s
         if (typingIndicatorShowing) {
+            console.log("showing already")
             clearTimeout(typingIndicatorTimeout);
             typingIndicatorTimeout = setTimeout(onTypingTimeout, 4000);
             return;
         }
+        // prevent this from being called until we time out
+
+        typingIndicatorShowing = true;
+
         info("Showing typing indicator");
 
         // set osc and txt typing indicators
@@ -68,8 +74,11 @@
           await setTextTypingIndicator($configStore["txtoutput.typingIndicatorText"]);
         }
 
-        // prevent this from being called until we time out
-        typingIndicatorShowing = true;
+        // set audio typing indicator
+        if($configStore["audioTypingIndicator"]) {
+          await invoke("audio_typingindicator_start");
+        }
+
         typingIndicatorTimeout = setTimeout(onTypingTimeout, 4000);
     };
 
@@ -77,6 +86,7 @@
     const onTypingTimeout = async () => {
         info("Hiding typing indicator");
         await invoke("osc_typing_indicator", { typing: false });
+        await invoke("audio_typingindicator_stop");
         await setTextTypingIndicator("");
         typingIndicatorShowing = false;
     };
@@ -194,19 +204,28 @@
     {/if}
 
     <div class="app-left">
-        <textarea
-            id="talkbox"
-            placeholder="type something to say"
-            bind:value={message}
-            bind:this={talkboxRef}
-            oninput={(e: any) => {
-                // don't count deleting as typing
-                if (typingIndicatorLastLength < e.target.value.length + 1) {
-                    onTyping();
-                }
-                typingIndicatorLastLength = e.target.value.length;
-            }}
-        ></textarea>
+        <div class="talkbox-container">
+            <textarea
+                id="talkbox"
+                placeholder="type something to say"
+                bind:value={message}
+                bind:this={talkboxRef}
+                oninput={(e: any) => {
+                    // don't count deleting as typing
+                    if (typingIndicatorLastLength < e.target.value.length + 1) {
+                        onTyping();
+                    }
+                    typingIndicatorLastLength = e.target.value.length;
+                }}
+                maxlength="200"
+            >
+            </textarea>
+            {#if typingIndicatorShowing}
+                <div class="typingindicator-floating-container">
+                    <p class="typingindicator-floating">typing</p>
+                </div>
+            {/if}
+        </div>
         <div class="buttons">
             {#if $configStore.audio.usePreviewOutput}
                 <ClickyButton
@@ -307,6 +326,10 @@
                     <h2>Rate</h2>
                 </StepToggle>
             {/if}
+
+            <Checkbox bind:checked={$configStore.audioTypingIndicator}>
+                Audible typing indicator
+            </Checkbox>
         {:else}
             <LoadingSpinner />
         {/if}
@@ -382,6 +405,11 @@
         100% {
             outline-color: var(--color-surface0);
         }
+    }div
+
+    .talkbox-container {
+        width: 100%;
+        height: 100%;
     }
 
     #talkbox {
@@ -491,5 +519,66 @@
             opacity: 0.35;
             font-style: italic;
         }
+    }
+
+    .typingindicator-floating-container {
+        position:relative;
+    }
+
+    @keyframes typingindicator-anim {
+        0% {
+            --gradient-alpha: 0.5;
+        }
+        15% {
+            --gradient-percent: 0%;
+        }
+
+        50% {
+            --gradient-alpha: 1.0;
+        }
+
+        100% {
+            --gradient-percent: 150%;
+            --gradient-alpha: 0.5;
+        }
+    }
+
+    @property --gradient-percent {
+      syntax: "<percentage>";
+      inherits: false;
+      initial-value: 0%;
+    }
+
+
+    @property --gradient-alpha {
+      syntax: "<number>";
+      inherits: false;
+      initial-value: 0;
+    }
+
+    .typingindicator-floating {
+        --gradient-percent: 0%;
+        position: absolute;
+        right: 16px;
+        bottom: 16px;
+        font-size: .9rem;
+
+        background: linear-gradient(90deg,
+            rgba(255,255,255,0.5),
+            rgba(255,255,255,var(--gradient-alpha)) var(--gradient-percent),
+            rgba(255,255,255,0.5)
+        );
+        background-size: 200%;
+        background-position: center;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+
+        animation: 1.4s typingindicator-anim infinite linear;
+    }
+
+    .quicksettings {
+        padding: 8px;
+        border: 1px var(--color-surface0) solid;
+        border-radius: var(--rounding);
     }
 </style>

@@ -23,6 +23,7 @@ interface BirdProConfig {
   "txtoutput.typingIndicator": boolean;
   "txtoutput.typingIndicatorText": string;
   "elevenlabs.apikey": string;
+  "audioTypingIndicator": boolean;
 }
 
 export let configStore: Writable<BirdProConfig>;
@@ -49,7 +50,8 @@ export async function initialiseConfig() {
     "txtoutput.clearTimeout": 10,
     "txtoutput.typingIndicator": false,
     "txtoutput.typingIndicatorText": "[* typing *]",
-    "elevenlabs.apikey": ""
+    "elevenlabs.apikey": "",
+    "audioTypingIndicator": false
   }
 
   let cfgPath = await getConfigPath();

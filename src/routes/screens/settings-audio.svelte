@@ -89,6 +89,8 @@
         grid-template-rows: 20px 1fr 1fr;
         grid-auto-flow: column;
         gap: 16px;
+
+        overflow-x: hidden;
     }
 
     .device-info {
