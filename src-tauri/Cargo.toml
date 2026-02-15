@@ -1,6 +1,6 @@
 [package]
 name = "birdpro"
-version = "0.1.0"
+version = "0.1.1"
 description = "text to speech for birds"
 authors = ["vimae <mae@mae.wtf>"]
 edition = "2021"
