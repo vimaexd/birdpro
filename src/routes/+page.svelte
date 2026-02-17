@@ -55,9 +55,13 @@
     let typingIndicatorTimeout: number;
 
     const onTyping = async () => {
+        // regardless of whever this is already showing, send typing over OSC
+        if($configStore["vrcOsc"]) {
+          await invoke("osc_typing_indicator", { typing: true });
+        }
+
         // if the indicator is already showing, extend the timeout by 4s
         if (typingIndicatorShowing) {
-            console.log("showing already")
             clearTimeout(typingIndicatorTimeout);
             typingIndicatorTimeout = setTimeout(onTypingTimeout, 4000);
             return;
@@ -69,7 +73,6 @@
         info("Showing typing indicator");
 
         // set osc and txt typing indicators
-        await invoke("osc_typing_indicator", { typing: true });
         if($configStore["txtoutput"] && $configStore["txtoutput.typingIndicator"]) {
           await setTextTypingIndicator($configStore["txtoutput.typingIndicatorText"]);
         }
