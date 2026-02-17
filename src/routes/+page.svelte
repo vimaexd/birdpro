@@ -50,6 +50,7 @@
     let barSize = $state(380);
     let resizeBar = $state(false);
 
+    const typingIndicatorTimeoutSeconds = 2500;
     let typingIndicatorLastLength = 0;
     let typingIndicatorShowing = $state(false);
     let typingIndicatorTimeout: number;
@@ -63,7 +64,7 @@
         // if the indicator is already showing, extend the timeout by 4s
         if (typingIndicatorShowing) {
             clearTimeout(typingIndicatorTimeout);
-            typingIndicatorTimeout = setTimeout(onTypingTimeout, 4000);
+            typingIndicatorTimeout = setTimeout(onTypingTimeout, typingIndicatorTimeoutSeconds);
             return;
         }
         // prevent this from being called until we time out
@@ -82,7 +83,7 @@
           await invoke("audio_typingindicator_start");
         }
 
-        typingIndicatorTimeout = setTimeout(onTypingTimeout, 4000);
+        typingIndicatorTimeout = setTimeout(onTypingTimeout, typingIndicatorTimeoutSeconds);
     };
 
     // clear after the timeout from not typing has run
