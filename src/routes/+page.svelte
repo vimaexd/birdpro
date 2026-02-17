@@ -217,7 +217,7 @@
                     }
                     typingIndicatorLastLength = e.target.value.length;
                 }}
-                maxlength="200"
+                maxlength="144"
             >
             </textarea>
             {#if typingIndicatorShowing}
