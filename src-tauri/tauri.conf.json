@@ -37,6 +37,11 @@
     ],
     "resources": [
       "assets/"
-    ]
+    ],
+    "windows": {
+      "nsis": {
+        "sidebarImage": "./assets-installer/installer-sidebar.bmp"
+      }
+    }
   }
 }
