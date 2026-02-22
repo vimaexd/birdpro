@@ -82,7 +82,7 @@
         editMode = false;
         saveFavourites();
         animate([...itemsContainer.children], {
-          translateX: [28, 0],
+          translateX: [32, 0],
           ease: "outExpo",
           duration: 400,
 
@@ -93,7 +93,7 @@
         editMode = true;
 
         animate([...itemsContainer.children], {
-          translateX: [-28, 0],
+          translateX: [-32, 0],
           delay: stagger(50),
           ease: "outExpo",
           duration: 400
@@ -120,7 +120,7 @@
             {#if editMode}
                 Editing - drag to reorder
             {:else}
-                2 Favourites
+                {$favouritesStore.length} Favourites
             {/if}
         </p>
 
@@ -134,33 +134,31 @@
     </div>
 {/if}
 <div id="favourites" bind:this={itemsContainer}>
-    {#key $favouritesStore}
-        {#each $favouritesStore as fav, i}
-            <div class="favourite-container smol-buttons" {...{ key: i } as any}>
-                {#if editMode}
-                    <div class="favourite-editcontrols">
-                        <Button onclick={() => removeFavourite(i)}>
-                            <IconBin width="24px" height="24px"/>
-                        </Button>
-                    </div>
-                {/if}
-                <FavouriteVoice
-                    key={i}
-                    name={fav.name}
-                    color={fav.color}
-                    store={fav.store}
-                    draggable={editMode}
-                    ondragstart={onDragStart}
-                    ondragover={onDragOver}
-                    ondragend={onDragEnd}
-                    onclick={() => {
-                      if(!editMode) {
-                        ttsStore.set(fav.store);
-                      }
-                    }}/>
-            </div>
-        {/each}
-    {/key}
+    {#each $favouritesStore as fav, i}
+        <div class="favourite-container smol-buttons" {...{ key: i } as any}>
+            {#if editMode}
+                <div class="favourite-editcontrols">
+                    <Button onclick={() => removeFavourite(i)}>
+                        <IconBin width="24px" height="24px"/>
+                    </Button>
+                </div>
+            {/if}
+            <FavouriteVoice
+                key={i}
+                name={fav.name}
+                color={fav.color}
+                store={fav.store}
+                draggable={editMode}
+                ondragstart={onDragStart}
+                ondragover={onDragOver}
+                ondragend={onDragEnd}
+                onclick={() => {
+                    if(!editMode) {
+                    ttsStore.set(fav.store);
+                    }
+                }}/>
+        </div>
+    {/each}
 </div>
 
 <style>

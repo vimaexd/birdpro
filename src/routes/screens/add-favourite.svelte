@@ -8,6 +8,7 @@
     import Button from '@bird/components/ui/Button.svelte';
     import Modal from '@bird/components/alert/Modal.svelte';
     import { favouritesStore, saveFavourites } from '@bird/lib/favourites';
+    import { get } from 'svelte/store';
 
     let name = $state("My voice");
     let color = $state("#4744eb");
@@ -26,11 +27,14 @@
     }
 
     const doAdd = () => {
-      let favStore = $favouritesStore;
+      // for some weird reason if we dont structuredclone
+      // then it stores a reference still?? huh??
+      let store = structuredClone(get(ttsStore));
+      let favStore = get(favouritesStore);
       favStore.push({
         name,
         color,
-        store: $ttsStore
+        store
       });
       favouritesStore.set(favStore);
       saveFavourites();
