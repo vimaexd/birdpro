@@ -47,7 +47,10 @@ pub fn run() {
                         "[{} {} {}] {}",
                         humantime::format_rfc3339(std::time::SystemTime::now()),
                         record.level(),
-                        record.module_path().unwrap_or("unk"),
+
+                        // assuming if we dont have a module path then it's
+                        // probably from the frontend
+                        record.module_path().unwrap_or("frontend"),
                         message
                     ))
                 })
@@ -61,6 +64,8 @@ pub fn run() {
                         file_name: Some("logs".to_string()),
                     },
                 ))
+                .max_file_size(10_000_000)
+                .rotation_strategy(tauri_plugin_log::RotationStrategy::KeepAll)
                 .build(),
         )
         .plugin(tauri_plugin_fs::init())

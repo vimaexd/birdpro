@@ -1,4 +1,4 @@
-use std::io::{Cursor, Read};
+use std::io::{Cursor};
 
 use crate::audio::{AudioDeviceInfo, AudioSetup, BirdSink};
 use crate::AppData;

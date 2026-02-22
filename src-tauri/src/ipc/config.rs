@@ -11,8 +11,5 @@ use tokio::sync::Mutex as AsyncMutex;
 pub async fn update_config(config: Value, state: State<'_, AsyncMutex<AppData>>) -> Result<(), ()> {
     let mut st = state.lock().await;
     st.config = config;
-
-    info!("backend config rx");
-
     Ok(())
 }
