@@ -1,12 +1,12 @@
 <script lang="ts">
     import { ttsProviders, ttsStore } from "@bird/lib/bird";
-    import FavouriteVoice from "./FavouriteVoice.svelte";
+    import FavouriteVoice from "@bird/components/feat/favourites/FavouriteVoice.svelte";
     import { favouritesStore, saveFavourites } from "@bird/lib/favourites";
     import IconFavourite from "@bird/assets/icons/IconFavourite.svelte";
-    import Button from "./ui/Button.svelte";
+    import Button from "@bird/components/ui/Button.svelte";
     import IconEdit from "@bird/assets/icons/IconEdit.svelte";
     import IconStop from "@bird/assets/icons/IconStop.svelte";
-    import { animate, spring, stagger, waapi } from "animejs";
+    import { animate, spring, stagger } from "animejs";
     import IconBin from "@bird/assets/icons/IconBin.svelte";
 
     // TODO: address this to the user and make it work with the sorting system
@@ -45,10 +45,8 @@
       if(dragDestination == +key) return;
       dragDestination = +key;
 
-      // animate items
       // this is such a hack i hate this
       let els = [...e.target.parentElement.parentElement.children];
-      console.log(els);
 
       dragSource = (dragSource as number);
       dragDestination = (dragDestination as number);
@@ -57,18 +55,16 @@
 
       // make a copy of the favourites store that we will apply our things to
       let fs = $favouritesStore;
-      let sourceItem = fs[dragSource as number];
+      let sourceItem = fs[dragSource];
 
       if(dragSource < dragDestination) {
         for(let i = dragSource + 1; i < dragDestination + 1; i++) {
-          console.log(`${i-1} -> ${i}`)
           fs[i-1] = fs[i];
         }
       } else {
         for(let i = dragSource - 1; i > dragDestination - 1; i--) {
           fs[i+1] = fs[i];
         }
-        console.log(dragSource)
       }
 
       fs[dragDestination] = sourceItem;
@@ -79,9 +75,6 @@
     const onDragEnd = (e: any) => {
       dragSource = undefined;
       dragDestination = undefined;
-
-      let els = [...e.target.parentElement.parentElement.children];
-      els.forEach(e => e.style.transform = '');
     }
 
     const toggleEditMode = () => {

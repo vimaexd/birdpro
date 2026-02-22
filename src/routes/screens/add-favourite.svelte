@@ -1,6 +1,6 @@
 <script lang="ts">
     import ColorPicker from 'svelte-awesome-color-picker';
-    import FavouriteVoice from "@bird/components/FavouriteVoice.svelte";
+    import FavouriteVoice from "@bird/components/feat/favourites/FavouriteVoice.svelte";
     import TextInput from "@bird/components/ui/TextInput.svelte";
     import { ttsStore } from "@bird/lib/bird";
     import { onMount } from 'svelte';

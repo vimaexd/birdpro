@@ -6,6 +6,7 @@
       ...props
     } = $props();
 
+    // svelte-ignore state_referenced_locally
     let hidden = $state(secret);
 </script>
 

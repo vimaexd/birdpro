@@ -1,41 +1,42 @@
 <script lang="ts">
-    import HistoryItem from "../components/HistoryItem.svelte";
-    import StepToggle from "../components/StepToggle.svelte";
-    import Voicebank from "../components/Voicebank.svelte";
-    import ClickyButton from "../components/ClickyButton.svelte";
 
     import {
         speakTts,
         ttsStore,
         resolveProvider,
-
         type Provider
+    } from "@bird/lib/bird";
+    import { configStore } from "@bird/lib/config";
+    import { getLastMessage, historyStore, pushHistory } from "@bird/lib/history";
+    import { disableInputCapture, isSettingsOpen } from "@bird/lib/modal";
+    import { setTextTypingIndicator } from "@bird/lib/txtoutput";
 
-    } from "$lib/bird";
     import { invoke } from "@tauri-apps/api/core";
+    import { getCurrentWindow } from "@tauri-apps/api/window";
+    import { info } from "@tauri-apps/plugin-log";
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
-    import LoadingSpinner from "../components/LoadingSpinner.svelte";
-    import { getLastMessage, historyStore, pushHistory } from "$lib/history";
-    import { disableInputCapture, isSettingsOpen } from "@bird/lib/modal";
 
-    import IconPitch from "../assets/icons/IconPitch.svelte";
-    import IconRate from "../assets/icons/IconRate.svelte";
-    import IconEnter from "@bird/assets/icons/IconEnter.svelte";
-
+    import AddFavourite from "./screens/add-favourite.svelte";
     import Settings from "./screens/settings.svelte";
-    import { configStore, initialiseConfig } from "@bird/lib/config";
-    import SplitMenus from "@bird/components/SplitMenus.svelte";
+
+    import SplitMenus from "@bird/components/feat/splitmenu/SplitMenus.svelte";
     import StatusBar from "@bird/components/StatusBar.svelte";
-    import IconStop from "@bird/assets/icons/IconStop.svelte";
-    import IconHeadphones from "@bird/assets/icons/IconHeadphones.svelte";
-    import { getCurrentWindow } from "@tauri-apps/api/window";
-    import { setTextTypingIndicator } from "@bird/lib/txtoutput";
-    import { info } from "@tauri-apps/plugin-log";
+    import HistoryItem from "@bird/components/feat/history/HistoryItem.svelte";
+    import StepToggle from "@bird/components/StepToggle.svelte";
+    import Voicebank from "@bird/components/Voicebank.svelte";
+    import ClickyButton from "@bird/components/ClickyButton.svelte";
     import Checkbox from "@bird/components/ui/Checkbox.svelte";
     import Button from "@bird/components/ui/Button.svelte";
+    import LoadingSpinner from "@bird/components/LoadingSpinner.svelte";
+
+    import IconStop from "@bird/assets/icons/IconStop.svelte";
+    import IconHeadphones from "@bird/assets/icons/IconHeadphones.svelte";
+    import IconPitch from "@bird/assets/icons/IconPitch.svelte";
+    import IconRate from "@bird/assets/icons/IconRate.svelte";
+    import IconEnter from "@bird/assets/icons/IconEnter.svelte";
     import IconFavourite from "@bird/assets/icons/IconFavourite.svelte";
-    import AddFavourite from "./screens/add-favourite.svelte";
+
 
     let provider: Provider = $derived.by(() => {
       return resolveProvider($ttsStore.providerId)
@@ -590,12 +591,6 @@
         -webkit-text-fill-color: transparent;
 
         animation: 1.4s typingindicator-anim infinite linear;
-    }
-
-    .quicksettings {
-        padding: 8px;
-        border: 1px var(--color-surface0) solid;
-        border-radius: var(--rounding);
     }
 
     .voicebank-top {

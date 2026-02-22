@@ -1,12 +1,12 @@
 <script lang="ts">
     import SelectList from '@bird/components/ui/SelectList.svelte';
-    import SelectListOption from './ui/SelectListOption.svelte';
+    import SelectListOption from '@bird/components/ui/SelectListOption.svelte';
     import SvelteVirtualList from '@humanspeak/svelte-virtual-list';
     import IconCloud from '@bird/assets/icons/IconCloud.svelte';
-    import Button from './ui/Button.svelte';
-    import { resolveProvider, ttsProviders, ttsStore, type Voice, setProvider, getErrorText } from '@bird/lib/bird';
+    import Button from '@bird/components/ui/Button.svelte';
+    import { ttsProviders, ttsStore, type Voice, getErrorText } from '@bird/lib/bird';
     import { invoke } from '@tauri-apps/api/core';
-    import LoadingSpinner from './LoadingSpinner.svelte';
+    import LoadingSpinner from '@bird/components/LoadingSpinner.svelte';
     import { showError } from '@bird/lib/toast';
     import { onMount } from 'svelte';
 
@@ -99,16 +99,6 @@
         justify-content: end;
     }
 
-    .provider-picker {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        width: 100%;
-
-        & :global(ul) {
-            width: 100%;
-        }
-    }
     h2 {
       font-size: 0.95rem;
       font-weight: 600;

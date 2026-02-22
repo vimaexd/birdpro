@@ -1,8 +1,5 @@
 <script lang="ts">
-    import { type Component } from "svelte";
-    import IconCloud from "@bird/assets/icons/IconCloud.svelte";
     import IconFavourite from "@bird/assets/icons/IconFavourite.svelte";
-    import IconPitch from "@bird/assets/icons/IconPitch.svelte";
     import IconSparkle from "@bird/assets/icons/IconSparkle.svelte";
     import SplitMenuFavourite from "./SplitMenuFavourite.svelte";
     import SplitMenuBrowse from "./SplitMenuBrowse.svelte";
@@ -20,7 +17,7 @@
 </script>
 <div class="menus">
     {#each Object.keys(menus) as menu, idx}
-        <div class="menu {(selectedPage == menu) ? 'selected' : ''}" onclick={() => {
+        <div class="menu {(selectedPage == menu) ? 'selected' : ''}" role="button" tabindex="0" onclick={() => {
           selectedPage = menu
         }}>
             {@render icons[idx]({})}
