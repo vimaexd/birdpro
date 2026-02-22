@@ -29,18 +29,24 @@
 <ToastContainer/>
 
 
-{#if ready}
-    {@render children()}
-{:else}
-    <div class="loader" in:fade={{ duration: 500 }} out:fade={{duration: 100 }}>
-        <img src={logo} height="128px" width="128px" alt="Bird Pro logo"/>
-        <div class="spinner">
-            <LoadingSpinner/>
+<div class="wrapper theme-dark">
+    {#if ready}
+        {@render children()}
+    {:else}
+        <div class="loader" in:fade={{ duration: 500 }} out:fade={{duration: 100 }}>
+            <img src={logo} height="128px" width="128px" alt="Bird Pro logo"/>
+            <div class="spinner">
+                <LoadingSpinner/>
+            </div>
         </div>
-    </div>
-{/if}
+    {/if}
+</div>
 
 <style>
+    .wrapper {
+        background-color: var(--color-bg);
+    }
+
     .loader {
         display: flex;
         align-items: center;
@@ -48,6 +54,7 @@
         width: 100vw;
         height: 100vh;
 
+        background-color: var(--color-bg);
         color: var(--color-text);
     }
 

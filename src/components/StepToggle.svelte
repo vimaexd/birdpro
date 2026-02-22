@@ -121,9 +121,9 @@
 
     .value-display {
         text-align: center;
-
         background-color: var(--color-surface0);
         border-radius: 99px;
+        user-select: none;
     }
 
     #steptoggle-slide {

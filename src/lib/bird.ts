@@ -4,6 +4,8 @@ import { showError } from "./toast";
 import { tryResurrectAudioConfig } from "./audio";
 import { configStore } from "./config";
 import { setTextFileContents, startClearTimeout, textTimeout } from "./txtoutput";
+import { favouritesStore } from "./favourites";
+import { info } from "@tauri-apps/plugin-log";
 
 export interface Provider {
   id: string;
@@ -45,6 +47,7 @@ export let ttsStore = writable<TTSStore>({
  * Runs after config initialisation
  */
 export async function initialiseApp() {
+  info(`=== frontend initialisation ===`)
   const config = get(configStore);
 
   // Resurrect audio config from loaded config
@@ -59,8 +62,10 @@ export async function initialiseApp() {
   ttsProviders.set(await invoke("tts_get_providerlist"));
   updateAudioDeviceList();
 
+  // Restore last voice
   if (config["last"] != undefined) {
     ttsStore.set(config["last"])
+    info(`Last voice restored`)
   } else {
     ttsStore.set({
       providerId: await invoke("tts_get_provider"),
@@ -69,6 +74,10 @@ export async function initialiseApp() {
       rate: 0.0
     });
   }
+
+  // Restore favourites
+  favouritesStore.set(config["favourites"]);
+  info(`${get(favouritesStore).length} favourites restored`)
 
   // save updates to current voice to config
   ttsStore.subscribe(t => {

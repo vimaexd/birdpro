@@ -30,6 +30,7 @@
 
     p {
         font-size: 0.95rem;
+        user-select: none;
     }
 
     input[type="checkbox"] {

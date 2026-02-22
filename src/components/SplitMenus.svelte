@@ -47,6 +47,7 @@
             align-items: center;
             justify-content: center;
             gap: 4px;
+            user-select: none;
 
             cursor: pointer;
 

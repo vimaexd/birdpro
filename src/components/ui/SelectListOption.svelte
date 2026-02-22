@@ -1,6 +1,5 @@
 <script>
-    import { getContext, setContext } from "svelte";
-    import { derived } from "svelte/store";
+    import { getContext } from "svelte";
     const { children, value, onSelect = undefined } = $props();
 
     let val = getContext('selectlist-value');

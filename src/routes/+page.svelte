@@ -17,7 +17,7 @@
     import { fade } from "svelte/transition";
     import LoadingSpinner from "../components/LoadingSpinner.svelte";
     import { getLastMessage, historyStore, pushHistory } from "$lib/history";
-    import { isSettingsOpen } from "@bird/lib/modal";
+    import { disableInputCapture, isSettingsOpen } from "@bird/lib/modal";
 
     import IconPitch from "../assets/icons/IconPitch.svelte";
     import IconRate from "../assets/icons/IconRate.svelte";
@@ -29,31 +29,40 @@
     import StatusBar from "@bird/components/StatusBar.svelte";
     import IconStop from "@bird/assets/icons/IconStop.svelte";
     import IconHeadphones from "@bird/assets/icons/IconHeadphones.svelte";
-    import {getAllWindows, getCurrentWindow} from "@tauri-apps/api/window";
-    import {getCurrentWebviewWindow} from "@tauri-apps/api/webviewWindow";
-    import { setTextFileContents, setTextTypingIndicator } from "@bird/lib/txtoutput";
+    import { getCurrentWindow } from "@tauri-apps/api/window";
+    import { setTextTypingIndicator } from "@bird/lib/txtoutput";
     import { info } from "@tauri-apps/plugin-log";
     import Checkbox from "@bird/components/ui/Checkbox.svelte";
+    import Button from "@bird/components/ui/Button.svelte";
+    import IconFavourite from "@bird/assets/icons/IconFavourite.svelte";
+    import AddFavourite from "./screens/add-favourite.svelte";
 
     let provider: Provider = $derived.by(() => {
       return resolveProvider($ttsStore.providerId)
     });
 
+    // talk box and messaging
     let talkboxRef: HTMLTextAreaElement;
     let buttonIsDown = $state(false);
     let buttonIsDownPreview = $state(false);
     let message = $state("");
 
+    // loading states for main buttons
     let isLoadingTts = $state(false);
     let isLoadingPreview = $state(false);
 
+    // app sizebar sizing
     let barSize = $state(380);
     let resizeBar = $state(false);
 
+    // typing indicator
     const typingIndicatorTimeoutSeconds = 2500;
     let typingIndicatorLastLength = 0;
     let typingIndicatorShowing = $state(false);
     let typingIndicatorTimeout: number;
+
+    // add favourite dialog
+    let showAddFavourite = $state(false);
 
     const onTyping = async () => {
         // regardless of whever this is already showing, send typing over OSC
@@ -145,9 +154,9 @@
         })
 
         document.body.addEventListener("keydown", (e) => {
-            // dont capture strokes if settings is shown
+            // dont capture strokes if a modal is shown
             // the user needs that to type stuff!!!
-            if($isSettingsOpen) {
+            if($disableInputCapture) {
               return;
             }
 
@@ -198,7 +207,7 @@
 </script>
 
 <!--svelte-ignore a11y_no_noninteractive_element_interactions -->
-<main class="app-container theme-dark"
+<main class="app-container"
     style="--sidebar-width: {barSize}px"
     onmousemove={trackMouseAndResizeBar}
     onmouseup={() => { resizeBar = false }}
@@ -225,7 +234,7 @@
             >
             </textarea>
             {#if typingIndicatorShowing}
-                <div class="typingindicator-floating-container">
+                <div class="typingindicator-floating-container" out:fade={{duration: 150}}>
                     <p class="typingindicator-floating">typing</p>
                 </div>
             {/if}
@@ -292,18 +301,24 @@
     </div>
 
     <!--svelte-ignore a11y_no_static_element_interactions -->
-    <div class="divider"
-        onmousedown={() => { resizeBar = true }}
-        >
+    <div class="divider" onmousedown={() => { resizeBar = true }}>
         <span class="vr"></span>
     </div>
     <div class="app-right">
         {#if $ttsStore.providerId}
-            <Voicebank
-                voiceName={$ttsStore.voice.name}
-                provider={resolveProvider($ttsStore.providerId).name}
-                cloud={resolveProvider($ttsStore.providerId).cloud}
-            />
+            <div class="voicebank-top">
+                <Voicebank
+                    voiceName={$ttsStore.voice.name}
+                    provider={resolveProvider($ttsStore.providerId).name}
+                    cloud={resolveProvider($ttsStore.providerId).cloud}
+                />
+                <Button class="btn-normal voicebank-action" onclick={() => showAddFavourite = true}>
+                    <IconFavourite/>
+                </Button>
+                {#if showAddFavourite}
+                    <AddFavourite onClose={() => showAddFavourite = false}/>
+                {/if}
+            </div>
 
             <StepToggle
                 majStep={5}
@@ -341,9 +356,6 @@
         <hr/>
 
         <SplitMenus/>
-
-        <!-- <SidebarItem title="Debug">
-             -->
 
         <div class="bottom">
             <StatusBar/>
@@ -584,5 +596,30 @@
         padding: 8px;
         border: 1px var(--color-surface0) solid;
         border-radius: var(--rounding);
+    }
+
+    .voicebank-top {
+        display: grid;
+
+        grid-template-columns: auto 32px;
+        grid-template-rows: auto auto;
+
+        gap: 0 8px;
+
+        :global(.voicebank-action) {
+            width: 100%;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background-color: var(--color-surface1);
+
+            :global(svg) {
+                /*color: var(--color-accent);*/
+                height: 20px;
+                width: 20px;
+            }
+        }
     }
 </style>

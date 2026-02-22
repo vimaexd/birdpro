@@ -20,7 +20,7 @@ export let audioStore = writable<{
  * tries to resurrect audio devices from the configStore
  */
 export async function tryResurrectAudioConfig() {
-  info("attempting to resurrect audio config");
+  info("Attempting to resurrect audio config");
 
   let cfg = get(configStore);
   let entr = Object.entries(cfg.audio.devices);

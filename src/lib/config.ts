@@ -6,6 +6,7 @@ import { error, info } from '@tauri-apps/plugin-log';
 import { showError } from "./toast";
 import type { AudioDevice } from "./audio";
 import type { TTSStore } from "./bird";
+import type { Favourite } from "./favourites";
 
 interface BirdProConfig {
   "vrcOsc": boolean;
@@ -15,6 +16,7 @@ interface BirdProConfig {
       [idx: number]: string;
     }
   }
+  favourites: Favourite[];
   volumes: number[];
   "last": TTSStore | undefined;
   "txtoutput": boolean;
@@ -43,6 +45,7 @@ export async function initialiseConfig() {
         0: (await invoke("audio_get_device", { setupIdx: 0 }) as AudioDevice).name
       }
     },
+    "favourites": [],
     "volumes": [1.0, 1.0],
     "last": undefined,
     "txtoutput": false,
@@ -88,7 +91,7 @@ export async function initialiseConfig() {
   configStore = writable<BirdProConfig>(initialConfig);
 
   configStore.subscribe(async c => {
-    info("cfg change")
+    info("Saving config")
     const configDir = await path.appConfigDir();
     const configPath = await getConfigPath();
 

@@ -1,37 +1,69 @@
-<script>
+<script lang="ts">
     import IconPitch from '@bird/assets/icons/IconPitch.svelte';
     import IconRate from '@bird/assets/icons/IconRate.svelte';
+    import { resolveProvider, type TTSStore } from '@bird/lib/bird';
+
+    let {
+      key = undefined,
+      name,
+      color,
+      store,
+      onclick,
+      draggable = false,
+      ondragstart = undefined,
+      ondragover = undefined,
+      ondragend = undefined
+    } = $props<{
+      key?: any;
+      name: string;
+      color: string;
+      store: TTSStore;
+      onclick?: () => any;
+      draggable?: boolean;
+
+      ondragstart?: (e: any) => any;
+      ondragover?: (e: any) => any;
+      ondragend?: (e: any) => any;
+    } >();
 </script>
 
-<div class="fav">
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<div class="fav" style="--preset-color: {color};" {onclick} role="button"
+    tabindex="0"
+    {...{ key } as any}
+    draggable={draggable}
+    ondragstart={ondragstart}
+    ondragover={ondragover}
+    ondragend={ondragend}>
     <p class="name">
-        Preset Name
+        {name}
     </p>
-    <p class="voice">
-        Microsoft Hazel
+    <div class="voice">
+        <p class="voice-name">{store.voice.name}</p>
         <span class="chip">
             <IconPitch/>
-            +14
+            {store.pitch}
         </span>
         <span class="chip">
             <IconRate/>
-            -2
+            {store.rate}
         </span>
-    </p>
+    </div>
     <p class="provider">
-        Windows
+        {resolveProvider(store.providerId).name}
     </p>
 </div>
 
 <style>
     .fav {
-        --preset-color: purple;
+        --preset-color: var(--color-accent);
 
         width: 100%;
         padding: 8px;
 
         border: 1px rgba(255,255,255,0.20) solid;
-        border-right: 1px var(--color-surface0) solid;
+        /* the right border is kinda fucked up so lets just manually make it nice*/
+        border-right: 1px var(--color-surface2) solid;
         border-radius: var(--rounding);
 
         .name {
@@ -43,6 +75,12 @@
             display: flex;
             gap: 8px;
             opacity: .8;
+
+            .voice-name {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
         }
 
         .provider {

@@ -112,5 +112,6 @@
     h2 {
       font-size: 0.95rem;
       font-weight: 600;
+      user-select: none;
     }
 </style>

@@ -1,6 +1,8 @@
 import { writable, get } from "svelte/store";
 
+export type ToastType = "success" | "error";
 export let toastStore = writable<{
+  type: ToastType;
   id: number;
   title: string;
   description: string;
@@ -11,6 +13,7 @@ export function showError(title: string, description: string) {
   toastStore.set([
     ...get(toastStore),
     {
+      type: "error",
       id: newToastId,
       title: title,
       description: description

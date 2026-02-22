@@ -1,12 +1,14 @@
-<script>
+<script lang="ts">
+    import { expoOut } from "svelte/easing";
     import IconCloud from "../assets/icons/IconCloud.svelte";
 
+    let ref: HTMLDivElement;
     const {
       provider, voiceName, cloud = false
     } = $props();
 </script>
 
-<div class="voice-status">
+<div class="voice-status" bind:this={ref}>
     <div class="status-text">
         <h2>{voiceName}</h2>
         <p>
@@ -29,6 +31,7 @@
         border: 1px solid rgba(255,255,255,0.2);
 
         padding: 12px;
+        overflow: hidden;
 
         & .status-text {
             display: flex;
@@ -53,19 +56,6 @@
                 height: 1.2rem;
             }
             user-select: none;
-        }
-
-        & .arrow {
-            display: flex;
-
-            align-self: center;
-            transform: translateY(-3px);
-            font-size: 1.5rem;
-            font-weight: 600;
-
-            & p {
-                user-select: none;
-            }
         }
     }
 </style>
