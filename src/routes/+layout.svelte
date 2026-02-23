@@ -12,10 +12,15 @@
   import LoadingSpinner from '@bird/components/LoadingSpinner.svelte';
   import logo from "@bird/assets/img/birdpro-logo.png";
   import { showError } from '@bird/lib/toast';
+  import { getCurrentWindow } from '@tauri-apps/api/window';
 
   let ready = $state(false);
 
   onMount(async () => {
+    // avoid white flash on startup
+    // by showing the window after we're ready
+    getCurrentWindow().show();
+
     try {
       await initialiseConfig();
       await initialiseApp();
@@ -45,6 +50,7 @@
 <style>
     .wrapper {
         background-color: var(--color-bg);
+        min-height: 100vh;
     }
 
     .loader {
