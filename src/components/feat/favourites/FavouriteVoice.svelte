@@ -58,10 +58,11 @@
     .fav {
         --preset-color: var(--color-accent);
 
+        color: #fff;
         width: 100%;
         padding: 8px;
 
-        border: 1px rgba(255,255,255,0.20) solid;
+        border: 1px var(--color-transoutline) solid;
         /* the right border is kinda fucked up so lets just manually make it nice*/
         border-right: 1px var(--color-surface2) solid;
         border-radius: var(--rounding);

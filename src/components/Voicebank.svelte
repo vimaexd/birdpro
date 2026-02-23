@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { expoOut } from "svelte/easing";
     import IconCloud from "../assets/icons/IconCloud.svelte";
 
     let ref: HTMLDivElement;
@@ -26,9 +25,16 @@
         justify-content: space-between;
 
         width: 100%;
-        background: #000 linear-gradient(176deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.08) 10%, rgba(255,255,255,0.02) 40%);
+        color: #fff;
+        background: #000 linear-gradient(
+        160deg,
+        rgba(255,255,255,0.2) 0%,
+        rgba(255,255,255,0.10) 40%,
+        rgba(255,255,255,0.02) 80%
+        );
+
         border-radius: var(--rounding);
-        border: 1px solid rgba(255,255,255,0.2);
+        border: 1px solid var(--color-transoutline);
 
         padding: 12px;
         overflow: hidden;

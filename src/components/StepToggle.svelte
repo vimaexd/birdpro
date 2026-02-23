@@ -142,14 +142,12 @@
         background: #ffffff;
         cursor: pointer;
         margin-top: -6px;
-        box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
     }
 
     #steptoggle-slide::-webkit-slider-runnable-track {
       width: 100%;
       height: 8.4px;
       cursor: pointer;
-      box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
       background: linear-gradient(90deg,
         var(--color-accent),
         color-mix(in srgb, var(--color-surface0) 80%, var(--color-accent) 20%) ,
