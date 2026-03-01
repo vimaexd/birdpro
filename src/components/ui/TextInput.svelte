@@ -1,8 +1,9 @@
 <script>
     let {
       value = $bindable(),
-      children,
+      children = undefined,
       secret = false,
+      onchange = undefined,
       ...props
     } = $props();
 
@@ -11,9 +12,11 @@
 </script>
 
 <div class="textinput">
+    {#if children}
     <label for="inp">
         {@render children()}
     </label>
+    {/if}
 
     {#if hidden}
         <div class="inputbox inputbox-placeholder" onclick={() => {
@@ -22,7 +25,7 @@
             <p>(hidden, click to reveal)</p>
         </div>
     {:else}
-        <input class="inputbox" type="text" name="inp" bind:value={value} {...props}>
+        <input class="inputbox" type="text" name="inp" onchange={onchange} bind:value={value} {...props}>
     {/if}
 
 </div>

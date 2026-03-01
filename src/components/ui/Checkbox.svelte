@@ -13,14 +13,15 @@
         onchange()
       }
     }}>
-    <p>{@render children()}</p>
+    <p onclick={() => {
+      checked = !checked
+    }}>{@render children()}</p>
 </div>
 
 <style lang="postcss">
     .box {
         display: flex;
         align-items: center;
-        gap: 8px;
 
         &.disabled {
             opacity: 0.4;
@@ -29,8 +30,12 @@
     }
 
     p {
+        padding-left: 8px;
         font-size: 0.95rem;
         user-select: none;
+        &:hover {
+            cursor: pointer;
+        }
     }
 
     input[type="checkbox"] {

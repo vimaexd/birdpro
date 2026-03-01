@@ -231,14 +231,17 @@
                     }
                     typingIndicatorLastLength = e.target.value.length;
                 }}
-                maxlength="144"
+                maxlength={$configStore["bypassCharLimit"] ? 99999 : 144}
             >
             </textarea>
-            {#if typingIndicatorShowing}
-                <div class="typingindicator-floating-container" out:fade={{duration: 150}}>
-                    <p class="typingindicator-floating">typing</p>
+            <div class="talkbox-corner">
+                <div class="talkbox-corner-inner">
+                    {#if typingIndicatorShowing}
+                        <p class="typingindicator-floating" out:fade={{duration: 150}}>typing</p>
+                    {/if}
+                    <p class="char-count">{message.length}/{$configStore["bypassCharLimit"] ?  '∞' : '144'}</p>
                 </div>
-            {/if}
+            </div>
         </div>
         <div class="buttons">
             {#if $configStore.audio.usePreviewOutput}
@@ -538,8 +541,28 @@
         }
     }
 
-    .typingindicator-floating-container {
-        position:relative;
+    .talkbox-corner {
+        position: relative;
+
+        .talkbox-corner-inner {
+            position: absolute;
+            right: 16px;
+            bottom: 16px;
+            font-size: .9rem;
+
+            display: flex;
+            flex-direction: row;
+            align-items: end;
+            gap: 2px;
+
+            text-align: right;
+        }
+    }
+
+    .char-count {
+        opacity: 0.5;
+        font-weight: 300;
+        width: 64px;
     }
 
     @keyframes typingindicator-anim {
@@ -575,10 +598,6 @@
 
     .typingindicator-floating {
         --gradient-percent: 0%;
-        position: absolute;
-        right: 16px;
-        bottom: 16px;
-        font-size: .9rem;
 
         background: linear-gradient(90deg,
             rgba(255,255,255,0.5),

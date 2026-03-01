@@ -14,6 +14,7 @@
     let color = $state("#4744eb");
 
     onMount(() => {
+      console.log(get(ttsStore));
       $disableInputCapture = true;
     })
 
@@ -29,6 +30,7 @@
     const doAdd = () => {
       // for some weird reason if we dont structuredclone
       // then it stores a reference still?? huh??
+
       let store = structuredClone(get(ttsStore));
       let favStore = get(favouritesStore);
       favStore.push({

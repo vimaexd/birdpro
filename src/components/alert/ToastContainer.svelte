@@ -34,7 +34,7 @@
     }
 
     .toast {
-        color: var(--color-text);
+        color: #fff;
 
         background: color-mix(in srgb, var(--color-danger) 10%,
             color-mix(in srgb, var(--color-bg) 60%, transparent 40%) 90%);

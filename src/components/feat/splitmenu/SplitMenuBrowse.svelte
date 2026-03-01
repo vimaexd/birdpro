@@ -9,6 +9,7 @@
     import LoadingSpinner from '@bird/components/LoadingSpinner.svelte';
     import { showError } from '@bird/lib/toast';
     import { onMount } from 'svelte';
+    import { get } from 'svelte/store';
 
     let provider = $state<string>($ttsStore.providerId);
     let ttsVoices = $state<Voice[]>([]);
@@ -78,8 +79,10 @@
     <Button style="width: 100%;justify-content: center;" disabled={!enableUseButton} type="accent"
         onclick={() => {
           if(!enableUseButton) return;
-          $ttsStore.providerId = provider;
-          $ttsStore.voice = ttsVoices.find((v: Voice) => (v.id == selectedVoice))!;
+          let ttsStoreCopy = get(ttsStore);
+          ttsStoreCopy.providerId = provider;
+          ttsStoreCopy.voice = JSON.parse(JSON.stringify(ttsVoices.find((v: Voice) => (v.id == selectedVoice))!));
+          ttsStore.set(ttsStoreCopy);
           justApplied = true;
         }}
     >Use Voice

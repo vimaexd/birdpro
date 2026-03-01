@@ -18,6 +18,9 @@ interface BirdProConfig {
   }
   favourites: Favourite[];
   volumes: number[];
+  replacements: {
+    [from: string]: string;
+  }
   "last": TTSStore | undefined;
   "txtoutput": boolean;
   "txtoutput.clear": boolean;
@@ -26,6 +29,7 @@ interface BirdProConfig {
   "txtoutput.typingIndicatorText": string;
   "elevenlabs.apikey": string;
   "audioTypingIndicator": boolean;
+  "bypassCharLimit": boolean;
 }
 
 export let configStore: Writable<BirdProConfig>;
@@ -45,6 +49,9 @@ export async function initialiseConfig() {
         0: (await invoke("audio_get_device", { setupIdx: 0 }) as AudioDevice).name
       }
     },
+    "replacements": {
+      "omw": "On my way!"
+    },
     "favourites": [],
     "volumes": [1.0, 1.0],
     "last": undefined,
@@ -54,7 +61,8 @@ export async function initialiseConfig() {
     "txtoutput.typingIndicator": false,
     "txtoutput.typingIndicatorText": "[* typing *]",
     "elevenlabs.apikey": "",
-    "audioTypingIndicator": false
+    "audioTypingIndicator": false,
+    "bypassCharLimit": false
   }
 
   let cfgPath = await getConfigPath();

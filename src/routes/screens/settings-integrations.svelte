@@ -50,19 +50,20 @@
             <input name="txttimeout" type="number" min="0" max="30" bind:value={$configStore["txtoutput.clearTimeout"]}>
             <label for="txttimeout">second timeout before clearing</label>
         </div>
+        {#if $configStore.txtoutput}
+            {#await getTextFilePath() then path}
+                <div>
+                    <h4>
+                        Text file path
+                    </h4>
+                    <SettingsExplainerText>
+                        <code>{path}</code>
+                    </SettingsExplainerText>
+                </div>
+            {/await}
+        {/if}
     </div>
-    {#if $configStore.txtoutput}
-        {#await getTextFilePath() then path}
-            <div>
-                <h4>
-                    Text file path
-                </h4>
-                <SettingsExplainerText>
-                    <code>{path}</code>
-                </SettingsExplainerText>
-            </div>
-        {/await}
-    {/if}
+
 
     <div class="option">
         <SettingsSectionTitle>

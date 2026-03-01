@@ -2,7 +2,6 @@
     /* TODO: Refactor this to new Modal component */
 
     import SettingsAudio from "./settings-audio.svelte";
-    import SettingsPlaceholder from "./settings-placeholder.svelte";
     import SettingsAbout from "./settings-about.svelte";
     import SettingsIntegrations from "./settings-integrations.svelte";
     import SettingsProviders from "./settings-providers.svelte";
@@ -11,11 +10,13 @@
     import ModalCloseButton from "@bird/components/alert/ModalCloseButton.svelte";
     import { disableInputCapture } from "@bird/lib/modal";
     import { onMount } from "svelte";
+    import SettingsReplacements from "./settings-replacements.svelte";
 
     let selectedPage = $state("Audio");
     const pages: {[id: string]: any} = {
       "Audio": SettingsAudio,
       "Behaviour": SettingsBehaviour,
+      // "Replacements": SettingsReplacements,
       "Providers": SettingsProviders,
       "Integrations": SettingsIntegrations,
       "About": SettingsAbout,
@@ -121,7 +122,7 @@
         & button {
             color: var(--color-text);
             text-decoration: none;
-            padding: 6px 12px;
+            padding: 8px 12px;
             font-size: .9rem;
             font-family: var(--font-family);
             border-radius: var(--rounding);
