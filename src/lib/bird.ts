@@ -129,7 +129,7 @@ export async function speakTts(text: string, preview: boolean = false) {
     });
 
     // txt file output
-    if (cs.txtoutput) {
+    if (cs.txtoutput && !preview) {
       await setTextFileContents(text);
       if (cs["txtoutput.clear"]) {
         if (textTimeout) {
