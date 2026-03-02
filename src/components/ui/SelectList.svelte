@@ -1,6 +1,6 @@
 <script lang="ts">
     import { setContext } from 'svelte';
-    let { children, value = $bindable(), onChange = undefined, height = "auto", maxHeight = "auto" } = $props();
+    let { children, value = $bindable(), onChange = undefined, height = "auto", maxHeight = "auto", shrink = "1" } = $props();
 
    	setContext('selectlist-value', {
           get current() { return value; },
@@ -11,7 +11,7 @@
     });
 </script>
 
-<ul style="height: {height}; max-height: {maxHeight}; overflow-y: {(maxHeight !== 'auto') ? 'scroll' : 'none'}">
+<ul style="height: {height}; max-height: {maxHeight}; flex-shrink: {shrink}; overflow-y: {(maxHeight !== 'auto') ? 'scroll' : 'none'}">
     {@render children()}
 </ul>
 
@@ -29,6 +29,8 @@
         display: flex;
         flex-direction: column;
 
+        background-clip: border-box;
+        overflow: hidden;
     }
 
     ul :global(*:not(:last-of-type)) {

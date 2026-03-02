@@ -40,6 +40,7 @@
       selectedVoice = ""
     }}
     height="fit-content"
+    shrink="0"
 >
     {#each $ttsProviders as provider}
         <SelectListOption value={provider.id}>

@@ -209,7 +209,10 @@
 
 <!--svelte-ignore a11y_no_noninteractive_element_interactions -->
 <main class="app-container"
-    style="--sidebar-width: {barSize}px"
+    style="
+    --sidebar-width: {barSize}px;
+    --rounding: {$configStore["ui.rounding"]}px;
+    --color-accent: {$configStore['ui.accentColor']};"
     onmousemove={trackMouseAndResizeBar}
     onmouseup={() => { resizeBar = false }}
     in:fade={{ duration: 300 }}>
@@ -441,7 +444,7 @@
         height: 100%;
         background: transparent;
         border: none;
-        outline: 1px var(--color-surface0) solid;
+        outline: 1px var(--color-surface1) solid;
         resize: none;
 
         will-change: outline-width;
@@ -500,7 +503,7 @@
 
     .history {
         margin-top: 4px;
-        height: 50%;
+        height: 248px;
         display: flex;
         gap: 8px;
 
@@ -567,19 +570,19 @@
 
     @keyframes typingindicator-anim {
         0% {
-            --gradient-alpha: 0.5;
+            --gradient-alpha: 50%;
         }
         15% {
             --gradient-percent: 0%;
         }
 
         50% {
-            --gradient-alpha: 1.0;
+            --gradient-alpha: 100%;
         }
 
         100% {
             --gradient-percent: 150%;
-            --gradient-alpha: 0.5;
+            --gradient-alpha: 50%;
         }
     }
 
@@ -591,18 +594,18 @@
 
 
     @property --gradient-alpha {
-      syntax: "<number>";
+      syntax: "<percentage>";
       inherits: false;
-      initial-value: 0;
+      initial-value: 0%;
     }
 
     .typingindicator-floating {
         --gradient-percent: 0%;
 
         background: linear-gradient(90deg,
-            rgba(255,255,255,0.5),
-            rgba(255,255,255,var(--gradient-alpha)) var(--gradient-percent),
-            rgba(255,255,255,0.5)
+            color-mix(in srgb, var(--color-text), transparent 50%),
+            color-mix(in srgb, var(--color-text) calc(var(--gradient-alpha)), transparent calc(100% - var(--gradient-alpha))) var(--gradient-percent),
+            color-mix(in srgb, var(--color-text), transparent 50%)
         );
         background-size: 200%;
         background-position: center;

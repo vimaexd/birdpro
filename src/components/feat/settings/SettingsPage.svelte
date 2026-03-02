@@ -15,7 +15,7 @@
         padding: 8px 0;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        height: 100%;
 
         overflow-y: scroll;
 

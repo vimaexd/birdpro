@@ -110,8 +110,17 @@ export async function updateAudioDeviceList() {
 export async function speakTts(text: string, preview: boolean = false) {
   let ttss = get(ttsStore);
   try {
+    let message = text;
+
+    // process replacements
+    let cs = get(configStore);
+    let replacements = Object.entries(cs['replacements']);
+    for (let i = 0; i < replacements.length; i++) {
+      message = message.replaceAll(replacements[i][0], replacements[i][1]);
+    }
+
     await invoke("tts_say", {
-      message: text,
+      message,
       pitch: ttss.pitch,
       rate: ttss.rate,
       provider: ttss.providerId,
@@ -120,7 +129,6 @@ export async function speakTts(text: string, preview: boolean = false) {
     });
 
     // txt file output
-    let cs = get(configStore);
     if (cs.txtoutput) {
       await setTextFileContents(text);
       if (cs["txtoutput.clear"]) {

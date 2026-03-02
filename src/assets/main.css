@@ -21,12 +21,11 @@
 
 /* work in progress */
 .theme-light {
-    --color-accent: #4744eb;
     --color-text: #000;
     --color-bg-darker: #030303;
     --color-bg: #f1f1f1;
     --color-bg-layer: #d9d9d9;
-    --color-surface0:#bebebe;
+    --color-surface0:#d4d4d4;
     --color-surface1: #b8b8b8;
     --color-surface2: #969696;
 
@@ -44,7 +43,7 @@
 
     --font-family: "Switzer", sans-serif;
 
-    --rounding: 6px;
+    /*--rounding: 6px;*/
 
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-in-out-sine: cubic-bezier(0.37, 0, 0.63, 1);
@@ -74,7 +73,7 @@ hr {
     border-bottom-width: 1px;
     border-left-width: 0px;
     border-right-width: 0px;
-    border-bottom-color: rgba(255,255,255,0.25);
+    border-bottom-color: color-mix(in srgb, var(--color-text) 60%, transparent 40%);
     width: 100%;
     height: fit-content;
     align-self: center;
@@ -101,4 +100,27 @@ hr {
     background: #555;
 }
 
-/* global select styles */
+/* global range styles */
+input[type='range'] {
+    accent-color: var(--color-accent);
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  background: color-mix(in srgb, var(--color-accent) 10%, var(--color-surface2) 90%);
+  height: 0.5rem;
+  border-radius: var(--rounding);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+   -webkit-appearance: none; /* Override default look */
+   appearance: none;
+   margin-top: -8px; /* Centers thumb on the track */
+   background-color: var(--color-accent);
+   height: 1.5rem;
+   width: 0.8rem;
+   border-radius: var(--rounding);
+}

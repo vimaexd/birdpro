@@ -1,5 +1,4 @@
 use crate::AppData;
-use log::info;
 use serde_json::Value;
 use tauri::State;
 use tokio::sync::Mutex as AsyncMutex;

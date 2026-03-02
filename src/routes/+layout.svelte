@@ -7,7 +7,7 @@
 
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
-  import { initialiseConfig } from '@bird/lib/config';
+  import { configStore, initialiseConfig } from '@bird/lib/config';
   import { initialiseApp } from '@bird/lib/bird';
   import LoadingSpinner from '@bird/components/LoadingSpinner.svelte';
   import logo from "@bird/assets/img/birdpro-logo.png";
@@ -15,6 +15,7 @@
   import { getCurrentWindow } from '@tauri-apps/api/window';
 
   let ready = $state(false);
+  let theme = $state("dark");
 
   onMount(async () => {
     // avoid white flash on startup
@@ -25,6 +26,12 @@
       await initialiseConfig();
       await initialiseApp();
       ready = true;
+
+      configStore.subscribe(c => {
+        if(theme !== c['ui.theme']) {
+          theme = c['ui.theme'];
+        }
+      })
     } catch(e: any) {
       showError("Startup Error", e);
     }
@@ -34,7 +41,7 @@
 <ToastContainer/>
 
 
-<div class="wrapper theme-dark">
+<div class="wrapper theme-{theme}">
     {#if ready}
         {@render children()}
     {:else}

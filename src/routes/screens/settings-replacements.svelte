@@ -6,32 +6,50 @@
     import Button from "@bird/components/ui/Button.svelte";
     import TextInput from "@bird/components/ui/TextInput.svelte";
     import { configStore } from "@bird/lib/config";
+    import { onMount } from "svelte";
     import { get } from "svelte/store";
 
-    let replacements = $state(get(configStore).replacements);
-    let entries = $derived(Object.entries(replacements));
+    // local replacements here are stored in a different way to replacements
+    // as its difficult to change the value of a k/v
+    // so the primary key is essentially the index
+    let replacements = $state<{
+      from: string;
+      to: string;
+    }[]>([]);
 
     const saveReplacements = () => {
       console.log("saving replacements")
+
+      // map replacements to normal format
+      let mapped: Record<string, string> = {};
+      replacements.forEach(r => {
+        // if theres no key we cant store it
+        if(r.from == "") return;
+        mapped[r.from] = r.to;
+      })
+
       let cs = get(configStore);
-      cs.replacements = replacements;
+      cs.replacements = mapped;
       configStore.set(cs);
     }
 
-    const updateReplacement = () => {
-
-
-      // saveReplacements();
+    const updateReplacement = (index: number, keyOrValue: "k" | "v", value: string) => {
+      let existing = replacements[index];
+      if(keyOrValue == "k") {
+        existing.from = value;
+      } else {
+        existing.to = value;
+      }
+      saveReplacements();
     }
 
-    const removeReplacement = (key: string) => {
-      delete replacements[key];
+    const removeReplacement = (index: number) => {
+      replacements.splice(index, 1);
       saveReplacements();
     }
 
     const addNewReplacement = () => {
-      console.log("awawa")
-      let keys = Object.keys(replacements);
+      let keys = replacements.map(r => r.from);
       let triedNumber = 1;
 
       while(true) {
@@ -42,12 +60,24 @@
         }
       }
 
-      let replacementsCopy = replacements
-      replacementsCopy[`Text to replace (${triedNumber})`] = "Replacement text";
-      replacements = replacementsCopy;
+      replacements.push({
+        from: `Text to replace (${triedNumber})`,
+        to: "Replacement text"
+      })
 
       saveReplacements();
     }
+
+    onMount(() => {
+      // get current replacements and put into the right format
+      let r = get(configStore).replacements;
+      replacements = Object.entries(r).map(rep => {
+        return {
+          from: rep[0],
+          to: rep[1]
+        }
+      })
+    })
 </script>
 
 <SettingsPage>
@@ -64,18 +94,18 @@
             </tr>
         </thead>
         <tbody>
-            {#each entries as entry, i}
+            {#each replacements as entry, i}
                 <tr>
                     <td>
                         <!-- todo make this work -->
-                        <TextInput onchange={(e: any) => updateReplacement()} value={entry[0]}></TextInput>
+                        <TextInput oninput={(e: any) => updateReplacement(i, "k", e.target.value)} value={entry.from}></TextInput>
                     </td>
                     <td>
                         <!-- todo make this work -->
-                        <TextInput onchange={(e: any) => updateReplacement()} value={entry[1]}></TextInput>
+                        <TextInput oninput={(e: any) => updateReplacement(i, "v", e.target.value)} value={entry.to}></TextInput>
                     </td>
                     <td class="actions">
-                        <Button onclick={() => removeReplacement(entry[0])}>
+                        <Button onclick={() => removeReplacement(i)}>
                             <IconBin width="20px" height="20px"/>
                         </Button>
                     </td>

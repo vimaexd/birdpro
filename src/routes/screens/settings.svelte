@@ -11,12 +11,14 @@
     import { disableInputCapture } from "@bird/lib/modal";
     import { onMount } from "svelte";
     import SettingsReplacements from "./settings-replacements.svelte";
+    import SettingsAppearence from "./settings-appearence.svelte";
 
     let selectedPage = $state("Audio");
     const pages: {[id: string]: any} = {
       "Audio": SettingsAudio,
+      "Appearence": SettingsAppearence,
       "Behaviour": SettingsBehaviour,
-      // "Replacements": SettingsReplacements,
+      "Replacements": SettingsReplacements,
       "Providers": SettingsProviders,
       "Integrations": SettingsIntegrations,
       "About": SettingsAbout,
@@ -41,7 +43,7 @@
 
     document.body.addEventListener('keydown', (e) => {
       if(e.key == "Escape") {
-        onClose()
+        doClose()
       }
     })
 </script>

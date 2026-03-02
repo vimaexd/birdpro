@@ -30,6 +30,9 @@ interface BirdProConfig {
   "elevenlabs.apikey": string;
   "audioTypingIndicator": boolean;
   "bypassCharLimit": boolean;
+  "ui.theme": "dark" | "light";
+  "ui.rounding": 6;
+  "ui.accentColor": string;
 }
 
 export let configStore: Writable<BirdProConfig>;
@@ -62,7 +65,10 @@ export async function initialiseConfig() {
     "txtoutput.typingIndicatorText": "[* typing *]",
     "elevenlabs.apikey": "",
     "audioTypingIndicator": false,
-    "bypassCharLimit": false
+    "bypassCharLimit": false,
+    "ui.theme": "dark",
+    "ui.rounding": 6,
+    "ui.accentColor": "#4744eb"
   }
 
   let cfgPath = await getConfigPath();
