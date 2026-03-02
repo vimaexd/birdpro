@@ -244,6 +244,15 @@
                     {/if}
                     <p class="char-count">{message.length}/{$configStore["bypassCharLimit"] ?  '∞' : '144'}</p>
                 </div>
+                <div class="talkbox-corner-inner-bl">
+                    {#if message.length > 0}
+                        <div in:fade={{duration: 100}} out:fade={{duration: 100}}>
+                            <Button onclick={() => {
+                              message = ""
+                            }}>clear</Button>
+                        </div>
+                    {/if}
+                </div>
             </div>
         </div>
         <div class="buttons">
@@ -560,12 +569,38 @@
 
             text-align: right;
         }
+
+        .talkbox-corner-inner-bl {
+            position: absolute;
+            left: 16px;
+            bottom: 16px;
+            font-size: .9rem;
+
+            display: flex;
+            flex-direction: row;
+            align-items: end;
+            gap: 2px;
+
+            text-align: right;
+
+            :global(button) {
+                opacity: 0.8;
+                font-size: 0.8rem;
+                background-color: var(--color-surface0);
+                color: var(--color-text);
+                padding: 2px 4px;
+
+                &:hover {
+                    background-color: var(--color-surface0);
+                }
+            }
+        }
     }
 
     .char-count {
         opacity: 0.5;
         font-weight: 300;
-        width: 64px;
+        width: 54px;
     }
 
     @keyframes typingindicator-anim {
