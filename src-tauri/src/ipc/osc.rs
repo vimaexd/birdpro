@@ -8,6 +8,13 @@ use vrchat_osc::{ServiceType, VRChatOSC};
 #[tauri::command]
 pub async fn osc_start(app: AppHandle, state: State<'_, AsyncMutex<AppData>>) -> Result<(), ()> {
     let mut state = state.lock().await;
+
+    // spinning up instances of VRChatOSC is VERY expensive
+    // and causes insane CPU usage
+    if state.vrc_osc.is_some() {
+        return Ok(())
+    }
+
     let osc = VRChatOSC::new(None).await.unwrap();
 
     info!("starting OSC");
