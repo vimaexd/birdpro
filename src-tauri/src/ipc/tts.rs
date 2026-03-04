@@ -7,6 +7,7 @@ use vrchat_osc::rosc::{OscMessage, OscPacket, OscType};
 use crate::audio::{BirdSink};
 use crate::backends::elevenlabs::ElevenlabsTTSProvider;
 use crate::backends::msedge::MsEdgeTTSProvider;
+use crate::backends::piper::PiperTTSProvider;
 #[cfg(windows)]
 use crate::backends::windows::WindowsTTSProvider;
 use crate::provider::{TTSBackend, TTSBackendError, TTSBackendInfo, TTSProvider, TTS_BACKENDS};

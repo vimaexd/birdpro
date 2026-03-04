@@ -490,7 +490,7 @@ dependencies = [
  "tauri-plugin-opener",
  "tokio",
  "vrchat_osc",
- "windows 0.61.3",
+ "windows 0.62.2",
 ]
 
 [[package]]
