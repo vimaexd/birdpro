@@ -11,6 +11,7 @@
     import { fade } from "svelte/transition";
 
     const completeOnboarding = () => {
+      disableInputCapture.set(false);
       $configStore.onboarded = true;
     }
 
