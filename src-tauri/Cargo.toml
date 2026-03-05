@@ -36,6 +36,7 @@ log = "0.4.29"
 vrchat_osc = "2.1.0"
 
 msedge-tts = "0.3.0"
+base64 = "0.22.1"
 
 [target.'cfg(windows)'.dependencies.windows]
 version = ">=0.59, <=0.62"
@@ -49,6 +50,8 @@ features = [
     "Storage_Streams",
     "Win32_System_WinRT"
 ]
+
+
 
 [profile.dev]
 incremental = true

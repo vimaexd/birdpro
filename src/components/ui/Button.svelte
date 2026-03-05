@@ -9,6 +9,9 @@
         case props.type == "accent":
           return "btn-accent"
 
+        case props.type == "small":
+          return "btn-small"
+
         default:
           return "btn-normal"
       }
@@ -42,6 +45,16 @@
 
     .btn-normal {
         background-color: var(--color-surface0);
+    }
+
+    .btn-small {
+        font-size: 0.8rem;
+        padding: 2px;
+        background-color: transparent;
+
+        &:hover {
+            background-color: var(--color-surface0);
+        }
     }
 
     .btn-disabled {

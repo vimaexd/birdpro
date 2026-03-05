@@ -41,9 +41,19 @@
 
         backdrop-filter: blur(16px) brightness(0.8);
         border: 1px var(--color-danger) solid;
-        border-radius: var(--rounding);
+
+        /*
+        toastcontainer is outside of the themed context because
+        it needs to be accessed before load incase of a critical error
+        so we just go with a sane default here.
+
+        sorry sharp border lovers! lmao
+        */
+        border-radius: 6px;
+
+
         padding: 8px 16px;
-        width: 360px;
+        width: 400px;
 
         box-shadow: 0px 4px 4px rgba(0,0,0,0.4);
         will-change: filter;

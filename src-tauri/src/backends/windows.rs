@@ -54,7 +54,9 @@ impl TTSProvider for WindowsTTSProvider {
         let buf = Buffer::Create(size).unwrap();
         let ibuf: IBuffer = speech_stream
             .ReadAsync(&buf, size, InputStreamOptions::None)
-            .unwrap().get().unwrap();
+            .unwrap()
+            .get()
+            .unwrap();
 
         let len = ibuf.Length().unwrap();
         if len == 0 {

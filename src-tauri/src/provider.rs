@@ -8,6 +8,7 @@ pub enum TTSBackend {
     #[default]
     MsEdge,
     ElevenLabs,
+    Tiktok,
 
     #[cfg(windows)]
     Windows,
@@ -86,6 +87,18 @@ pub static TTS_BACKENDS: &[TTSBackendInfo] = &[
         uses_credits: true,
         supported_features: &[TTSFeature::Rate],
     },
+
+    // disabled for now due to not working
+    // see tiktok.rs for more details
+
+    // TTSBackendInfo {
+    //     id: TTSBackend::Tiktok,
+    //     name: "TikTok",
+    //     supported_platforms: &[TTSProviderPlatform::Windows, TTSProviderPlatform::Linux],
+    //     cloud: true,
+    //     uses_credits: false,
+    //     supported_features: &[],
+    // },
     #[cfg(windows)]
     TTSBackendInfo {
         id: TTSBackend::Windows,

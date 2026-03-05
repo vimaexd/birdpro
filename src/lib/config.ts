@@ -33,6 +33,7 @@ interface BirdProConfig {
   "ui.theme": "dark" | "light";
   "ui.rounding": 6;
   "ui.accentColor": string;
+  "checkForUpdates": boolean;
 }
 
 export let configStore: Writable<BirdProConfig>;
@@ -68,7 +69,8 @@ export async function initialiseConfig() {
     "bypassCharLimit": false,
     "ui.theme": "dark",
     "ui.rounding": 6,
-    "ui.accentColor": "#4744eb"
+    "ui.accentColor": "#4744eb",
+    "checkForUpdates": true
   }
 
   let cfgPath = await getConfigPath();

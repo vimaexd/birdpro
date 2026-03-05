@@ -4,6 +4,7 @@
       children = undefined,
       secret = false,
       onchange = undefined,
+      onclick = undefined,
       ...props
     } = $props();
 
@@ -25,7 +26,7 @@
             <p>(hidden, click to reveal)</p>
         </div>
     {:else}
-        <input class="inputbox" type="text" name="inp" onchange={onchange} bind:value={value} {...props}>
+        <input class="inputbox" type="text" name="inp" onchange={onchange} onclick={onclick} bind:value={value} {...props}>
     {/if}
 
 </div>

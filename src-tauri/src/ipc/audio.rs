@@ -1,4 +1,4 @@
-use std::io::{Cursor};
+use std::io::Cursor;
 
 use crate::audio::{AudioDeviceInfo, AudioSetup, BirdSink};
 use crate::AppData;
@@ -123,9 +123,7 @@ pub async fn audio_set_volume(
 }
 
 #[tauri::command]
-pub async fn audio_stop_all(
-    state: State<'_, AsyncMutex<AppData>>,
-) -> Result<(), ()> {
+pub async fn audio_stop_all(state: State<'_, AsyncMutex<AppData>>) -> Result<(), ()> {
     let st = state.lock().await;
 
     for sink in &st.audio_sinks {
@@ -137,12 +135,15 @@ pub async fn audio_stop_all(
 #[tauri::command]
 pub async fn audio_typingindicator_start(
     state: State<'_, AsyncMutex<AppData>>,
-    handle: tauri::AppHandle
+    handle: tauri::AppHandle,
 ) -> Result<(), ()> {
     let mut st = state.lock().await;
 
     // load sound
-    let file_path = handle.path().resolve("assets/snd_talking.wav", BaseDirectory::Resource).unwrap();
+    let file_path = handle
+        .path()
+        .resolve("assets/snd_talking.wav", BaseDirectory::Resource)
+        .unwrap();
     let audio_data = std::fs::read(&file_path).unwrap();
 
     for i in 0..st.audio_setups.len() {
@@ -156,7 +157,7 @@ pub async fn audio_typingindicator_start(
 
             let bs = BirdSink {
                 setup_index: i,
-                sink: sink
+                sink: sink,
             };
 
             st.audio_sinks_typingindicator.push(bs);
@@ -167,9 +168,7 @@ pub async fn audio_typingindicator_start(
 }
 
 #[tauri::command]
-pub async fn audio_typingindicator_stop(
-    state: State<'_, AsyncMutex<AppData>>,
-) -> Result<(), ()> {
+pub async fn audio_typingindicator_stop(state: State<'_, AsyncMutex<AppData>>) -> Result<(), ()> {
     let mut st = state.lock().await;
 
     for ti in st.audio_sinks_typingindicator.drain(..) {

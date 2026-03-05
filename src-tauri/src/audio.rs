@@ -1,4 +1,3 @@
-
 use rodio::cpal::{self, traits::HostTrait};
 use rodio::DeviceTrait;
 use serde::{Deserialize, Serialize};
@@ -51,5 +50,5 @@ impl AudioSetup {
 // different audio outputs
 pub struct BirdSink {
     pub sink: rodio::Sink,
-    pub setup_index: usize
+    pub setup_index: usize,
 }

@@ -38,10 +38,9 @@
   })
 </script>
 
-<ToastContainer/>
-
-
 <div class="wrapper theme-{theme}">
+    <ToastContainer/>
+
     {#if ready}
         {@render children()}
     {:else}

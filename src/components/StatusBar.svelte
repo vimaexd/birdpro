@@ -2,15 +2,18 @@
     import { isSettingsOpen } from "@bird/lib/modal";
     import Button from "./ui/Button.svelte";
     import IconSettings from "@bird/assets/icons/IconSettings.svelte";
-    import IconStop from "@bird/assets/icons/IconStop.svelte";
-    import { invoke } from "@tauri-apps/api/core";
+    import UpdateButton from "./feat/update/UpdateButton.svelte";
+    import { isUpdateAvailable } from "@bird/lib/updates";
 
 </script>
 <div class="statusbar">
     <div class="left">
+        {#if $isUpdateAvailable}
+           	<UpdateButton/>
+        {/if}
     </div>
 
-    <Button onclick={() => ($isSettingsOpen = true)}>
+    <Button type="small" onclick={() => ($isSettingsOpen = true)}>
         <IconSettings width="16px" height="16px"/> Settings
     </Button>
 </div>
@@ -21,20 +24,11 @@
         display: flex;
         justify-content: end;
         font-size: .8rem;
-        padding: 2px;
-
-        :global(button) {
-            font-size: inherit;
-            background-color: transparent;
-            padding: 2px;
-
-            &:hover {
-                background-color: var(--color-surface0);
-            }
-        }
+        overflow: hidden;
 
         .left {
             margin-right: auto;
+            width: 50%;
         }
     }
 </style>

@@ -4,26 +4,40 @@
     import SvelteVirtualList from '@humanspeak/svelte-virtual-list';
     import IconCloud from '@bird/assets/icons/IconCloud.svelte';
     import Button from '@bird/components/ui/Button.svelte';
-    import { ttsProviders, ttsStore, type Voice, getErrorText } from '@bird/lib/bird';
+    import { ttsProviders, ttsStore, type Voice, getErrorText, resolveProvider } from '@bird/lib/bird';
     import { invoke } from '@tauri-apps/api/core';
     import LoadingSpinner from '@bird/components/LoadingSpinner.svelte';
     import { showError } from '@bird/lib/toast';
     import { onMount } from 'svelte';
     import { get } from 'svelte/store';
+    import NoticeRequiresAuth from './NoticeRequiresAuth.svelte';
+    import TextInput from '@bird/components/ui/TextInput.svelte';
+    import IconSearch from '@bird/assets/icons/IconSearch.svelte';
+    import { disableInputCapture } from '@bird/lib/modal';
 
     let provider = $state<string>($ttsStore.providerId);
     let ttsVoices = $state<Voice[]>([]);
+    let ttsVoicesFiltered = $derived(
+      ttsVoices.filter(v => v.name.toLowerCase().includes(voiceSearchQuery.toLowerCase().trim()))
+    )
     let justApplied = $state(false);
     let selectedVoice = $state("");
+    let voiceSearchQuery = $state("")
 
-    let enableUseButton = $derived(!justApplied && selectedVoice !== "")
+    let enableUseButton = $derived(!justApplied && selectedVoice !== "");
+
+    let showRequiresAuth = $state(false);
 
     const updateVoices = async () => {
       try {
         ttsVoices = await invoke("tts_get_voicelist", { providerId: provider })
       } catch(e: any) {
-        let err = await getErrorText(e);
-        showError(e, err);
+        if(e == "AuthorizationRequired") {
+          showRequiresAuth = true
+        } else {
+          let err = await getErrorText(e);
+          showError(e, err);
+        }
       }
     }
 
@@ -36,6 +50,7 @@
 <SelectList
     bind:value={provider}
     onChange={() => {
+      showRequiresAuth = false
       ttsVoices = []
       selectedVoice = ""
     }}
@@ -53,7 +68,22 @@
 </SelectList>
 
 
-<h2>Voice</h2>
+<div class="header header-inp">
+    <h2>Voice</h2>
+    <div>
+        {#if voiceSearchQuery.length < 1}
+        <div class="header-inp-label-container">
+            <div>
+                <label for="">
+                    <IconSearch width="16px" height="16px"/>
+                    Search
+                </label>
+            </div>
+        </div>
+        {/if}
+        <TextInput bind:value={voiceSearchQuery} onclick={() => disableInputCapture.set(true)}/>
+    </div>
+</div>
 <SelectList
     bind:value={selectedVoice}
     onChange={() => {
@@ -66,13 +96,17 @@
             <LoadingSpinner/>
         </div>
     {:then voices}
-        <SvelteVirtualList items={ttsVoices as Voice[]}>
-            {#snippet renderItem(voice)}
-                <SelectListOption value={voice.id}>
-                    {voice.name}
-                </SelectListOption>
-            {/snippet}
-        </SvelteVirtualList>
+        {#if showRequiresAuth}
+            <NoticeRequiresAuth providerName={resolveProvider(provider).name}/>
+        {:else}
+            <SvelteVirtualList items={ttsVoicesFiltered as Voice[]}>
+                {#snippet renderItem(voice)}
+                    <SelectListOption value={voice.id}>
+                        {voice.name}
+                    </SelectListOption>
+                {/snippet}
+            </SvelteVirtualList>
+        {/if}
     {/await}
 </SelectList>
 
@@ -107,5 +141,35 @@
       font-size: 0.95rem;
       font-weight: 600;
       user-select: none;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .header-inp {
+        .header-inp-label-container {
+            position: absolute;
+            label {
+                display: flex;
+                align-items: center;
+                gap: 2px;
+
+                position: relative;
+                font-size: 0.8rem;
+                left: 8px;
+                top: 3px;
+                opacity: 0.5;
+            }
+            user-select: none;
+            pointer-events: none;
+        }
+        :global(input) {
+            height: 1.5rem;
+            font-size: 0.8rem;
+            width: 100%;
+        }
     }
 </style>

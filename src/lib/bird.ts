@@ -6,6 +6,7 @@ import { configStore } from "./config";
 import { setTextFileContents, startClearTimeout, textTimeout } from "./txtoutput";
 import { favouritesStore } from "./favourites";
 import { info } from "@tauri-apps/plugin-log";
+import { startUpdateCheck } from "./updates";
 
 export interface Provider {
   id: string;
@@ -62,8 +63,11 @@ export async function initialiseApp() {
   ttsProviders.set(await invoke("tts_get_providerlist"));
   updateAudioDeviceList();
 
-  // Restore last voice
-  if (config["last"] != undefined) {
+  // Restore last voice unless that provider is no longer available
+  if (
+    config["last"] != undefined
+    && get(ttsProviders).map(p => p.id).includes(config["last"].providerId)
+  ) {
     ttsStore.set(config["last"])
     info(`Last voice restored`)
   } else {
@@ -86,6 +90,11 @@ export async function initialiseApp() {
 
     configStore.set(cs);
   })
+
+  // check for updates in the background
+  if (config['checkForUpdates']) {
+    setTimeout(startUpdateCheck, 1000)
+  }
 
   console.log("providers", get(ttsProviders));
 }

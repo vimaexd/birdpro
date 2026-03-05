@@ -1,18 +1,22 @@
 use rodio::{Decoder, Sink, Source};
 use std::io::Cursor;
+use std::sync::OnceLock;
 use tauri::State;
 use tokio::sync::Mutex as AsyncMutex;
 use vrchat_osc::rosc::{OscMessage, OscPacket, OscType};
 
-use crate::audio::{BirdSink};
+use crate::audio::BirdSink;
 use crate::backends::elevenlabs::ElevenlabsTTSProvider;
 use crate::backends::msedge::MsEdgeTTSProvider;
 
+use crate::backends::tiktok::TiktokTTSProvider;
 #[cfg(windows)]
 use crate::backends::windows::WindowsTTSProvider;
 use crate::provider::{TTSBackend, TTSBackendError, TTSBackendInfo, TTSProvider, TTS_BACKENDS};
 use crate::voice::Voice;
 use crate::{get_platform, AppData};
+
+pub static APP_HANDLE: OnceLock<tauri::AppHandle> = OnceLock::new();
 
 #[tauri::command]
 pub async fn tts_say(
@@ -49,6 +53,10 @@ pub async fn tts_say(
         }
         TTSBackend::ElevenLabs => {
             ElevenlabsTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config)
+                .await
+        }
+        TTSBackend::Tiktok => {
+            TiktokTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config)
                 .await
         }
         #[cfg(windows)]
@@ -99,7 +107,7 @@ pub async fn tts_say(
 
         state.audio_sinks.push(BirdSink {
             sink: sink,
-            setup_index: setup
+            setup_index: setup,
         });
     }
 
@@ -129,12 +137,18 @@ pub async fn tts_say(
 pub async fn tts_get_voicelist(
     provider_id: TTSBackend,
     state: State<'_, AsyncMutex<AppData>>,
+    handle: tauri::AppHandle
 ) -> Result<Vec<Voice>, TTSBackendError> {
     let state = state.lock().await;
+
+    // set app handle so below functions can access it
+    // for resolving paths
+    APP_HANDLE.set(handle).ok();
 
     let _voices = match provider_id {
         TTSBackend::MsEdge => MsEdgeTTSProvider::get_voices(&state.config).await,
         TTSBackend::ElevenLabs => ElevenlabsTTSProvider::get_voices(&state.config).await,
+        TTSBackend::Tiktok => TiktokTTSProvider::get_voices(&state.config).await,
         #[cfg(windows)]
         TTSBackend::Windows => WindowsTTSProvider::get_voices(&state.config).await,
     };
@@ -188,6 +202,7 @@ pub async fn tts_set_provider(
     let default_voice = match state.provider {
         TTSBackend::MsEdge => MsEdgeTTSProvider::get_default_voice(),
         TTSBackend::ElevenLabs => ElevenlabsTTSProvider::get_default_voice(),
+        TTSBackend::Tiktok => TiktokTTSProvider::get_default_voice(),
         #[cfg(windows)]
         TTSBackend::Windows => WindowsTTSProvider::get_default_voice(),
     };

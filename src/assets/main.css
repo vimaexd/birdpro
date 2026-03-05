@@ -73,7 +73,7 @@ hr {
     border-bottom-width: 1px;
     border-left-width: 0px;
     border-right-width: 0px;
-    border-bottom-color: color-mix(in srgb, var(--color-text) 60%, transparent 40%);
+    border-bottom-color: color-mix(in srgb, var(--color-text) 30%, transparent 40%);
     width: 100%;
     height: fit-content;
     align-self: center;

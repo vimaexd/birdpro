@@ -36,11 +36,9 @@
     import IconRate from "@bird/assets/icons/IconRate.svelte";
     import IconEnter from "@bird/assets/icons/IconEnter.svelte";
     import IconFavourite from "@bird/assets/icons/IconFavourite.svelte";
-
-
-    let provider: Provider = $derived.by(() => {
-      return resolveProvider($ttsStore.providerId)
-    });
+    import FavouriteVoice from "@bird/components/feat/favourites/FavouriteVoice.svelte";
+    import VoiceEditor from "@bird/components/feat/sidebar/VoiceEditor.svelte";
+    import HistoryContainer from "@bird/components/feat/history/HistoryContainer.svelte";
 
     // talk box and messaging
     let talkboxRef: HTMLTextAreaElement;
@@ -61,9 +59,6 @@
     let typingIndicatorLastLength = 0;
     let typingIndicatorShowing = $state(false);
     let typingIndicatorTimeout: number;
-
-    // add favourite dialog
-    let showAddFavourite = $state(false);
 
     const onTyping = async () => {
         // regardless of whever this is already showing, send typing over OSC
@@ -293,27 +288,9 @@
             </ClickyButton>
         </div>
 
-        <div class="history">
-            <div class="history-side">
-                <span class="vr"></span>
-                <h2 class="history-title">History</h2>
-                <span class="vr"></span>
-            </div>
-            <div class="history-items">
-                {#if $historyStore.length < 1}
-                    <span class="history-empty"
-                        >Say something, and it'll show up here!</span
-                    >
-                {/if}
-                {#each $historyStore as item}
-                    <HistoryItem
-                        onclick={() => {
-                            message = item;
-                        }}>{item}</HistoryItem
-                    >
-                {/each}
-            </div>
-        </div>
+        <HistoryContainer onSelectMessage={(msg: string) => {
+          message = msg;
+        }}/>
     </div>
 
     <!--svelte-ignore a11y_no_static_element_interactions -->
@@ -322,54 +299,11 @@
     </div>
     <div class="app-right">
         {#if $ttsStore.providerId}
-            <div class="voicebank-top">
-                <Voicebank
-                    voiceName={$ttsStore.voice.name}
-                    provider={resolveProvider($ttsStore.providerId).name}
-                    cloud={resolveProvider($ttsStore.providerId).cloud}
-                />
-                <Button class="btn-normal voicebank-action" onclick={() => showAddFavourite = true}>
-                    <IconFavourite/>
-                </Button>
-                {#if showAddFavourite}
-                    <AddFavourite onClose={() => showAddFavourite = false}/>
-                {/if}
-            </div>
-
-            <StepToggle
-                majStep={5}
-                minStep={1}
-                initial={0}
-                min={-64}
-                max={100}
-                bind:value={$ttsStore.pitch}
-            >
-                <IconPitch width={24} height={24} />
-                <h2>Pitch</h2>
-            </StepToggle>
-
-            {#if provider.supported_features.includes("Rate")}
-                <StepToggle
-                    initial={0}
-                    majStep={1}
-                    minStep={0.5}
-                    min={-8}
-                    max={8}
-                    bind:value={$ttsStore.rate}
-                >
-                    <IconRate width={24} height={24} />
-                    <h2>Rate</h2>
-                </StepToggle>
-            {/if}
-
-            <Checkbox bind:checked={$configStore.audioTypingIndicator}>
-                Audible typing indicator
-            </Checkbox>
+            <VoiceEditor/>
         {:else}
             <LoadingSpinner />
         {/if}
 
-        <hr/>
 
         <SplitMenus/>
 
@@ -391,7 +325,7 @@
         height: 100%;
         width: 100%;
 
-        gap: 4px;
+        gap: 2px;
         padding: 12px;
         background: var(--color-bg);
 
@@ -510,49 +444,6 @@
         gap: 8px;
     }
 
-    .history {
-        margin-top: 4px;
-        height: 248px;
-        display: flex;
-        gap: 8px;
-
-        .history-side {
-            writing-mode: vertical-rl;
-            text-orientation: sideways;
-            transform: rotate(180deg);
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-
-            gap: 16px;
-
-            .vr {
-                height: 100%;
-                border-right: 1px var(--color-surface0) solid;
-            }
-        }
-
-        .history-title {
-            letter-spacing: 0.1px;
-            font-size: 0.75rem;
-            user-select: none;
-        }
-
-        .history-items {
-            justify-content: end;
-            display: flex;
-            flex-direction: column;
-            min-width: 0;
-            gap: 8px;
-            width: 100%;
-        }
-
-        .history-empty {
-            opacity: 0.35;
-            font-style: italic;
-        }
-    }
-
     .talkbox-corner {
         position: relative;
 
@@ -648,30 +539,5 @@
         -webkit-text-fill-color: transparent;
 
         animation: 1.4s typingindicator-anim infinite linear;
-    }
-
-    .voicebank-top {
-        display: grid;
-
-        grid-template-columns: auto 32px;
-        grid-template-rows: auto auto;
-
-        gap: 0 8px;
-
-        :global(.voicebank-action) {
-            width: 100%;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            background-color: var(--color-surface1);
-
-            :global(svg) {
-                /*color: var(--color-accent);*/
-                height: 20px;
-                width: 20px;
-            }
-        }
     }
 </style>

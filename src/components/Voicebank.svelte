@@ -3,18 +3,23 @@
 
     let ref: HTMLDivElement;
     const {
-      provider, voiceName, cloud = false
+      provider, voiceName, cloud = false, onclick = undefined, expanded = false
     } = $props();
 </script>
 
-<div class="voice-status" bind:this={ref}>
+<div class="voice-status" bind:this={ref} role="button" onclick={onclick}>
     <div class="status-text">
         <h2>{voiceName}</h2>
         <p>
             {provider}
         {#if cloud}
-            <IconCloud width="24px" height="24px"/>
+            <IconCloud width="16px" height="16px"/>
         {/if}
+        </p>
+    </div>
+    <div class="arrow {(expanded) ? 'arrow-down' : ''}">
+        <p>
+            ›
         </p>
     </div>
 </div>
@@ -23,6 +28,7 @@
     .voice-status {
         display: flex;
         justify-content: space-between;
+        align-items: center;
 
         width: 100%;
         color: #fff;
@@ -36,8 +42,10 @@
         border-radius: var(--rounding);
         border: 1px solid var(--color-transoutline);
 
-        padding: 12px;
+        padding: 8px 12px;
         overflow: hidden;
+
+        cursor: pointer;
 
         & .status-text {
             display: flex;
@@ -46,7 +54,7 @@
 
             flex-grow: 0;
             min-width: 0;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
 
             & h2 {
                 font-size: 1em;
@@ -55,6 +63,7 @@
                 white-space: nowrap;
                 overflow: hidden;
             }
+
             & p {
                 display: flex;
                 align-items: center;
@@ -62,6 +71,19 @@
                 height: 1.2rem;
             }
             user-select: none;
+        }
+
+        & .arrow {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-left: auto;
+
+            transition: transform .2s var(--ease-out-expo);
+            user-select: none;
+        }
+
+        & .arrow-down {
+            transform: rotate(90deg);
         }
     }
 </style>

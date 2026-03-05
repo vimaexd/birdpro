@@ -31,6 +31,15 @@
         {/if}
     </div>
 
+    <div class="option">
+        <SettingsSectionTitle>
+            App
+        </SettingsSectionTitle>
+        <Checkbox bind:checked={$configStore["checkForUpdates"]}>
+            Check for updates
+        </Checkbox>
+    </div>
+
 </SettingsPage>
 
 <style>

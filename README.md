@@ -32,7 +32,7 @@ Latest builds for Windows and Linux can be downloaded from [Codeberg Actions](ht
 # Credits
 Bird Pro is a [vimae](https://mae.wtf) project
 
-The name "Bird Pro" was inspired by [IvyNyabula](https://ivynyabula.carrd.co/) and her bird self
+The name "Bird Pro" was inspired by [IvyNyabula](https://ivynyabula.cc/) and her bird self
 
 # License
 Bird Pro is licensed under [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).

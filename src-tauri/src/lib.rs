@@ -14,7 +14,7 @@ use log::*;
 use serde_json::Value;
 use std::sync::Arc;
 use tauri::window::Color;
-use tauri::{Manager};
+use tauri::Manager;
 use tokio::sync::Mutex as AsyncMutex;
 use vrchat_osc::VRChatOSC;
 
@@ -47,7 +47,6 @@ pub fn run() {
                         "[{} {} {}] {}",
                         humantime::format_rfc3339(std::time::SystemTime::now()),
                         record.level(),
-
                         // assuming if we dont have a module path then it's
                         // probably from the frontend
                         record.module_path().unwrap_or("frontend"),

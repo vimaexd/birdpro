@@ -40,6 +40,7 @@
             font-size: 1.25rem;
             font-weight: 500;
             margin-left: auto;
+            user-select: none;
         }
 
         .status-dot {

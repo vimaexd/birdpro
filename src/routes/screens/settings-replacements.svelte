@@ -82,7 +82,7 @@
 
 <SettingsPage>
     <SettingsExplainerText>
-        WORK IN PROGRESS
+        Replacements can be used to correct TTS engine pronounciation or create shorthands for phrases.
     </SettingsExplainerText>
 
     <table class="replacement-table">

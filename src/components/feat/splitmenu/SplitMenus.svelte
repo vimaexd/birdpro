@@ -3,6 +3,8 @@
     import IconSparkle from "@bird/assets/icons/IconSparkle.svelte";
     import SplitMenuFavourite from "./SplitMenuFavourite.svelte";
     import SplitMenuBrowse from "./SplitMenuBrowse.svelte";
+    import { fade } from "svelte/transition";
+    import { expoOut } from "svelte/easing";
 
     let selectedPage = $state("Favourite");
     let menus: {[id: string]: any} = {
@@ -26,7 +28,11 @@
     {/each}
 </div>
 
-{@render currentScreen()}
+{#key currentScreen}
+    <div class="sidebar-menu-container" in:fade={{duration: 300, easing: expoOut}}>
+        {@render currentScreen()}
+    </div>
+{/key}
 
 <style>
     .menus {
@@ -89,5 +95,14 @@
             initial-value: 0deg;
             inherits: false;
         }
+    }
+
+    .sidebar-menu-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        height: 100%;
+        overflow: hidden;
     }
 </style>

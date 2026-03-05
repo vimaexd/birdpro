@@ -1,12 +1,11 @@
 <script lang="ts">
-    import { ttsProviders, ttsStore } from "@bird/lib/bird";
+    import { ttsStore } from "@bird/lib/bird";
     import FavouriteVoice from "@bird/components/feat/favourites/FavouriteVoice.svelte";
     import { favouritesStore, saveFavourites } from "@bird/lib/favourites";
     import IconFavourite from "@bird/assets/icons/IconFavourite.svelte";
     import Button from "@bird/components/ui/Button.svelte";
     import IconEdit from "@bird/assets/icons/IconEdit.svelte";
-    import IconStop from "@bird/assets/icons/IconStop.svelte";
-    import { animate, spring, stagger } from "animejs";
+    import { animate, stagger } from "animejs";
     import IconBin from "@bird/assets/icons/IconBin.svelte";
 
     // TODO: address this to the user and make it work with the sorting system
@@ -40,6 +39,7 @@
     }
 
     const onDragOver = (e: any) => {
+      e.preventDefault();
       let key = e.target.getAttribute("key");
       if(key == undefined) return;
       if(dragDestination == +key) return;
@@ -73,6 +73,7 @@
     }
 
     const onDragEnd = (e: any) => {
+      e.preventDefault();
       dragSource = undefined;
       dragDestination = undefined;
     }
@@ -154,7 +155,7 @@
                 ondragend={onDragEnd}
                 onclick={() => {
                     if(!editMode) {
-                    ttsStore.set(fav.store);
+                      ttsStore.set( structuredClone(fav.store) );
                     }
                 }}/>
         </div>

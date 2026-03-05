@@ -56,6 +56,10 @@
         height: 128px;
     }
 
+    :global(.theme-light) .logo {
+        filter: invert()
+    }
+
     .text {
         text-align: center;
     }
@@ -63,7 +67,7 @@
     .credit {
         margin-top: 3rem;
         & .link {
-            color: white;
+            color: var(--color-text);
             font-weight: 600;
             text-decoration-line: underline;
             text-decoration-style: wavy;

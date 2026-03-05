@@ -1,5 +1,4 @@
 <script lang="ts">
-    import SidebarItem from "./SidebarItem.svelte";
     let {
       children,
       value = $bindable(),
@@ -20,6 +19,7 @@
       onChange?: () => any;
     }>();
 
+    let minimised = $state(false);
 
     /**
      * Adjusts value with capping
@@ -62,6 +62,7 @@
     <p class="value-display">{value}</p>
     <input type="range" id="steptoggle-slide" step={minStep} min={min} max={max} bind:value={value}>
 </div>
+
 
 <style>
     .steptoggle {
