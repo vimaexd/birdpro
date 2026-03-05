@@ -43,6 +43,8 @@ export let ttsStore = writable<TTSStore>({
   rate: 0.0
 });
 
+export let devmode = writable(false);
+
 /**
  * Initialise the app
  * Runs after config initialisation

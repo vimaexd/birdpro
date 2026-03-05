@@ -4,14 +4,25 @@
     import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
     import { openPath, openUrl } from "@tauri-apps/plugin-opener";
     import { path } from "@tauri-apps/api";
+    import { devmode } from "@bird/lib/bird";
+    import { showError } from "@bird/lib/toast";
 
+    let versionClicked = $state(0);
 </script>
 <div class="about">
     <img src={logo} class="logo" alt="Bird Pro logo"/>
 
     <div class="text">
         <h2>Bird Pro</h2>
-       	<p>
+       	<p onclick={() => {
+          versionClicked++;
+          if(versionClicked == 5) {
+            devmode.set(true);
+            showError("Developer mode enabled", "Sqwawk sqwawk");
+          } else if(versionClicked == 15) {
+            showError("You don't need to click it again", "Seriously");
+          }
+        }}>
             v{#await getVersion() then ver}{ver}{/await}
             • {(import.meta.env.DEV) ? "Debug" : "Release"}
         </p>

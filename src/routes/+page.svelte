@@ -39,6 +39,7 @@
     import FavouriteVoice from "@bird/components/feat/favourites/FavouriteVoice.svelte";
     import VoiceEditor from "@bird/components/feat/sidebar/VoiceEditor.svelte";
     import HistoryContainer from "@bird/components/feat/history/HistoryContainer.svelte";
+    import Onboarding from "./screens/onboarding.svelte";
 
     // talk box and messaging
     let talkboxRef: HTMLTextAreaElement;
@@ -211,6 +212,10 @@
     onmousemove={trackMouseAndResizeBar}
     onmouseup={() => { resizeBar = false }}
     in:fade={{ duration: 300 }}>
+    {#if !$configStore.onboarded}
+        <Onboarding/>
+    {/if}
+
     {#if $isSettingsOpen}
         <Settings onClose={() => ($isSettingsOpen = false)} />
     {/if}

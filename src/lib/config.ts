@@ -9,6 +9,7 @@ import type { TTSStore } from "./bird";
 import type { Favourite } from "./favourites";
 
 interface BirdProConfig {
+  "onboarded": boolean;
   "vrcOsc": boolean;
   audio: {
     usePreviewOutput: boolean;
@@ -46,6 +47,7 @@ async function getConfigPath() {
 
 export async function initialiseConfig() {
   let initialConfig: BirdProConfig = {
+    "onboarded": false,
     "vrcOsc": false,
     audio: {
       usePreviewOutput: false,

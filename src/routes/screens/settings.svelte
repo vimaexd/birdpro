@@ -12,9 +12,11 @@
     import { onMount } from "svelte";
     import SettingsReplacements from "./settings-replacements.svelte";
     import SettingsAppearence from "./settings-appearence.svelte";
+    import { devmode } from "@bird/lib/bird";
+    import SettingsDev from "./settings-dev.svelte";
 
     let selectedPage = $state("Audio");
-    const pages: {[id: string]: any} = {
+    const pages: {[id: string]: any} = $state({
       "Audio": SettingsAudio,
       "Appearence": SettingsAppearence,
       "Behaviour": SettingsBehaviour,
@@ -22,7 +24,13 @@
       "Providers": SettingsProviders,
       "Integrations": SettingsIntegrations,
       "About": SettingsAbout,
-    }
+    });
+
+    devmode.subscribe(d => {
+      if(d) {
+        pages["Developer"] = SettingsDev
+      }
+    })
 
     let currentScreen = $derived(pages[selectedPage]);
 

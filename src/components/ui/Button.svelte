@@ -73,5 +73,6 @@
 
     .btn-accent {
         background-color: var(--color-accent);
+        color: #fff;
     }
 </style>
