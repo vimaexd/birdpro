@@ -1,51 +1,44 @@
 <script lang="ts">
-    import IconPitch from '@bird/assets/icons/IconPitch.svelte';
-    import IconRate from '@bird/assets/icons/IconRate.svelte';
-    import { resolveProvider, type TTSStore } from '@bird/lib/bird';
+    import IconPitch from "@bird/assets/icons/IconPitch.svelte";
+    import IconRate from "@bird/assets/icons/IconRate.svelte";
+    import { resolveProvider, type TTSStore } from "@bird/lib/bird";
 
     let {
-      key = undefined,
-      name,
-      color,
-      store,
-      onclick,
-      draggable = false,
-      ondragstart = undefined,
-      ondragover = undefined,
-      ondragend = undefined
+        name,
+        color,
+        store,
+        onclick,
+        dragging = false,
+        onpointerdown = undefined,
     } = $props<{
-      key?: any;
-      name: string;
-      color: string;
-      store: TTSStore;
-      onclick?: () => any;
-      draggable?: boolean;
-
-      ondragstart?: (e: any) => any;
-      ondragover?: (e: any) => any;
-      ondragend?: (e: any) => any;
-    } >();
+        name: string;
+        color: string;
+        store: TTSStore;
+        onclick?: () => any;
+        dragging?: boolean;
+        onpointerdown?: (e: PointerEvent) => any;
+    }>();
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
-<div class="fav" style="--preset-color: {color};" {onclick} role="button"
+<div
+    class="fav"
+    class:dragging
+    style="--preset-color: {color};"
+    {onclick}
+    {onpointerdown}
+    role="button"
     tabindex="0"
-    {...{ key } as any}
-    draggable={draggable}
-    ondragstart={ondragstart}
-    ondragover={ondragover}
-    ondragend={ondragend}>
-    <p class="name">
-        {name}
-    </p>
+>
+    <p class="name">{name}</p>
     <div class="voice">
         <p class="voice-name">{store.voice.name}</p>
         <span class="chip">
-            <IconPitch/>
+            <IconPitch />
             {store.pitch}
         </span>
         <span class="chip">
-            <IconRate/>
+            <IconRate />
             {store.rate}
         </span>
     </div>
@@ -68,14 +61,14 @@
         border-radius: var(--rounding);
 
         .name {
-            font-size: .9rem;
+            font-size: 0.9rem;
         }
 
         .voice {
-            font-size: .9rem;
+            font-size: 0.9rem;
             display: flex;
             gap: 8px;
-            opacity: .8;
+            opacity: 0.8;
 
             .voice-name {
                 overflow: hidden;
@@ -85,19 +78,21 @@
         }
 
         .provider {
-            font-size: .7em;
-            opacity: .5;
+            font-size: 0.7em;
+            opacity: 0.5;
             margin: -2px 0px;
         }
 
-        background-image: linear-gradient(90deg,
+        background-image: linear-gradient(
+            90deg,
             color-mix(in srgb, var(--preset-color) 40%, #000 60%) -50%,
-            transparent);
+            transparent
+        );
 
         user-select: none;
         cursor: pointer;
-        transition: filter .05s var(--ease-out-expo);
-        filter: brightness(1.0);
+        transition: filter 0.05s var(--ease-out-expo);
+        filter: brightness(1);
         will-change: filter;
 
         &:hover {
@@ -110,7 +105,7 @@
 
     .chip {
         display: flex;
-        background-color: rgba(0,0,0,0.4);
+        background-color: rgba(0, 0, 0, 0.4);
         border: 1px color-mix(in srgb, var(--preset-color) 80%, #fff 20%) solid;
         border-radius: 99px;
         padding: 0 6px;

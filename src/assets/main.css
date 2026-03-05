@@ -7,16 +7,16 @@
     --color-bg-darker: #030303;
     --color-bg: #111210;
     --color-bg-layer: #1a1c1b;
-    --color-surface0:#2f2f30;
+    --color-surface0: #2f2f30;
     --color-surface1: #373638;
     --color-surface2: #48464a;
 
-    --color-transoutline: rgba(255,255,255,0.20);
+    --color-transoutline: rgba(255, 255, 255, 0.2);
 
     --cp-bg-color: var(--color-bg-layer);
     --cp-border-color: var(--color-surface0);
-	--cp-text-color: var(--color-text);
-	--cp-input-color: var(--color-surface0);
+    --cp-text-color: var(--color-text);
+    --cp-input-color: var(--color-surface0);
 }
 
 /* work in progress */
@@ -25,16 +25,16 @@
     --color-bg-darker: #030303;
     --color-bg: #f1f1f1;
     --color-bg-layer: #d9d9d9;
-    --color-surface0:#d4d4d4;
+    --color-surface0: #d4d4d4;
     --color-surface1: #b8b8b8;
     --color-surface2: #969696;
 
-    --color-transoutline: rgba(0,0,0,0.20);
+    --color-transoutline: rgba(0, 0, 0, 0.2);
 
     --cp-bg-color: var(--color-bg-layer);
     --cp-border-color: var(--color-surface0);
-	--cp-text-color: var(--color-text);
-	--cp-input-color: var(--color-surface0);
+    --cp-text-color: var(--color-text);
+    --cp-input-color: var(--color-surface0);
 }
 
 :root {
@@ -63,7 +63,8 @@ h2,
 h3,
 h4,
 h5,
-h6, p {
+h6,
+p {
     margin: 0;
     padding: 0;
 }
@@ -73,7 +74,11 @@ hr {
     border-bottom-width: 1px;
     border-left-width: 0px;
     border-right-width: 0px;
-    border-bottom-color: color-mix(in srgb, var(--color-text) 30%, transparent 40%);
+    border-bottom-color: color-mix(
+        in srgb,
+        var(--color-text) 30%,
+        transparent 40%
+    );
     width: 100%;
     height: fit-content;
     align-self: center;
@@ -101,7 +106,7 @@ hr {
 }
 
 /* global range styles */
-input[type='range'] {
+input[type="range"] {
     accent-color: var(--color-accent);
     -webkit-appearance: none;
     appearance: none;
@@ -110,17 +115,21 @@ input[type='range'] {
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
-  background: color-mix(in srgb, var(--color-accent) 10%, var(--color-surface2) 90%);
-  height: 0.5rem;
-  border-radius: var(--rounding);
+    background: color-mix(
+        in srgb,
+        var(--color-accent) 10%,
+        var(--color-surface2) 90%
+    );
+    height: 0.5rem;
+    border-radius: var(--rounding);
 }
 
 input[type="range"]::-webkit-slider-thumb {
-   -webkit-appearance: none; /* Override default look */
-   appearance: none;
-   margin-top: -8px; /* Centers thumb on the track */
-   background-color: var(--color-accent);
-   height: 1.5rem;
-   width: 0.8rem;
-   border-radius: var(--rounding);
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    margin-top: -8px; /* Centers thumb on the track */
+    background-color: var(--color-accent);
+    height: 1.5rem;
+    width: 0.8rem;
+    border-radius: var(--rounding);
 }

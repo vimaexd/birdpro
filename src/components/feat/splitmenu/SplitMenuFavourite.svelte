@@ -8,111 +8,123 @@
     import { animate, stagger } from "animejs";
     import IconBin from "@bird/assets/icons/IconBin.svelte";
 
-    // TODO: address this to the user and make it work with the sorting system
-    // dont want to overwrite user prefs when they try and sort stuff
-
-    /*
-    let filteredFavourites = $derived.by(() => {
-      let fs = $favouritesStore;
-
-
-
-      return fs
-        // only show voices with currently available providers on this system
-        // .filter(f => $ttsProviders.find(p => p.id == f.store.providerId) != undefined)
-    })
-    */
-
     let itemsContainer: HTMLDivElement;
     let editMode = $state(false);
-    let dragSource: number | undefined = undefined;
-    let dragDestination: number | undefined = undefined;
 
-    const onDragStart = (e: any) => {
-      console.log("started dragging");
-      e.dataTransfer.effectAllowed = "move";
-      e.dataTransfer.setData("text/plain", "");
+    // pointer drag state
+    let dragIndex: number | undefined = undefined;
+    let dragY = $state(0);
+    let startY = 0;
+    let itemHeight = 0;
+    let isDragging = $state(false);
+    let visualIndex = $state<number | undefined>(undefined);
 
-      let key = e.target.getAttribute("key");
-      dragSource = +key;
-      dragDestination = +key;
-    }
+    const onPointerDown = (e: PointerEvent, index: number) => {
+        if (!editMode) return;
+        e.preventDefault();
 
-    const onDragOver = (e: any) => {
-      e.preventDefault();
-      let key = e.target.getAttribute("key");
-      if(key == undefined) return;
-      if(dragDestination == +key) return;
-      dragDestination = +key;
+        dragIndex = index;
+        visualIndex = index;
+        startY = e.clientY;
+        dragY = 0;
+        isDragging = true;
 
-      // this is such a hack i hate this
-      let els = [...e.target.parentElement.parentElement.children];
+        const el = itemsContainer.children[index] as HTMLElement;
+        itemHeight = el.getBoundingClientRect().height + 8; // 8 = gap
 
-      dragSource = (dragSource as number);
-      dragDestination = (dragDestination as number);
+        window.addEventListener("pointermove", onPointerMove);
+        window.addEventListener("pointerup", onPointerUp);
+    };
 
-      els.forEach(e => e.style.transform = '');
+    const onPointerMove = (e: PointerEvent) => {
+        if (!isDragging || dragIndex === undefined) return;
+        e.preventDefault();
 
-      // make a copy of the favourites store that we will apply our things to
-      let fs = $favouritesStore;
-      let sourceItem = fs[dragSource];
+        dragY = e.clientY - startY;
 
-      if(dragSource < dragDestination) {
-        for(let i = dragSource + 1; i < dragDestination + 1; i++) {
-          fs[i-1] = fs[i];
+        const newIndex = Math.min(
+            Math.max(0, dragIndex + Math.round(dragY / itemHeight)),
+            $favouritesStore.length - 1,
+        );
+
+        if (newIndex !== visualIndex) {
+            visualIndex = newIndex;
         }
-      } else {
-        for(let i = dragSource - 1; i > dragDestination - 1; i--) {
-          fs[i+1] = fs[i];
+    };
+
+    const onPointerUp = () => {
+        if (!isDragging || dragIndex === undefined || visualIndex === undefined)
+            return;
+
+        // reorder
+        let fs = [...$favouritesStore];
+        const [item] = fs.splice(dragIndex, 1);
+        fs.splice(visualIndex, 0, item);
+        $favouritesStore = fs;
+        saveFavourites();
+
+        dragIndex = undefined;
+        visualIndex = undefined;
+        dragY = 0;
+        isDragging = false;
+
+        window.removeEventListener("pointermove", onPointerMove);
+        window.removeEventListener("pointerup", onPointerUp);
+    };
+
+    const getItemStyle = (i: number): string => {
+        if (!isDragging || dragIndex === undefined || visualIndex === undefined)
+            return "";
+
+        if (i === dragIndex) {
+            return `transform: translateY(${dragY}px); z-index: 10; opacity: 0.85; position: relative;`;
         }
-      }
 
-      fs[dragDestination] = sourceItem;
-      dragSource = dragDestination;
-      $favouritesStore = fs;
-    }
+        // shift other items out of the way
+        if (dragIndex < visualIndex) {
+            if (i > dragIndex && i <= visualIndex) {
+                return `transform: translateY(-${itemHeight}px); transition: transform 0.15s ease;`;
+            }
+        } else if (dragIndex > visualIndex) {
+            if (i < dragIndex && i >= visualIndex) {
+                return `transform: translateY(${itemHeight}px); transition: transform 0.15s ease;`;
+            }
+        }
 
-    const onDragEnd = (e: any) => {
-      e.preventDefault();
-      dragSource = undefined;
-      dragDestination = undefined;
-    }
+        return `transform: translateY(0); transition: transform 0.15s ease;`;
+    };
 
     const toggleEditMode = () => {
-      if(editMode) {
-        editMode = false;
-        saveFavourites();
-        animate([...itemsContainer.children], {
-          translateX: [32, 0],
-          ease: "outExpo",
-          duration: 400,
-
-          onComplete() {
-          }
-        })
-      } else {
-        editMode = true;
-
-        animate([...itemsContainer.children], {
-          translateX: [-32, 0],
-          delay: stagger(50),
-          ease: "outExpo",
-          duration: 400
-        })
-      }
-    }
+        if (editMode) {
+            editMode = false;
+            saveFavourites();
+            animate([...itemsContainer.children], {
+                translateX: [32, 0],
+                ease: "outExpo",
+                duration: 400,
+            });
+        } else {
+            editMode = true;
+            animate([...itemsContainer.children], {
+                translateX: [-32, 0],
+                delay: stagger(50),
+                ease: "outExpo",
+                duration: 400,
+            });
+        }
+    };
 
     const removeFavourite = (idx: number) => {
-      let fs = $favouritesStore;
-      fs.splice(idx, 1);
-      favouritesStore.set(fs);
-      saveFavourites();
-    }
+        let fs = $favouritesStore;
+        fs.splice(idx, 1);
+        favouritesStore.set(fs);
+        saveFavourites();
+    };
 </script>
 
 {#if $favouritesStore.length == 0}
     <p class="no-results">
-        Click the <span><IconFavourite width="20px" height="20px"/></span>
+        Click the <span><IconFavourite width="20px" height="20px" /></span>
         button to add a favourite!
     </p>
 {:else}
@@ -124,40 +136,40 @@
                 {$favouritesStore.length} Favourites
             {/if}
         </p>
-
         <Button onclick={toggleEditMode}>
             {#if editMode}
                 Done
             {:else}
-                <IconEdit width="16px" height="16px"/>
+                <IconEdit width="16px" height="16px" />
             {/if}
         </Button>
     </div>
 {/if}
+
 <div id="favourites" bind:this={itemsContainer}>
     {#each $favouritesStore as fav, i}
-        <div class="favourite-container smol-buttons" {...{ key: i } as any}>
+        <div class="favourite-container smol-buttons" style={getItemStyle(i)}>
             {#if editMode}
                 <div class="favourite-editcontrols">
                     <Button onclick={() => removeFavourite(i)}>
-                        <IconBin width="24px" height="24px"/>
+                        <IconBin width="24px" height="24px" />
                     </Button>
                 </div>
             {/if}
             <FavouriteVoice
-                key={i}
                 name={fav.name}
                 color={fav.color}
                 store={fav.store}
-                draggable={editMode}
-                ondragstart={onDragStart}
-                ondragover={onDragOver}
-                ondragend={onDragEnd}
+                dragging={isDragging && dragIndex === i}
+                onpointerdown={editMode
+                    ? (e) => onPointerDown(e, i)
+                    : undefined}
                 onclick={() => {
-                    if(!editMode) {
-                      ttsStore.set( structuredClone(fav.store) );
+                    if (!editMode) {
+                        ttsStore.set(structuredClone(fav.store));
                     }
-                }}/>
+                }}
+            />
         </div>
     {/each}
 </div>
@@ -178,7 +190,7 @@
     }
 
     .favourites-bar {
-        font-size: .8rem;
+        font-size: 0.8rem;
 
         display: flex;
         align-items: center;
@@ -189,7 +201,7 @@
 
     .smol-buttons {
         :global(button) {
-            font-size: .8rem;
+            font-size: 0.8rem;
             background-color: transparent;
             padding: 2px;
 
@@ -214,8 +226,11 @@
         width: 32px;
 
         :global(button) {
-            background: color-mix(in srgb, var(--color-danger) 50%,
-                color-mix(in srgb, var(--color-bg) 60%, transparent 40%) 50%);
+            background: color-mix(
+                in srgb,
+                var(--color-danger) 50%,
+                color-mix(in srgb, var(--color-bg) 60%, transparent 40%) 50%
+            );
 
             border: 1px var(--color-danger) solid;
 

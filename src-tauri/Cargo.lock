@@ -472,7 +472,7 @@ checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 
 [[package]]
 name = "birdpro"
-version = "0.2.0"
+version = "1.0.0"
 dependencies = [
  "base64 0.22.1",
  "cpal 0.17.1",
@@ -491,7 +491,7 @@ dependencies = [
  "tauri-plugin-opener",
  "tokio",
  "vrchat_osc",
- "windows 0.62.2",
+ "windows 0.61.3",
 ]
 
 [[package]]
