@@ -234,6 +234,9 @@
                     }
                     typingIndicatorLastLength = e.target.value.length;
                 }}
+                onclick={() => {
+                  $disableInputCapture = false;
+                }}
                 maxlength={$configStore["bypassCharLimit"] ? 99999 : 144}
             >
             </textarea>
