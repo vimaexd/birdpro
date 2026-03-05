@@ -21,9 +21,15 @@ export let WORKER_checkforUpdates = async (currentVersion: string) => {
   }
 
   let currentRelease = releases.find((r) => r.tag_name == currentVersion);
+  if (!currentRelease) {
+    postMessage({
+      updateAvailable: false
+    })
+    return;
+  }
+
   let newerReleases = releases.filter((r) => dayjs(r.published_at)
-    // if we can't find the current release then just fetch the latest release
-    .isAfter((currentRelease) ? currentRelease.published_at : 0)
+    .isAfter(currentRelease.published_at)
   );
 
   if (newerReleases.length < 1) {
