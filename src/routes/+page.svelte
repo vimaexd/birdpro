@@ -22,21 +22,13 @@
 
     import SplitMenus from "@bird/components/feat/splitmenu/SplitMenus.svelte";
     import StatusBar from "@bird/components/StatusBar.svelte";
-    import HistoryItem from "@bird/components/feat/history/HistoryItem.svelte";
-    import StepToggle from "@bird/components/StepToggle.svelte";
-    import Voicebank from "@bird/components/Voicebank.svelte";
     import ClickyButton from "@bird/components/ClickyButton.svelte";
-    import Checkbox from "@bird/components/ui/Checkbox.svelte";
     import Button from "@bird/components/ui/Button.svelte";
     import LoadingSpinner from "@bird/components/LoadingSpinner.svelte";
 
     import IconStop from "@bird/assets/icons/IconStop.svelte";
     import IconHeadphones from "@bird/assets/icons/IconHeadphones.svelte";
-    import IconPitch from "@bird/assets/icons/IconPitch.svelte";
-    import IconRate from "@bird/assets/icons/IconRate.svelte";
     import IconEnter from "@bird/assets/icons/IconEnter.svelte";
-    import IconFavourite from "@bird/assets/icons/IconFavourite.svelte";
-    import FavouriteVoice from "@bird/components/feat/favourites/FavouriteVoice.svelte";
     import VoiceEditor from "@bird/components/feat/sidebar/VoiceEditor.svelte";
     import HistoryContainer from "@bird/components/feat/history/HistoryContainer.svelte";
     import Onboarding from "./screens/onboarding.svelte";
@@ -150,7 +142,7 @@
             }
         })
 
-        document.body.addEventListener("keydown", (e) => {
+        document.body.addEventListener("keydown", async (e) => {
             // dont capture strokes if a modal is shown
             // the user needs that to type stuff!!!
             if($disableInputCapture) {
@@ -184,6 +176,10 @@
                       sendMessage();
                       buttonIsDown = true;
                     }
+                    break;
+
+                case "Delete":
+                    await invoke("audio_stop_all")
                     break;
 
                 default:
