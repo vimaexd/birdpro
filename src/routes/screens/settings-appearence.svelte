@@ -31,6 +31,14 @@
         </div>
     </div>
 
+    <div class="option">
+        <SettingsSectionTitle>
+            Sections
+        </SettingsSectionTitle>
+        <Checkbox bind:checked={$configStore["ui.showHistory"]}>
+            Show history
+        </Checkbox>
+    </div>
 </SettingsPage>
 
 <style>

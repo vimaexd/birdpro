@@ -34,6 +34,7 @@ interface BirdProConfig {
   "ui.theme": "dark" | "light";
   "ui.rounding": 6;
   "ui.accentColor": string;
+  "ui.showHistory": boolean;
   "checkForUpdates": boolean;
 }
 
@@ -72,6 +73,7 @@ export async function initialiseConfig() {
     "ui.theme": "dark",
     "ui.rounding": 6,
     "ui.accentColor": "#4744eb",
+    "ui.showHistory": true,
     "checkForUpdates": true
   }
 

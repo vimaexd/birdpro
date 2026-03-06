@@ -292,9 +292,11 @@
             </ClickyButton>
         </div>
 
-        <HistoryContainer onSelectMessage={(msg: string) => {
-          message = msg;
-        }}/>
+        {#if $configStore['ui.showHistory']}
+            <HistoryContainer onSelectMessage={(msg: string) => {
+              message = msg;
+            }}/>
+        {/if}
     </div>
 
     <!--svelte-ignore a11y_no_static_element_interactions -->
