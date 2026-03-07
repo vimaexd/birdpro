@@ -1,4 +1,4 @@
-use crate::provider::{TTSBackend, TTSBackendError, TTSProvider};
+use crate::provider::{TTSProvider, TTSProviderError, TTSProviderType};
 use crate::voice::{Voice, VoiceWithSettings};
 use serde_json::Value;
 use windows::core::{Interface, HSTRING};
@@ -16,8 +16,8 @@ impl TTSProvider for WindowsTTSProvider {
     async fn get_speech_bytes(
         message: &str,
         voice: &VoiceWithSettings,
-        config: &Value,
-    ) -> Result<Vec<u8>, TTSBackendError> {
+        _config: &Value,
+    ) -> Result<Vec<u8>, TTSProviderError> {
         let synth = SpeechSynthesizer::new().unwrap();
 
         let voices = SpeechSynthesizer::AllVoices().unwrap();
@@ -26,13 +26,12 @@ impl TTSProvider for WindowsTTSProvider {
             .find(|x| &x.DisplayName().unwrap().to_string() == &voice.voice.name);
 
         if resolved_voice.is_none() {
-            return Err(TTSBackendError::VoiceNotFound);
+            return Err(TTSProviderError::VoiceNotFound);
         }
 
         synth.SetVoice(&resolved_voice.unwrap()).unwrap();
 
         let lang = voice.voice.lang.as_ref().unwrap();
-        let pitch = voice.pitch;
         let rate = (voice.rate * 10.0).round() as i32;
 
         let ssml = format!("<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xml:lang=\"{lang}\">
@@ -45,7 +44,7 @@ impl TTSProvider for WindowsTTSProvider {
             .SynthesizeSsmlToStreamAsync(&HSTRING::from(ssml))
             .expect("failed to synthesize")
             .get()
-            .map_err(|_| TTSBackendError::SynthesisFailure)?;
+            .map_err(|_| TTSProviderError::SynthesisFailure)?;
 
         // microsoft I hate you
         let size = speech_stream.Size().unwrap() as u32;
@@ -73,17 +72,15 @@ impl TTSProvider for WindowsTTSProvider {
         Ok(bytes)
     }
 
-    async fn get_voices(config: &Value) -> Result<Vec<Voice>, TTSBackendError> {
+    async fn get_voices(_config: &Value) -> Result<Vec<Voice>, TTSProviderError> {
         let voices = SpeechSynthesizer::AllVoices().unwrap();
         Ok(voices
             .into_iter()
             .map(|x| Voice {
-                provider: TTSBackend::Windows,
+                provider: TTSProviderType::Windows,
                 id: x.Id().unwrap().to_string(),
                 name: x.DisplayName().unwrap().to_string(),
-                lang: Some(x.Language().unwrap().to_string()),
-                rate: 1.0,
-                pitch: 0,
+                lang: Some(x.Language().unwrap().to_string())
             })
             .collect())
     }
@@ -91,12 +88,10 @@ impl TTSProvider for WindowsTTSProvider {
     fn get_default_voice() -> Voice {
         let default = SpeechSynthesizer::DefaultVoice().unwrap();
         Voice {
-            provider: TTSBackend::Windows,
+            provider: TTSProviderType::Windows,
             id: default.Id().unwrap().to_string(),
             name: default.DisplayName().unwrap().to_string(),
-            lang: Some(default.Language().unwrap().to_string()),
-            rate: 1.0,
-            pitch: 0,
+            lang: Some(default.Language().unwrap().to_string())
         }
     }
 }
