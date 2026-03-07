@@ -26,7 +26,7 @@ impl TTSProvider for TiktokTTSProvider {
     async fn get_speech_bytes(
             message: &str,
             voice: &crate::voice::Voice,
-            config: &serde_json::Value,
+            _config: &serde_json::Value,
         ) -> Result<Vec<u8>, crate::provider::TTSBackendError> {
         let client = reqwest::Client::new();
 

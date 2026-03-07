@@ -73,9 +73,10 @@ export async function initialiseApp() {
     ttsStore.set(config["last"])
     info(`Last voice restored`)
   } else {
+    let defaultProvider: Provider = await invoke("tts_get_default_provider");
     ttsStore.set({
-      providerId: await invoke("tts_get_provider"),
-      voice: await invoke("tts_get_voice"),
+      providerId: defaultProvider.id,
+      voice: await invoke("tts_get_default_voice", { provider: defaultProvider.id }),
       pitch: 0,
       rate: 0.0
     });
@@ -99,15 +100,6 @@ export async function initialiseApp() {
   }
 
   console.log("providers", get(ttsProviders));
-}
-
-export async function setProvider(providerId: string) {
-  await invoke("tts_set_provider", { provider: providerId })
-  ttsStore.set({
-    ...get(ttsStore),
-    providerId: providerId,
-    voice: await invoke("tts_get_voice") // fetch new default voice
-  });
 }
 
 export function resolveProvider(providerId: string): Provider {

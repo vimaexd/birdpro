@@ -162,21 +162,6 @@ pub async fn tts_get_voicelist(
 }
 
 #[tauri::command]
-pub async fn tts_get_voice(state: State<'_, AsyncMutex<AppData>>) -> Result<Voice, ()> {
-    let state = state.lock().await;
-    Ok(state.voice.clone())
-}
-
-#[tauri::command]
-pub async fn tts_set_voice(voice: Voice, state: State<'_, AsyncMutex<AppData>>) -> Result<(), ()> {
-    let mut state = state.lock().await;
-    state.voice = voice.clone();
-
-    log::info!("TTS voice changed to {}", voice.id);
-    Ok(())
-}
-
-#[tauri::command]
 pub async fn tts_get_providerlist() -> Result<Vec<TTSBackendInfo>, ()> {
     Ok(TTS_BACKENDS
         .iter()
@@ -186,20 +171,18 @@ pub async fn tts_get_providerlist() -> Result<Vec<TTSBackendInfo>, ()> {
 }
 
 #[tauri::command]
-pub async fn tts_get_provider(state: State<'_, AsyncMutex<AppData>>) -> Result<TTSBackend, ()> {
-    let state = state.lock().await;
-    Ok(state.provider)
+pub async fn tts_get_default_provider(
+    _state: State<'_, AsyncMutex<AppData>>,
+) -> Result<TTSBackendInfo, ()> {
+    Ok(*TTS_BACKENDS.first().unwrap())
 }
 
 #[tauri::command]
-pub async fn tts_set_provider(
+pub async fn tts_get_default_voice(
     provider: TTSBackend,
-    state: State<'_, AsyncMutex<AppData>>,
-) -> Result<(), ()> {
-    let mut state = state.lock().await;
-    state.provider = provider.clone();
-
-    let default_voice = match state.provider {
+    _state: State<'_, AsyncMutex<AppData>>,
+) -> Result<Voice, TTSBackendError> {
+    let default_voice = match provider {
         TTSBackend::MsEdge => MsEdgeTTSProvider::get_default_voice(),
         TTSBackend::ElevenLabs => ElevenlabsTTSProvider::get_default_voice(),
         TTSBackend::Tiktok => TiktokTTSProvider::get_default_voice(),
@@ -207,9 +190,5 @@ pub async fn tts_set_provider(
         TTSBackend::Windows => WindowsTTSProvider::get_default_voice(),
     };
 
-    state.voice = default_voice;
-
-    log::info!("TTS provider changed to {:?}", provider);
-
-    Ok(())
+    Ok(default_voice)
 }

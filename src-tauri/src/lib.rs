@@ -9,7 +9,6 @@ pub mod ipc;
 use crate::audio::{AudioSetup, BirdSink};
 use crate::backends::msedge::MsEdgeTTSProvider;
 use crate::provider::{TTSBackend, TTSProvider, TTSProviderPlatform};
-use crate::voice::Voice;
 use log::*;
 use serde_json::Value;
 use std::sync::Arc;
@@ -20,11 +19,9 @@ use vrchat_osc::VRChatOSC;
 
 pub struct AppData {
     config: Value,
-    provider: TTSBackend,
     audio_setups: Vec<Option<AudioSetup>>,
     audio_sinks: Vec<BirdSink>,
     audio_sinks_typingindicator: Vec<BirdSink>,
-    voice: Voice,
     vrc_osc: Option<Arc<VRChatOSC>>,
 }
 
@@ -80,11 +77,9 @@ pub fn run() {
             let audio = AudioSetup::new();
             app.manage(AsyncMutex::new(AppData {
                 config: Value::from(0), // will be updated by frontend
-                provider: TTSBackend::MsEdge,
                 audio_setups: vec![Some(audio), None, None, None],
                 audio_sinks: vec![],
                 audio_sinks_typingindicator: vec![],
-                voice: MsEdgeTTSProvider::get_default_voice(),
                 vrc_osc: None,
             }));
             Ok(())
@@ -92,11 +87,9 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             crate::ipc::tts::tts_say,
             crate::ipc::tts::tts_get_voicelist,
-            crate::ipc::tts::tts_set_voice,
-            crate::ipc::tts::tts_get_voice,
             crate::ipc::tts::tts_get_providerlist,
-            crate::ipc::tts::tts_get_provider,
-            crate::ipc::tts::tts_set_provider,
+            crate::ipc::tts::tts_get_default_provider,
+            crate::ipc::tts::tts_get_default_voice,
             crate::ipc::audio::audio_get_devices,
             crate::ipc::audio::audio_get_device,
             crate::ipc::audio::audio_set_device,
