@@ -10,6 +10,7 @@ export interface AudioDevice {
   bit_depth: number;
 }
 
+export let audioDevices = writable([]);
 export let audioStore = writable<{
   devices: { [idx: number]: string };
 }>({

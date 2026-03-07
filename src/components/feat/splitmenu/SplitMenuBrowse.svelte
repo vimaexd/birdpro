@@ -15,7 +15,7 @@
     import IconSearch from '@bird/assets/icons/IconSearch.svelte';
     import { disableInputCapture } from '@bird/lib/modal';
 
-    let provider = $state<string>($ttsStore.providerId);
+    let provider = $state<string>($ttsStore.voice.provider);
     let ttsVoices = $state<Voice[]>([]);
     let ttsVoicesFiltered = $derived(
       ttsVoices.filter(v => v.name.toLowerCase().includes(voiceSearchQuery.toLowerCase().trim()))
@@ -115,7 +115,6 @@
         onclick={() => {
           if(!enableUseButton) return;
           let ttsStoreCopy = get(ttsStore);
-          ttsStoreCopy.providerId = provider;
           ttsStoreCopy.voice = JSON.parse(JSON.stringify(ttsVoices.find((v: Voice) => (v.id == selectedVoice))!));
           ttsStore.set(ttsStoreCopy);
           justApplied = true;

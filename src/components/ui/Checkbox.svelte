@@ -20,6 +20,7 @@
 
 <style lang="postcss">
     .box {
+        margin-top: 2px;
         display: flex;
         align-items: center;
 
@@ -48,7 +49,6 @@
       background-color: var(--color-surface0);
       outline: 1px solid color-mix(in srgb, var(--color-surface0) 80%, #fff 20%);
       transition: outline 0.1s;
-
       border-radius: 2px;
 
       cursor: pointer;

@@ -304,7 +304,7 @@
         <span class="vr"></span>
     </div>
     <div class="app-right">
-        {#if $ttsStore.providerId}
+        {#if $ttsStore.voice.provider}
             <VoiceEditor/>
         {:else}
             <LoadingSpinner />

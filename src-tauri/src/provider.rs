@@ -1,10 +1,10 @@
-use crate::voice::Voice;
+use crate::voice::{Voice, VoiceWithSettings};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::fmt;
 
 #[derive(Default, Clone, Copy, Serialize, Deserialize, Debug)]
-pub enum TTSBackend {
+pub enum TTSProviderType {
     #[default]
     MsEdge,
     ElevenLabs,
@@ -15,8 +15,8 @@ pub enum TTSBackend {
 }
 
 #[derive(Clone, Copy, Serialize)]
-pub struct TTSBackendInfo {
-    pub id: TTSBackend,
+pub struct TTSProviderInfo {
+    pub id: TTSProviderType,
     pub name: &'static str,
     pub supported_platforms: &'static [TTSProviderPlatform],
     pub cloud: bool,
@@ -31,7 +31,7 @@ pub enum TTSFeature {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub enum TTSBackendError {
+pub enum TTSProviderError {
     // voice not found
     VoiceNotFound,
 
@@ -50,37 +50,37 @@ pub enum TTSBackendError {
     OutOfCredits,
 }
 
-impl fmt::Display for TTSBackendError {
+impl fmt::Display for TTSProviderError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            TTSBackendError::VoiceNotFound => write!(f, "Requested voice was not found"),
-            TTSBackendError::FetchError => write!(
+            TTSProviderError::VoiceNotFound => write!(f, "Requested voice was not found"),
+            TTSProviderError::FetchError => write!(
                 f,
                 "Couldn't connect to server - check your internet connection!"
             ),
-            TTSBackendError::SynthesisFailure => write!(f, "Failed to synthesize text to speech"),
-            TTSBackendError::DecodeError => write!(f, "Failed to decode TTS audio"),
-            TTSBackendError::AuthorizationRequired => write!(
+            TTSProviderError::SynthesisFailure => write!(f, "Failed to synthesize text to speech"),
+            TTSProviderError::DecodeError => write!(f, "Failed to decode TTS audio"),
+            TTSProviderError::AuthorizationRequired => write!(
                 f,
                 "You need to specify an API key in Settings to use this provider"
             ),
-            TTSBackendError::AuthorizationInvalid => write!(f, "The API key provided is invalid"),
-            TTSBackendError::OutOfCredits => write!(f, "You're out of credits! :("),
+            TTSProviderError::AuthorizationInvalid => write!(f, "The API key provided is invalid"),
+            TTSProviderError::OutOfCredits => write!(f, "You're out of credits! :("),
         }
     }
 }
 
-pub static TTS_BACKENDS: &[TTSBackendInfo] = &[
-    TTSBackendInfo {
-        id: TTSBackend::MsEdge,
+pub static TTS_PROVIDERS: &[TTSProviderInfo] = &[
+    TTSProviderInfo {
+        id: TTSProviderType::MsEdge,
         name: "Microsoft Edge TTS",
         supported_platforms: &[TTSProviderPlatform::Windows, TTSProviderPlatform::Linux],
         cloud: true,
         uses_credits: false,
         supported_features: &[TTSFeature::Pitch, TTSFeature::Rate],
     },
-    TTSBackendInfo {
-        id: TTSBackend::ElevenLabs,
+    TTSProviderInfo {
+        id: TTSProviderType::ElevenLabs,
         name: "ElevenLabs",
         supported_platforms: &[TTSProviderPlatform::Windows, TTSProviderPlatform::Linux],
         cloud: true,
@@ -100,8 +100,8 @@ pub static TTS_BACKENDS: &[TTSBackendInfo] = &[
     //     supported_features: &[],
     // },
     #[cfg(windows)]
-    TTSBackendInfo {
-        id: TTSBackend::Windows,
+    TTSProviderInfo {
+        id: TTSProviderType::Windows,
         name: "Windows",
         supported_platforms: &[TTSProviderPlatform::Windows],
         cloud: false,
@@ -125,10 +125,10 @@ pub trait TTSProvider {
     #[allow(async_fn_in_trait)]
     async fn get_speech_bytes(
         message: &str,
-        voice: &Voice,
+        voice: &VoiceWithSettings,
         config: &Value,
-    ) -> Result<Vec<u8>, TTSBackendError>;
+    ) -> Result<Vec<u8>, TTSProviderError>;
     #[allow(async_fn_in_trait)]
-    async fn get_voices(config: &Value) -> Result<Vec<Voice>, TTSBackendError>;
+    async fn get_voices(config: &Value) -> Result<Vec<Voice>, TTSProviderError>;
     fn get_default_voice() -> Voice;
 }

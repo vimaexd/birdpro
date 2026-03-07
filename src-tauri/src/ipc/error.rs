@@ -1,6 +1,6 @@
-use crate::provider::TTSBackendError;
+use crate::provider::TTSProviderError;
 
 #[tauri::command]
-pub fn get_error_text(error_code: TTSBackendError) -> String {
+pub fn get_error_text(error_code: TTSProviderError) -> String {
     format!("{}", error_code)
 }

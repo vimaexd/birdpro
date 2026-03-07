@@ -1,5 +1,5 @@
-use crate::provider::{TTSBackend, TTSBackendError, TTSProvider};
-use crate::voice::Voice;
+use crate::provider::{TTSProviderType, TTSProviderError, TTSProvider};
+use crate::voice::{Voice, VoiceWithSettings};
 use msedge_tts::tts::client::connect_async;
 use msedge_tts::tts::SpeechConfig;
 use msedge_tts::voice::get_voices_list;
@@ -14,15 +14,15 @@ impl TTSProvider for MsEdgeTTSProvider {
 
     async fn get_speech_bytes(
         message: &str,
-        voice: &Voice,
+        voice: &VoiceWithSettings,
         _config: &Value,
-    ) -> Result<Vec<u8>, TTSBackendError> {
+    ) -> Result<Vec<u8>, TTSProviderError> {
         let voices = get_voices_list().unwrap();
 
-        let _resolved_voice = voices.iter().find(|x| &x.name == &voice.id);
+        let _resolved_voice = voices.iter().find(|x| &x.name == &voice.voice.id);
 
         if _resolved_voice.is_none() {
-            return Err(TTSBackendError::VoiceNotFound);
+            return Err(TTSProviderError::VoiceNotFound);
         }
 
         let resolved_voice = _resolved_voice.unwrap();
@@ -32,17 +32,17 @@ impl TTSProvider for MsEdgeTTSProvider {
 
         let mut tts = connect_async()
             .await
-            .map_err(|_| TTSBackendError::FetchError)?;
+            .map_err(|_| TTSProviderError::FetchError)?;
 
         let audio = tts
             .synthesize(message, &speech_config)
             .await
-            .map_err(|_| TTSBackendError::FetchError)?;
+            .map_err(|_| TTSProviderError::FetchError)?;
 
         Ok(audio.audio_bytes)
     }
 
-    async fn get_voices(_config: &Value) -> Result<Vec<Voice>, TTSBackendError> {
+    async fn get_voices(_config: &Value) -> Result<Vec<Voice>, TTSProviderError> {
         let voices = match get_voices_list() {
             Ok(v) => v,
             Err(_) => {
@@ -53,12 +53,10 @@ impl TTSProvider for MsEdgeTTSProvider {
         let mapped: Vec<Voice> = voices
             .iter()
             .map(|x| Voice {
-                provider: TTSBackend::MsEdge,
+                provider: TTSProviderType::MsEdge,
                 id: x.name.clone(),
                 name: x.friendly_name.clone().unwrap(),
-                lang: x.locale.clone(),
-                pitch: 0,
-                rate: 1.0,
+                lang: x.locale.clone()
             })
             .collect();
 
@@ -67,12 +65,10 @@ impl TTSProvider for MsEdgeTTSProvider {
 
     fn get_default_voice() -> Voice {
         return Voice {
-            provider: TTSBackend::MsEdge,
+            provider: TTSProviderType::MsEdge,
             id: "Microsoft Server Speech Text to Speech Voice (en-US, EmmaNeural)".to_string(),
             name: "Microsoft Emma Online (Natural) - English (United States)".to_string(),
-            lang: Some("en-US".to_string()),
-            pitch: 0,
-            rate: 1.0,
+            lang: Some("en-US".to_string())
         };
     }
 }

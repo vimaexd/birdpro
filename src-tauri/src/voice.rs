@@ -1,16 +1,17 @@
-use crate::provider::TTSBackend;
+use crate::provider::TTSProviderType;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Voice {
-    pub provider: TTSBackend,
+    pub provider: TTSProviderType,
     pub id: String,
     pub name: String,
-    pub lang: Option<String>,
+    pub lang: Option<String>
+}
 
-    // rate, as decimal
-    pub rate: f64,
-
-    // pitch, as semitones
-    pub pitch: i32,
+#[derive(Serialize, Deserialize, Clone)]
+pub struct VoiceWithSettings {
+    pub voice: Voice,
+    pub rate: f64,  // rate, as decimal
+    pub pitch: i32, // pitch, as semitones
 }

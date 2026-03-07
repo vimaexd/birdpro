@@ -1,12 +1,13 @@
 import { invoke } from "@tauri-apps/api/core";
 import { writable, get } from "svelte/store";
 import { showError } from "./toast";
-import { tryResurrectAudioConfig } from "./audio";
+import { audioDevices, tryResurrectAudioConfig } from "./audio";
 import { configStore } from "./config";
 import { setTextFileContents, startClearTimeout, textTimeout } from "./txtoutput";
 import { favouritesStore } from "./favourites";
 import { info } from "@tauri-apps/plugin-log";
 import { startUpdateCheck } from "./updates";
+import { dev } from "$app/environment";
 
 export interface Provider {
   id: string;
@@ -22,18 +23,15 @@ export interface Voice {
   name: string;
 }
 
-export let audioDevices = writable([]);
 export let ttsProviders = writable<Provider[]>([]);
 
 export interface TTSStore {
-  providerId: string;
   voice: Voice;
   pitch: number;
   rate: number;
 }
 
 export let ttsStore = writable<TTSStore>({
-  providerId: "",
   voice: {
     provider: "",
     id: "",
@@ -43,7 +41,7 @@ export let ttsStore = writable<TTSStore>({
   rate: 0.0
 });
 
-export let devmode = writable(false);
+export let devmode = writable(dev);
 
 /**
  * Initialise the app
@@ -68,14 +66,13 @@ export async function initialiseApp() {
   // Restore last voice unless that provider is no longer available
   if (
     config["last"] != undefined
-    && get(ttsProviders).map(p => p.id).includes(config["last"].providerId)
+    && get(ttsProviders).map(p => p.id).includes(config["last"].voice.provider)
   ) {
     ttsStore.set(config["last"])
     info(`Last voice restored`)
   } else {
     let defaultProvider: Provider = await invoke("tts_get_default_provider");
     ttsStore.set({
-      providerId: defaultProvider.id,
       voice: await invoke("tts_get_default_voice", { provider: defaultProvider.id }),
       pitch: 0,
       rate: 0.0
@@ -126,7 +123,7 @@ export async function speakTts(text: string, preview: boolean = false) {
       message,
       pitch: ttss.pitch,
       rate: ttss.rate,
-      provider: ttss.providerId,
+      provider: ttss.voice.provider,
       voice: ttss.voice,
       preview
     });

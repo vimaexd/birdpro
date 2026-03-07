@@ -16,7 +16,7 @@
     import IconRate from "@bird/assets/icons/IconRate.svelte";
 
     let provider: Provider = $derived.by(() => {
-      return resolveProvider($ttsStore.providerId)
+      return resolveProvider($ttsStore.voice.provider)
     });
 
     let isMinimised = $state(false);
@@ -26,8 +26,8 @@
 <div class="voicebank-top">
     <Voicebank
         voiceName={$ttsStore.voice.name}
-        provider={resolveProvider($ttsStore.providerId).name}
-        cloud={resolveProvider($ttsStore.providerId).cloud}
+        provider={resolveProvider($ttsStore.voice.provider).name}
+        cloud={resolveProvider($ttsStore.voice.provider).cloud}
         onclick={() => isMinimised = !isMinimised}
         expanded={!isMinimised}
     />

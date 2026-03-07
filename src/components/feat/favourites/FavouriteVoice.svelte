@@ -43,7 +43,7 @@
         </span>
     </div>
     <p class="provider">
-        {resolveProvider(store.providerId).name}
+        {resolveProvider(store.voice.provider).name}
     </p>
 </div>
 

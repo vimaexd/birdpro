@@ -12,8 +12,8 @@ use crate::backends::msedge::MsEdgeTTSProvider;
 use crate::backends::tiktok::TiktokTTSProvider;
 #[cfg(windows)]
 use crate::backends::windows::WindowsTTSProvider;
-use crate::provider::{TTSBackend, TTSBackendError, TTSBackendInfo, TTSProvider, TTS_BACKENDS};
-use crate::voice::Voice;
+use crate::provider::{TTSProviderType, TTSProviderError, TTSProviderInfo, TTSProvider, TTS_PROVIDERS};
+use crate::voice::{Voice, VoiceWithSettings};
 use crate::{get_platform, AppData};
 
 pub static APP_HANDLE: OnceLock<tauri::AppHandle> = OnceLock::new();
@@ -23,11 +23,11 @@ pub async fn tts_say(
     message: String,
     pitch: i32,
     rate: f64,
-    provider: TTSBackend,
+    provider: TTSProviderType,
     voice: Voice,
     preview: Option<bool>,
     state: State<'_, AsyncMutex<AppData>>,
-) -> Result<(), TTSBackendError> {
+) -> Result<(), TTSProviderError> {
     if message.is_empty() {
         // empty message so skip
         // this should be handled on frontend, this is just a failsafe to prevent weird errors
@@ -43,24 +43,26 @@ pub async fn tts_say(
     let mut state = state.lock().await;
 
     // add pitch and rate to voice
-    let mut voice_final = voice;
-    voice_final.pitch = pitch;
-    voice_final.rate = rate;
+    let voice_final = VoiceWithSettings {
+        voice: voice,
+        pitch: pitch,
+        rate: rate
+    };
 
-    let _bytes: Result<Vec<u8>, TTSBackendError> = match provider {
-        TTSBackend::MsEdge => {
+    let _bytes: Result<Vec<u8>, TTSProviderError> = match provider {
+        TTSProviderType::MsEdge => {
             MsEdgeTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config).await
         }
-        TTSBackend::ElevenLabs => {
+        TTSProviderType::ElevenLabs => {
             ElevenlabsTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config)
                 .await
         }
-        TTSBackend::Tiktok => {
+        TTSProviderType::Tiktok => {
             TiktokTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config)
                 .await
         }
         #[cfg(windows)]
-        TTSBackend::Windows => {
+        TTSProviderType::Windows => {
             WindowsTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config)
                 .await
         }
@@ -95,7 +97,7 @@ pub async fn tts_say(
     for setup in target_setup_ids {
         let audiosetup = state.audio_setups[setup].as_ref().unwrap();
         let src = Decoder::try_from(Cursor::new(bytes.clone()))
-            .map_err(|_| TTSBackendError::DecodeError)?
+            .map_err(|_| TTSProviderError::DecodeError)?
             .speed(speed);
 
         let sink = Sink::connect_new(&audiosetup.stream_handle.mixer());
@@ -135,10 +137,10 @@ pub async fn tts_say(
 
 #[tauri::command]
 pub async fn tts_get_voicelist(
-    provider_id: TTSBackend,
+    provider_id: TTSProviderType,
     state: State<'_, AsyncMutex<AppData>>,
     handle: tauri::AppHandle
-) -> Result<Vec<Voice>, TTSBackendError> {
+) -> Result<Vec<Voice>, TTSProviderError> {
     let state = state.lock().await;
 
     // set app handle so below functions can access it
@@ -146,11 +148,11 @@ pub async fn tts_get_voicelist(
     APP_HANDLE.set(handle).ok();
 
     let _voices = match provider_id {
-        TTSBackend::MsEdge => MsEdgeTTSProvider::get_voices(&state.config).await,
-        TTSBackend::ElevenLabs => ElevenlabsTTSProvider::get_voices(&state.config).await,
-        TTSBackend::Tiktok => TiktokTTSProvider::get_voices(&state.config).await,
+        TTSProviderType::MsEdge => MsEdgeTTSProvider::get_voices(&state.config).await,
+        TTSProviderType::ElevenLabs => ElevenlabsTTSProvider::get_voices(&state.config).await,
+        TTSProviderType::Tiktok => TiktokTTSProvider::get_voices(&state.config).await,
         #[cfg(windows)]
-        TTSBackend::Windows => WindowsTTSProvider::get_voices(&state.config).await,
+        TTSProviderType::Windows => WindowsTTSProvider::get_voices(&state.config).await,
     };
 
     let voices = match _voices {
@@ -162,8 +164,8 @@ pub async fn tts_get_voicelist(
 }
 
 #[tauri::command]
-pub async fn tts_get_providerlist() -> Result<Vec<TTSBackendInfo>, ()> {
-    Ok(TTS_BACKENDS
+pub async fn tts_get_providerlist() -> Result<Vec<TTSProviderInfo>, ()> {
+    Ok(TTS_PROVIDERS
         .iter()
         .cloned()
         .filter(|x| x.supported_platforms.contains(&get_platform()))
@@ -173,21 +175,21 @@ pub async fn tts_get_providerlist() -> Result<Vec<TTSBackendInfo>, ()> {
 #[tauri::command]
 pub async fn tts_get_default_provider(
     _state: State<'_, AsyncMutex<AppData>>,
-) -> Result<TTSBackendInfo, ()> {
-    Ok(*TTS_BACKENDS.first().unwrap())
+) -> Result<TTSProviderInfo, ()> {
+    Ok(*TTS_PROVIDERS.first().unwrap())
 }
 
 #[tauri::command]
 pub async fn tts_get_default_voice(
-    provider: TTSBackend,
+    provider: TTSProviderType,
     _state: State<'_, AsyncMutex<AppData>>,
-) -> Result<Voice, TTSBackendError> {
+) -> Result<Voice, TTSProviderError> {
     let default_voice = match provider {
-        TTSBackend::MsEdge => MsEdgeTTSProvider::get_default_voice(),
-        TTSBackend::ElevenLabs => ElevenlabsTTSProvider::get_default_voice(),
-        TTSBackend::Tiktok => TiktokTTSProvider::get_default_voice(),
+        TTSProviderType::MsEdge => MsEdgeTTSProvider::get_default_voice(),
+        TTSProviderType::ElevenLabs => ElevenlabsTTSProvider::get_default_voice(),
+        TTSProviderType::Tiktok => TiktokTTSProvider::get_default_voice(),
         #[cfg(windows)]
-        TTSBackend::Windows => WindowsTTSProvider::get_default_voice(),
+        TTSProviderType::Windows => WindowsTTSProvider::get_default_voice(),
     };
 
     Ok(default_voice)

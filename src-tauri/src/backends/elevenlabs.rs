@@ -1,8 +1,8 @@
 use reqwest::StatusCode;
 use serde_json::Value;
 
-use crate::provider::{TTSBackend, TTSBackendError, TTSProvider};
-use crate::voice::Voice;
+use crate::provider::{TTSProviderType, TTSProviderError, TTSProvider};
+use crate::voice::{Voice, VoiceWithSettings};
 
 static ELEVENLABS_BASE_URL: &'static str = "https://api.elevenlabs.io";
 
@@ -15,18 +15,18 @@ impl TTSProvider for ElevenlabsTTSProvider {
 
     async fn get_speech_bytes(
         message: &str,
-        voice: &Voice,
+        voice: &VoiceWithSettings,
         config: &Value,
-    ) -> Result<Vec<u8>, TTSBackendError> {
+    ) -> Result<Vec<u8>, TTSProviderError> {
         let apikey = match config["elevenlabs.apikey"].as_str() {
             Some(a) => a,
             None => {
-                return Err(TTSBackendError::AuthorizationRequired);
+                return Err(TTSProviderError::AuthorizationRequired);
             }
         };
 
         if apikey == "" {
-            return Err(TTSBackendError::AuthorizationRequired);
+            return Err(TTSProviderError::AuthorizationRequired);
         }
 
         let client = reqwest::Client::new();
@@ -43,21 +43,21 @@ impl TTSProvider for ElevenlabsTTSProvider {
         });
 
         let _req = client
-            .post(ELEVENLABS_BASE_URL.to_owned() + "/v1/text-to-speech/" + voice.id.as_str())
+            .post(ELEVENLABS_BASE_URL.to_owned() + "/v1/text-to-speech/" + voice.voice.id.as_str())
             .json(&body)
             .header("xi-api-key", apikey)
             .send()
             .await
-            .map_err(|_| TTSBackendError::FetchError)
+            .map_err(|_| TTSProviderError::FetchError)
             .unwrap();
 
         let status = _req.status();
         match status {
-            StatusCode::UNAUTHORIZED => return Err(TTSBackendError::AuthorizationInvalid),
-            StatusCode::PAYMENT_REQUIRED => return Err(TTSBackendError::OutOfCredits),
+            StatusCode::UNAUTHORIZED => return Err(TTSProviderError::AuthorizationInvalid),
+            StatusCode::PAYMENT_REQUIRED => return Err(TTSProviderError::OutOfCredits),
             _ if status != StatusCode::OK => {
                 println!("{}", _req.text().await.unwrap());
-                return Err(TTSBackendError::FetchError);
+                return Err(TTSProviderError::FetchError);
             }
             _ => {}
         }
@@ -65,21 +65,21 @@ impl TTSProvider for ElevenlabsTTSProvider {
         let bytes = _req
             .bytes()
             .await
-            .map_err(|_| TTSBackendError::DecodeError)
+            .map_err(|_| TTSProviderError::DecodeError)
             .unwrap();
         Ok(Vec::from(bytes))
     }
 
-    async fn get_voices(config: &Value) -> Result<Vec<Voice>, TTSBackendError> {
+    async fn get_voices(config: &Value) -> Result<Vec<Voice>, TTSProviderError> {
         let apikey = match config["elevenlabs.apikey"].as_str() {
             Some(a) => a,
             None => {
-                return Err(TTSBackendError::AuthorizationRequired);
+                return Err(TTSProviderError::AuthorizationRequired);
             }
         };
 
         if apikey == "" {
-            return Err(TTSBackendError::AuthorizationRequired);
+            return Err(TTSProviderError::AuthorizationRequired);
         }
 
         let client = reqwest::Client::new();
@@ -88,11 +88,11 @@ impl TTSProvider for ElevenlabsTTSProvider {
             .header("xi-api-key", apikey)
             .send()
             .await
-            .map_err(|_| TTSBackendError::FetchError)
+            .map_err(|_| TTSProviderError::FetchError)
             .unwrap();
 
         match _req.status() {
-            StatusCode::UNAUTHORIZED => return Err(TTSBackendError::AuthorizationInvalid),
+            StatusCode::UNAUTHORIZED => return Err(TTSProviderError::AuthorizationInvalid),
             _ => {}
         }
 
@@ -104,12 +104,10 @@ impl TTSProvider for ElevenlabsTTSProvider {
             .into_iter()
             .map(|v| {
                 Ok(Voice {
-                    provider: TTSBackend::ElevenLabs,
+                    provider: TTSProviderType::ElevenLabs,
                     id: v["voice_id"].as_str().unwrap().to_owned(),
                     name: v["name"].as_str().unwrap().to_owned(),
-                    lang: v["language"].as_str().map(str::to_owned),
-                    pitch: 0,
-                    rate: 0.0,
+                    lang: v["language"].as_str().map(str::to_owned)
                 })
             })
             .collect()
@@ -117,12 +115,10 @@ impl TTSProvider for ElevenlabsTTSProvider {
 
     fn get_default_voice() -> Voice {
         Voice {
-            provider: TTSBackend::ElevenLabs,
+            provider: TTSProviderType::ElevenLabs,
             id: "".to_string(),
             name: "Test voice".to_string(),
-            lang: None,
-            rate: 0.0,
-            pitch: 0,
+            lang: None
         }
     }
 }

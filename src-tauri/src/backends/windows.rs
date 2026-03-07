@@ -1,5 +1,5 @@
 use crate::provider::{TTSBackend, TTSBackendError, TTSProvider};
-use crate::voice::Voice;
+use crate::voice::{Voice, VoiceWithSettings};
 use serde_json::Value;
 use windows::core::{Interface, HSTRING};
 use windows::Media::SpeechSynthesis::{SpeechSynthesisStream, SpeechSynthesizer};
@@ -15,7 +15,7 @@ impl TTSProvider for WindowsTTSProvider {
 
     async fn get_speech_bytes(
         message: &str,
-        voice: &Voice,
+        voice: &VoiceWithSettings,
         config: &Value,
     ) -> Result<Vec<u8>, TTSBackendError> {
         let synth = SpeechSynthesizer::new().unwrap();
@@ -23,7 +23,7 @@ impl TTSProvider for WindowsTTSProvider {
         let voices = SpeechSynthesizer::AllVoices().unwrap();
         let resolved_voice = voices
             .into_iter()
-            .find(|x| &x.DisplayName().unwrap().to_string() == &voice.name);
+            .find(|x| &x.DisplayName().unwrap().to_string() == &voice.voice.name);
 
         if resolved_voice.is_none() {
             return Err(TTSBackendError::VoiceNotFound);
@@ -31,7 +31,7 @@ impl TTSProvider for WindowsTTSProvider {
 
         synth.SetVoice(&resolved_voice.unwrap()).unwrap();
 
-        let lang = voice.lang.as_ref().unwrap();
+        let lang = voice.voice.lang.as_ref().unwrap();
         let pitch = voice.pitch;
         let rate = (voice.rate * 10.0).round() as i32;
 

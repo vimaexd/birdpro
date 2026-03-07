@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { audioDevices } from "@bird/lib/bird";
-    import { audioStore, setAudioDevice, getAudioDeviceInfo, destroyAudioDevice } from "@bird/lib/audio";
+    import { audioStore, setAudioDevice, getAudioDeviceInfo, destroyAudioDevice, audioDevices } from "@bird/lib/audio";
     import Checkbox from "@bird/components/ui/Checkbox.svelte";
     import SelectList from "@bird/components/ui/SelectList.svelte";
     import SelectListOption from "@bird/components/ui/SelectListOption.svelte"

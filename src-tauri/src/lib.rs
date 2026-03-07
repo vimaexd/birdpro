@@ -7,8 +7,7 @@ pub mod voice;
 pub mod ipc;
 
 use crate::audio::{AudioSetup, BirdSink};
-use crate::backends::msedge::MsEdgeTTSProvider;
-use crate::provider::{TTSBackend, TTSProvider, TTSProviderPlatform};
+use crate::provider::{TTSProviderPlatform};
 use log::*;
 use serde_json::Value;
 use std::sync::Arc;
