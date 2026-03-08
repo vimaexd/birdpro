@@ -38,7 +38,6 @@ jobs:
                     libjack-dev \
                     libclang-dev \
                     libespeak-ng-dev \
-                    cmake \
                     xdg-utils
 
             - name: install rust
@@ -98,20 +97,12 @@ jobs:
                     libpulse-dev \
                     libjack-dev \
                     libespeak-ng-dev \
+                    clang \
                     libclang-dev \
                     xdg-utils \
                     nsis \
                     lld \
                     llvm \
-                    cmake \
-                    ninja-build \
-
-            - name: install clang 19
-              run: |
-                  wget https://apt.llvm.org/llvm.sh
-                  chmod +x llvm.sh
-                  ./llvm.sh 19
-                  apt install -y clang-19 lld-19 llvm-19
 
             - name: install rust
               run: |
