@@ -35,6 +35,7 @@ jobs:
                     libpulse-dev \
                     libjack-dev \
                     libclang-dev \
+                    libespeak-ng-dev \
                     xdg-utils
 
             - name: install rust
@@ -91,6 +92,7 @@ jobs:
                     libasound2-dev \
                     libpulse-dev \
                     libjack-dev \
+                    libespeak-ng-dev \
                     clang \
                     libclang-dev \
                     xdg-utils \
