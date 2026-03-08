@@ -99,12 +99,14 @@ jobs:
                     libjack-dev \
                     libespeak-ng-dev \
                     clang \
+                    clang-cl \
                     libclang-dev \
                     xdg-utils \
                     nsis \
                     lld \
                     llvm \
                     cmake \
+                    ninja-build \
 
             - name: install rust
               run: |
