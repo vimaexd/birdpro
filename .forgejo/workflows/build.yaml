@@ -17,6 +17,8 @@ jobs:
         steps:
             - name: checkout
               uses: actions/checkout@v4
+              with:
+                  submodules: recursive
 
             # tauri requirements as of https://v2.tauri.app/start/prerequisites/#linux
             - name: install system dependencies
@@ -75,6 +77,8 @@ jobs:
         steps:
             - name: checkout
               uses: actions/checkout@v4
+              with:
+                  submodules: recursive
 
             # tauri requirements as of https://v2.tauri.app/start/prerequisites/#linux
             - name: install system dependencies
