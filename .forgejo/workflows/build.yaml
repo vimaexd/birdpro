@@ -98,7 +98,7 @@ jobs:
                     libpulse-dev \
                     libjack-dev \
                     libespeak-ng-dev \
-                    clang \
+                    clang-19 \
                     clang-tools \
                     libclang-dev \
                     xdg-utils \
