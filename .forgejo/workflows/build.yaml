@@ -99,7 +99,7 @@ jobs:
                     libjack-dev \
                     libespeak-ng-dev \
                     clang \
-                    clang-cl \
+                    clang-tools \
                     libclang-dev \
                     xdg-utils \
                     nsis \
