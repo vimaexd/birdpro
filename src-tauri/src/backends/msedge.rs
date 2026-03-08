@@ -1,4 +1,4 @@
-use crate::provider::{TTSProviderType, TTSProviderError, TTSProvider};
+use crate::provider::{TTSProvider, TTSProviderError, TTSProviderType};
 use crate::voice::{Voice, VoiceWithSettings};
 use msedge_tts::tts::client::connect_async;
 use msedge_tts::tts::SpeechConfig;
@@ -56,7 +56,7 @@ impl TTSProvider for MsEdgeTTSProvider {
                 provider: TTSProviderType::MsEdge,
                 id: x.name.clone(),
                 name: x.friendly_name.clone().unwrap(),
-                lang: x.locale.clone()
+                lang: x.locale.clone(),
             })
             .collect();
 
@@ -68,7 +68,7 @@ impl TTSProvider for MsEdgeTTSProvider {
             provider: TTSProviderType::MsEdge,
             id: "Microsoft Server Speech Text to Speech Voice (en-US, EmmaNeural)".to_string(),
             name: "Microsoft Emma Online (Natural) - English (United States)".to_string(),
-            lang: Some("en-US".to_string())
+            lang: Some("en-US".to_string()),
         };
     }
 }

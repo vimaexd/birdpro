@@ -7,7 +7,7 @@ pub mod voice;
 pub mod ipc;
 
 use crate::audio::{AudioSetup, BirdSink};
-use crate::provider::{TTSProviderPlatform};
+use crate::provider::TTSProviderPlatform;
 use log::*;
 use serde_json::Value;
 use std::sync::Arc;
@@ -35,6 +35,7 @@ pub fn get_platform() -> TTSProviderPlatform {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(
             tauri_plugin_log::Builder::new()

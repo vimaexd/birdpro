@@ -27,6 +27,7 @@
     },
     "clipboard-manager:allow-write-text",
     "clipboard-manager:default",
-    "core:window:allow-show"
+    "core:window:allow-show",
+    "dialog:allow-open"
   ]
 }

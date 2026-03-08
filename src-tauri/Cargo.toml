@@ -32,11 +32,20 @@ tokio = "1.49.0"
 reqwest = { version = "0.13.1", features = ["json"] }
 humantime = "2.3.0"
 log = "0.4.29"
+hound = "3.5.1"
+base64 = "0.22.1"
+walkdir = "2"
 
 vrchat_osc = "2.1.0"
 
 msedge-tts = "0.3.0"
-base64 = "0.22.1"
+piper-rs = "0.1.9"
+ort = { version = "=2.0.0-rc.9" }
+ort-sys = { version = "=2.0.0-rc.9", default-features = false }
+tauri-plugin-dialog = "2"
+
+[patch.crates-io]
+espeak-rs-sys = { path = "../crates/espeak-rs-sys" }
 
 [target.'cfg(windows)'.dependencies.windows]
 version = ">=0.59, <=0.62"
@@ -50,8 +59,6 @@ features = [
     "Storage_Streams",
     "Win32_System_WinRT"
 ]
-
-
 
 [profile.dev]
 incremental = true

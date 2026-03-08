@@ -1,0 +1,5 @@
+[env]
+ESPEAK_BUILD_SHARED_LIBS = "1"
+
+[profile.dev]
+codegen-units = 1

@@ -80,7 +80,7 @@ impl TTSProvider for WindowsTTSProvider {
                 provider: TTSProviderType::Windows,
                 id: x.Id().unwrap().to_string(),
                 name: x.DisplayName().unwrap().to_string(),
-                lang: Some(x.Language().unwrap().to_string())
+                lang: Some(x.Language().unwrap().to_string()),
             })
             .collect())
     }
@@ -91,7 +91,7 @@ impl TTSProvider for WindowsTTSProvider {
             provider: TTSProviderType::Windows,
             id: default.Id().unwrap().to_string(),
             name: default.DisplayName().unwrap().to_string(),
-            lang: Some(default.Language().unwrap().to_string())
+            lang: Some(default.Language().unwrap().to_string()),
         }
     }
 }

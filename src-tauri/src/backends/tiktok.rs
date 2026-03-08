@@ -1,19 +1,24 @@
-use base64::{Engine, prelude::BASE64_STANDARD};
-use serde_json::Value;
-use tauri::Manager;
-use tauri::path::BaseDirectory;
-use serde::{Deserialize, Serialize};
+use base64::{prelude::BASE64_STANDARD, Engine};
 use reqwest::StatusCode;
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use tauri::path::BaseDirectory;
+use tauri::Manager;
 
-use crate::{ipc::tts::APP_HANDLE, provider::{TTSProviderType, TTSProviderError, TTSProvider}, voice::{Voice, VoiceWithSettings}};
+use crate::{
+    ipc::tts::APP_HANDLE,
+    provider::{TTSProvider, TTSProviderError, TTSProviderType},
+    voice::{Voice, VoiceWithSettings},
+};
 
-static TIKTOK_BASE_URL: &'static str = "https://api16-normal-useast5.us.tiktokv.com/media/api/text/speech/invoke/";
+static TIKTOK_BASE_URL: &'static str =
+    "https://api16-normal-useast5.us.tiktokv.com/media/api/text/speech/invoke/";
 static TIKTOK_UA: &'static str = "com.zhiliaoapp.musically/2022600030 (Linux; U; Android 7.1.2; es_ES; SM-G988N; Build/NRD90M;tt-ok/3.12.13.1)";
 
 #[derive(Serialize, Deserialize)]
 struct TiktokVoice {
     voice_id: String,
-    name: String
+    name: String,
 }
 
 pub struct TiktokTTSProvider {}
@@ -24,10 +29,10 @@ impl TTSProvider for TiktokTTSProvider {
     }
 
     async fn get_speech_bytes(
-            message: &str,
-            voice: &VoiceWithSettings,
-            _config: &serde_json::Value,
-        ) -> Result<Vec<u8>, crate::provider::TTSProviderError> {
+        message: &str,
+        voice: &VoiceWithSettings,
+        _config: &serde_json::Value,
+    ) -> Result<Vec<u8>, crate::provider::TTSProviderError> {
         let client = reqwest::Client::new();
 
         let normalised_message = message
@@ -42,7 +47,15 @@ impl TTSProvider for TiktokTTSProvider {
         // i really don't want to just go through Some Guy's random server
         // (i'm sure Some Guy is very nice)
 
-        let _req = client.post(TIKTOK_BASE_URL.to_string() + "?text_speaker=" + voice.voice.id.as_str() + "&req_text=" + normalised_message.as_str() + "&speaker_map_type=0&aid=1233")
+        let _req = client
+            .post(
+                TIKTOK_BASE_URL.to_string()
+                    + "?text_speaker="
+                    + voice.voice.id.as_str()
+                    + "&req_text="
+                    + normalised_message.as_str()
+                    + "&speaker_map_type=0&aid=1233",
+            )
             .header("User-Agent", TIKTOK_UA)
             .send()
             .await
@@ -63,12 +76,17 @@ impl TTSProvider for TiktokTTSProvider {
         println!("{:?}", json);
         let b64d = json["b64d"].as_str().unwrap();
 
-        BASE64_STANDARD.decode(b64d)
+        BASE64_STANDARD
+            .decode(b64d)
             .map_err(|_| TTSProviderError::DecodeError)
     }
 
-    async fn get_voices(_config: &serde_json::Value) -> Result<Vec<crate::voice::Voice>, crate::provider::TTSProviderError> {
-        let voices_path = APP_HANDLE.get().unwrap()
+    async fn get_voices(
+        _config: &serde_json::Value,
+    ) -> Result<Vec<crate::voice::Voice>, crate::provider::TTSProviderError> {
+        let voices_path = APP_HANDLE
+            .get()
+            .unwrap()
             .path()
             .resolve("assets/data/tiktokVoices.json", BaseDirectory::Resource)
             .unwrap();
@@ -76,17 +94,15 @@ impl TTSProvider for TiktokTTSProvider {
         let voices_file = std::fs::File::open(&voices_path).unwrap();
         let voices_json: Vec<TiktokVoice> = serde_json::from_reader(voices_file).unwrap();
 
-        Ok(
-            voices_json.iter()
-                .map(|v| {
-                    Voice {
-                        id: v.voice_id.clone(),
-                        name: v.name.clone(),
-                        lang: None,
-                        provider: TTSProviderType::Tiktok
-                    }
-                }).collect()
-        )
+        Ok(voices_json
+            .iter()
+            .map(|v| Voice {
+                id: v.voice_id.clone(),
+                name: v.name.clone(),
+                lang: None,
+                provider: TTSProviderType::Tiktok,
+            })
+            .collect())
     }
 
     fn get_default_voice() -> Voice {
@@ -94,7 +110,7 @@ impl TTSProvider for TiktokTTSProvider {
             provider: TTSProviderType::Tiktok,
             id: "en_us_002".to_string(),
             name: "Jessie [Female]".to_string(),
-            lang: None
+            lang: None,
         }
     }
 }

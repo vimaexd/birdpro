@@ -9,33 +9,45 @@ import type { TTSStore } from "./bird";
 import type { Favourite } from "./favourites";
 
 interface BirdProConfig {
+  /* General app state */
   "onboarded": boolean;
-  "vrcOsc": boolean;
+  "last": TTSStore | undefined;
+  favourites: Favourite[];
+  replacements: {
+    [from: string]: string;
+  }
+
+  /* Audio */
   audio: {
     usePreviewOutput: boolean;
     devices: {
       [idx: number]: string;
     }
   }
-  favourites: Favourite[];
   volumes: number[];
-  replacements: {
-    [from: string]: string;
-  }
-  "last": TTSStore | undefined;
+
+  /* Behaviour */
+  "audioTypingIndicator": boolean;
+  "bypassCharLimit": boolean;
+  "checkForUpdates": boolean;
+
+  /* Integrations */
+  "vrcOsc": boolean;
   "txtoutput": boolean;
   "txtoutput.clear": boolean;
   "txtoutput.clearTimeout": number;
   "txtoutput.typingIndicator": boolean;
   "txtoutput.typingIndicatorText": string;
+
+  /* Providers */
   "elevenlabs.apikey": string;
-  "audioTypingIndicator": boolean;
-  "bypassCharLimit": boolean;
+  "piper.voicesPath": string;
+
+  /* UI */
   "ui.theme": "dark" | "light";
   "ui.rounding": 6;
   "ui.accentColor": string;
   "ui.showHistory": boolean;
-  "checkForUpdates": boolean;
 }
 
 export let configStore: Writable<BirdProConfig>;
@@ -68,6 +80,7 @@ export async function initialiseConfig() {
     "txtoutput.typingIndicator": false,
     "txtoutput.typingIndicatorText": "[* typing *]",
     "elevenlabs.apikey": "",
+    "piper.voicesPath": "/usr/share/piper-voices",
     "audioTypingIndicator": false,
     "bypassCharLimit": false,
     "ui.theme": "dark",

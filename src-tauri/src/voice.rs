@@ -6,7 +6,7 @@ pub struct Voice {
     pub provider: TTSProviderType,
     pub id: String,
     pub name: String,
-    pub lang: Option<String>
+    pub lang: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]

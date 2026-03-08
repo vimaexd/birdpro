@@ -9,10 +9,13 @@ use crate::audio::BirdSink;
 use crate::backends::elevenlabs::ElevenlabsTTSProvider;
 use crate::backends::msedge::MsEdgeTTSProvider;
 
+use crate::backends::piper::PiperTTSProvider;
 use crate::backends::tiktok::TiktokTTSProvider;
 #[cfg(windows)]
 use crate::backends::windows::WindowsTTSProvider;
-use crate::provider::{TTSProviderType, TTSProviderError, TTSProviderInfo, TTSProvider, TTS_PROVIDERS};
+use crate::provider::{
+    TTSProvider, TTSProviderError, TTSProviderInfo, TTSProviderType, TTS_PROVIDERS,
+};
 use crate::voice::{Voice, VoiceWithSettings};
 use crate::{get_platform, AppData};
 
@@ -46,7 +49,7 @@ pub async fn tts_say(
     let voice_final = VoiceWithSettings {
         voice: voice,
         pitch: pitch,
-        rate: rate
+        rate: rate,
     };
 
     let _bytes: Result<Vec<u8>, TTSProviderError> = match provider {
@@ -58,8 +61,10 @@ pub async fn tts_say(
                 .await
         }
         TTSProviderType::Tiktok => {
-            TiktokTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config)
-                .await
+            TiktokTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config).await
+        }
+        TTSProviderType::Piper => {
+            PiperTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config).await
         }
         #[cfg(windows)]
         TTSProviderType::Windows => {
@@ -139,7 +144,7 @@ pub async fn tts_say(
 pub async fn tts_get_voicelist(
     provider_id: TTSProviderType,
     state: State<'_, AsyncMutex<AppData>>,
-    handle: tauri::AppHandle
+    handle: tauri::AppHandle,
 ) -> Result<Vec<Voice>, TTSProviderError> {
     let state = state.lock().await;
 
@@ -151,6 +156,7 @@ pub async fn tts_get_voicelist(
         TTSProviderType::MsEdge => MsEdgeTTSProvider::get_voices(&state.config).await,
         TTSProviderType::ElevenLabs => ElevenlabsTTSProvider::get_voices(&state.config).await,
         TTSProviderType::Tiktok => TiktokTTSProvider::get_voices(&state.config).await,
+        TTSProviderType::Piper => PiperTTSProvider::get_voices(&state.config).await,
         #[cfg(windows)]
         TTSProviderType::Windows => WindowsTTSProvider::get_voices(&state.config).await,
     };
@@ -188,6 +194,7 @@ pub async fn tts_get_default_voice(
         TTSProviderType::MsEdge => MsEdgeTTSProvider::get_default_voice(),
         TTSProviderType::ElevenLabs => ElevenlabsTTSProvider::get_default_voice(),
         TTSProviderType::Tiktok => TiktokTTSProvider::get_default_voice(),
+        TTSProviderType::Piper => PiperTTSProvider::get_default_voice(),
         #[cfg(windows)]
         TTSProviderType::Windows => WindowsTTSProvider::get_default_voice(),
     };

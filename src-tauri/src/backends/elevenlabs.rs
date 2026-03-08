@@ -1,7 +1,7 @@
 use reqwest::StatusCode;
 use serde_json::Value;
 
-use crate::provider::{TTSProviderType, TTSProviderError, TTSProvider};
+use crate::provider::{TTSProvider, TTSProviderError, TTSProviderType};
 use crate::voice::{Voice, VoiceWithSettings};
 
 static ELEVENLABS_BASE_URL: &'static str = "https://api.elevenlabs.io";
@@ -107,7 +107,7 @@ impl TTSProvider for ElevenlabsTTSProvider {
                     provider: TTSProviderType::ElevenLabs,
                     id: v["voice_id"].as_str().unwrap().to_owned(),
                     name: v["name"].as_str().unwrap().to_owned(),
-                    lang: v["language"].as_str().map(str::to_owned)
+                    lang: v["language"].as_str().map(str::to_owned),
                 })
             })
             .collect()
@@ -118,7 +118,7 @@ impl TTSProvider for ElevenlabsTTSProvider {
             provider: TTSProviderType::ElevenLabs,
             id: "".to_string(),
             name: "Test voice".to_string(),
-            lang: None
+            lang: None,
         }
     }
 }
