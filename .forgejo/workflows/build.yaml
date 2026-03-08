@@ -98,8 +98,6 @@ jobs:
                     libpulse-dev \
                     libjack-dev \
                     libespeak-ng-dev \
-                    clang-19 \
-                    clang-tools \
                     libclang-dev \
                     xdg-utils \
                     nsis \
@@ -107,6 +105,16 @@ jobs:
                     llvm \
                     cmake \
                     ninja-build \
+
+            - name: install clang 19
+              run: |
+                  wget https://apt.llvm.org/llvm.sh
+                  chmod +x llvm.sh
+                  ./llvm.sh 19
+                  apt install -y clang-19 lld-19 llvm-19
+                  update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 100
+                  update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 100
+                  update-alternatives --install /usr/bin/clang-cl clang-cl /usr/bin/clang-cl-19 100
 
             - name: install rust
               run: |
@@ -120,6 +128,7 @@ jobs:
                   source "$HOME/.cargo/env"
                   rustup target add x86_64-pc-windows-msvc
                   cargo install --locked cargo-xwin
+                  echo "XWIN_CLANG_CL=$(which clang-cl)" >> $FORGEJO_ENV
 
             - name: install bun
               run: |
