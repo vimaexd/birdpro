@@ -514,7 +514,7 @@ dependencies = [
 
 [[package]]
 name = "birdpro"
-version = "1.0.1"
+version = "1.1.0"
 dependencies = [
  "base64 0.22.1",
  "cpal 0.17.1",
@@ -539,7 +539,7 @@ dependencies = [
  "tokio",
  "vrchat_osc",
  "walkdir",
- "windows 0.62.2",
+ "windows 0.61.3",
 ]
 
 [[package]]
