@@ -23,7 +23,7 @@ Latest builds for Windows and Linux can be downloaded from [Codeberg Actions](ht
 
 # Develop
 
-- Install [Rust](https://rust-lang.org/tools/install/) and [Bun](https://bun.sh/)
+- Install [Rust](https://rust-lang.org/tools/install/), [Bun](https://bun.sh/) and [LLVM](https://releases.llvm.org/)
 - Clone the repo
 - Download the [Tauri System Dependencies](https://v2.tauri.app/start/prerequisites/) required for your operating system
 - Run `bun install` to install JS dependencies

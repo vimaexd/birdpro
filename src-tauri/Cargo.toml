@@ -48,7 +48,7 @@ tauri-plugin-dialog = "2"
 espeak-rs-sys = { path = "../crates/espeak-rs-sys" }
 
 [target.'cfg(windows)'.dependencies.windows]
-version = "0.62.2"
+version = ">=0.59, <=0.62"
 features = [
     "Data_Xml_Dom",
     "Win32_Security",

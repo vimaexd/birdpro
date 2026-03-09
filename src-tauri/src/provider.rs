@@ -50,7 +50,7 @@ pub enum TTSProviderError {
 
     OutOfCredits,
 
-    MissingVoicesPath
+    MissingVoicesPath,
 }
 
 impl fmt::Display for TTSProviderError {
@@ -69,7 +69,10 @@ impl fmt::Display for TTSProviderError {
             ),
             TTSProviderError::AuthorizationInvalid => write!(f, "The API key provided is invalid"),
             TTSProviderError::OutOfCredits => write!(f, "You're out of credits! :("),
-            TTSProviderError::MissingVoicesPath => write!(f, "You need to specify a voices path in Settings to use this provider"),
+            TTSProviderError::MissingVoicesPath => write!(
+                f,
+                "You need to specify a voices path in Settings to use this provider"
+            ),
         }
     }
 }
@@ -94,7 +97,7 @@ pub static TTS_PROVIDERS: &[TTSProviderInfo] = &[
     TTSProviderInfo {
         id: TTSProviderType::Piper,
         name: "Piper",
-        supported_platforms: &[TTSProviderPlatform::Linux],
+        supported_platforms: &[TTSProviderPlatform::Windows, TTSProviderPlatform::Linux],
         cloud: false,
         uses_credits: false,
         supported_features: &[],

@@ -102,8 +102,6 @@ impl TTSProvider for PiperTTSProvider {
             if entry.file_type().is_file()
                 && entry.file_name().to_str().unwrap().ends_with(".onnx.json")
             {
-                println!("{}", entry.path().display());
-
                 let file = std::fs::File::open(entry.path()).unwrap();
                 let json: Value = match serde_json::from_reader(file) {
                     Ok(v) => v,
