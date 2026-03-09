@@ -100,12 +100,13 @@ jobs:
             libjack-dev \
             xdg-utils \
             nsis \
-            clang \
+            clang-19 \
             clang-tools \
             libclang-dev \
             lld \
             llvm \
-            ninja-build \
+            ninja-build
+          update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 200
 
       - name: install rust
         run: |
