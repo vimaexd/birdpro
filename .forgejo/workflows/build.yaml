@@ -105,6 +105,7 @@ jobs:
             nsis \
             lld \
             llvm \
+            ninja-build \
 
       - name: install rust
         run: |
