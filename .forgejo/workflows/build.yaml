@@ -98,14 +98,19 @@ jobs:
             libasound2-dev \
             libpulse-dev \
             libjack-dev \
-            clang \
-            clang-tools \
-            libclang-dev \
             xdg-utils \
             nsis \
             lld \
             llvm \
             ninja-build \
+
+      - name: install llvm/clang 19
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          ./llvm.sh 19
+          update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 100
+          update-alternatives --install /usr/bin/clang-cl clang-cl /usr/bin/clang-cl-19 100
 
       - name: install rust
         run: |
