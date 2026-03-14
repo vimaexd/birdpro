@@ -132,7 +132,7 @@
       if(!resizeBar) return;
       console.log("rsz")
       let newWidth = (window.innerWidth - e.pageX);
-      barSize = Math.min(Math.max(newWidth, 400), 800) - 18
+      barSize = Math.min(Math.max(newWidth, 300), 700) - 18
     }
 
     onMount(async () => {
@@ -546,4 +546,5 @@
 
         animation: 1.4s typingindicator-anim infinite linear;
     }
+
 </style>

@@ -1,5 +1,7 @@
 <script>
-    let props = $props();
+    import { tooltip } from "@svelte-plugins/tooltips";
+
+    let { popover = undefined, children, ...props } = $props();
 
     let styleClass = $derived.by(() => {
       switch(true) {
@@ -17,7 +19,7 @@
       }
     })
 </script>
-<button class={styleClass} {...props}>{@render props.children()}</button>
+<button class={styleClass} use:tooltip={popover} {...props}>{@render children()}</button>
 
 <style>
     button {

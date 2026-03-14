@@ -43,8 +43,6 @@
 
     --font-family: "Switzer", sans-serif;
 
-    /*--rounding: 6px;*/
-
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-in-out-sine: cubic-bezier(0.37, 0, 0.63, 1);
 }
@@ -132,4 +130,65 @@ input[type="range"]::-webkit-slider-thumb {
     height: 1.5rem;
     width: 0.8rem;
     border-radius: var(--rounding);
+}
+
+
+/* a */
+.tooltip {
+    --tooltip-arrow-size: 10px;
+    --tooltip-background-color: var(--color-bg-layer);
+    --tooltip-border-radius: 6px;
+    --tooltip-font-family: var(--font-family);
+    --tooltip-font-size: 12px;
+    --tooltip-font-weight: 400;
+    --tooltip-line-height: 1.15rem;
+    --tooltip-color: var(--color-text);
+    --tooltip-padding: 6px;
+    --tooltip-z-index: 100;
+
+    border: 1px var(--color-surface2) solid;
+
+    user-select: none;
+}
+
+.tooltip.top.animation-pop {
+    opacity: 0;
+    transform: translate(
+        calc(-50%),
+        calc(-50%)
+      )
+      scale(1);
+    transform-origin: 50% 50%;
+    transition:
+      opacity 0.1s var(--ease-out-expo),
+      transform 0.15s var(--ease-out-expo);
+}
+
+.tooltip.top.animation-pop.show {
+    opacity: 1;
+    transform: translate(
+        calc(-50%),
+        calc(-150%)
+      )
+      scale(1.1);
+}
+
+.tooltip.top:before {
+    content: ' ';
+    position: absolute;
+    border: calc(var(--tooltip-arrow-size) + 1px) solid transparent;
+    border-color: var(--color-surface2) transparent transparent transparent;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, calc(99% + 1px));
+}
+
+.tooltip.left:before {
+    content: ' ';
+    position: absolute;
+    border: calc(var(--tooltip-arrow-size) + 1px) solid transparent;
+    border-color: transparent transparent transparent var(--color-surface2);
+    right: 0;
+    top: 50%;
+    transform: translate(calc(99% + 1px), -50%);
 }

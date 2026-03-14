@@ -102,7 +102,7 @@
         border: none;
         border-radius: var(--rounding);
         font-weight: 500;
-        font-size: 1.5rem;
+        font-size: 1.25rem;
 
         cursor: pointer;
         transition: filter .15s var(--ease-out-expo);
