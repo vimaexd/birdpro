@@ -28,6 +28,7 @@ pub fn get_platform() -> TTSProviderPlatform {
     match std::env::consts::OS {
         "windows" => TTSProviderPlatform::Windows,
         "linux" => TTSProviderPlatform::Linux,
+        "macos" => TTSProviderPlatform::MacOS,
         _ => TTSProviderPlatform::Unknown,
     }
 }

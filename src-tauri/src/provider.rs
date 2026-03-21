@@ -81,7 +81,11 @@ pub static TTS_PROVIDERS: &[TTSProviderInfo] = &[
     TTSProviderInfo {
         id: TTSProviderType::MsEdge,
         name: "Microsoft Edge TTS",
-        supported_platforms: &[TTSProviderPlatform::Windows, TTSProviderPlatform::Linux],
+        supported_platforms: &[
+            TTSProviderPlatform::Windows,
+            TTSProviderPlatform::MacOS,
+            TTSProviderPlatform::Linux,
+        ],
         cloud: true,
         uses_credits: false,
         supported_features: &[TTSFeature::Pitch, TTSFeature::Rate],
@@ -89,7 +93,11 @@ pub static TTS_PROVIDERS: &[TTSProviderInfo] = &[
     TTSProviderInfo {
         id: TTSProviderType::ElevenLabs,
         name: "ElevenLabs",
-        supported_platforms: &[TTSProviderPlatform::Windows, TTSProviderPlatform::Linux],
+        supported_platforms: &[
+            TTSProviderPlatform::Windows,
+            TTSProviderPlatform::MacOS,
+            TTSProviderPlatform::Linux,
+        ],
         cloud: true,
         uses_credits: true,
         supported_features: &[TTSFeature::Rate],
@@ -97,7 +105,11 @@ pub static TTS_PROVIDERS: &[TTSProviderInfo] = &[
     TTSProviderInfo {
         id: TTSProviderType::Piper,
         name: "Piper",
-        supported_platforms: &[TTSProviderPlatform::Windows, TTSProviderPlatform::Linux],
+        supported_platforms: &[
+            TTSProviderPlatform::Windows,
+            TTSProviderPlatform::MacOS,
+            TTSProviderPlatform::Linux,
+        ],
         cloud: false,
         uses_credits: false,
         supported_features: &[],
@@ -128,9 +140,8 @@ pub static TTS_PROVIDERS: &[TTSProviderInfo] = &[
 pub enum TTSProviderPlatform {
     Linux,
     Windows,
+    MacOS,
     Unknown,
-    // maybe in the future?
-    // MacOS,
 }
 
 pub trait TTSProvider {
