@@ -12,9 +12,10 @@
 <SettingsPage>
     <div class="option">
         <SettingsSectionTitle>Theme</SettingsSectionTitle>
-        <SelectList bind:value={$configStore["ui.theme"]}>
+        <SelectList direction="horizontal" bind:value={$configStore["ui.theme"]}>
             <SelectListOption value="dark">Dark</SelectListOption>
             <SelectListOption value="light">Light</SelectListOption>
+            <SelectListOption value="auto">Auto</SelectListOption>
         </SelectList>
     </div>
 

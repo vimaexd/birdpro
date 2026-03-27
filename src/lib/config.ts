@@ -44,7 +44,7 @@ interface BirdProConfig {
   "piper.voicesPath": string;
 
   /* UI */
-  "ui.theme": "dark" | "light";
+  "ui.theme": "dark" | "light" | "auto";
   "ui.rounding": 6;
   "ui.accentColor": string;
   "ui.showHistory": boolean;

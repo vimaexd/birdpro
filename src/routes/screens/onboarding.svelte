@@ -28,9 +28,10 @@
         <div class="box">
             <div class="option">
                 <h2>Theme</h2>
-                <SelectList bind:value={$configStore["ui.theme"]}>
+                <SelectList direction="horizontal" bind:value={$configStore["ui.theme"]}>
                     <SelectListOption value="dark">Dark</SelectListOption>
                     <SelectListOption value="light">Light</SelectListOption>
+                    <SelectListOption value="auto">Auto</SelectListOption>
                 </SelectList>
             </div>
             <div class="option">

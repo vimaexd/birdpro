@@ -15,7 +15,12 @@
     import { getCurrentWindow } from "@tauri-apps/api/window";
 
     let ready = $state(false);
+
+    // used to set actual theme - can NOT have auto
     let theme = $state("dark");
+
+    // used to compare - can have auto
+    let previousTheme = "dark";
 
     onMount(async () => {
         // avoid white flash on startup
@@ -27,11 +32,25 @@
             await initialiseApp();
             ready = true;
 
-            configStore.subscribe((c) => {
-                if (theme !== c["ui.theme"]) {
-                    theme = c["ui.theme"];
+            // change theme when theme store changes
+            configStore.subscribe(async (c) => {
+                if (previousTheme !== c["ui.theme"]) {
+                    if(c["ui.theme"] == "auto") {
+                        theme = await getCurrentWindow().theme() || "dark";
+                    } else {
+                        theme = c["ui.theme"];
+                    }
+                    previousTheme = c["ui.theme"]
                 }
             });
+
+            // update auto theme
+            getCurrentWindow().onThemeChanged((newTheme) => {
+                if($configStore["ui.theme"] == "auto") {
+                    theme = newTheme.payload;
+                }
+            })
+
         } catch (e: any) {
             showError("Startup Error", e);
         }
