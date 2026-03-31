@@ -1,10 +1,11 @@
 <script lang="ts">
     import IconFavourite from "@bird/assets/icons/IconFavourite.svelte";
     import IconSparkle from "@bird/assets/icons/IconSparkle.svelte";
-    import SplitMenuFavourite from "./SplitMenuFavourite.svelte";
-    import SplitMenuBrowse from "./SplitMenuBrowse.svelte";
     import { fade } from "svelte/transition";
     import { expoOut } from "svelte/easing";
+
+    import SplitMenuFavourite from "./SplitMenuFavourite.svelte";
+    import SplitMenuBrowse from "./SplitMenuBrowse.svelte";
 
     let selectedPage = $state("Favourite");
     let menus: {[id: string]: any} = {

@@ -14,8 +14,13 @@
     import TextInput from '@bird/components/ui/TextInput.svelte';
     import IconSearch from '@bird/assets/icons/IconSearch.svelte';
     import { disableInputCapture } from '@bird/lib/modal';
+    import { fade } from 'svelte/transition';
 
-    let provider = $state<string>($ttsStore.voice.provider);
+    // provider
+    let showProviders = $state(true);
+    let provider = $state<string>("");
+
+    // voices
     let ttsVoices = $state<Voice[]>([]);
     let ttsVoicesFiltered = $derived(
       ttsVoices.filter(v => v.name.toLowerCase().includes(voiceSearchQuery.toLowerCase().trim()))
@@ -26,6 +31,7 @@
 
     let enableUseButton = $derived(!justApplied && selectedVoice !== "");
 
+    // notices
     let showRequiresAuth = $state(false);
 
     const updateVoices = async () => {
@@ -46,89 +52,102 @@
     })
 </script>
 
-<h2>Provider</h2>
-<SelectList
-    bind:value={provider}
-    onChange={() => {
-      showRequiresAuth = false
-      ttsVoices = []
-      selectedVoice = ""
-    }}
-    height="fit-content"
-    shrink="0"
->
-    {#each $ttsProviders as provider}
-        <SelectListOption value={provider.id}>
-            {provider.name}
-            {#if provider.cloud}
-                <IconCloud width="16px" height="16px" />
-            {/if}
-        </SelectListOption>
-    {/each}
-</SelectList>
-
-
-<div class="header header-inp">
-    <h2>Voice</h2>
-    <div>
-        {#if voiceSearchQuery.length < 1}
-        <div class="header-inp-label-container">
-            <div>
-                <label for="">
-                    <IconSearch width="16px" height="16px"/>
-                    Search
-                </label>
-            </div>
+{#if showProviders}
+    <div class="header header-inp">
+        <div>
+            <h2>Choose a provider:</h2>
         </div>
-        {/if}
-        <TextInput bind:value={voiceSearchQuery} onclick={() => disableInputCapture.set(true)}/>
     </div>
-</div>
-<SelectList
-    bind:value={selectedVoice}
-    onChange={() => {
-      justApplied = false
-    }}
-    height="100%"
->
-    {#await updateVoices() }
-        <div class="selectlist-loading-container">
-            <LoadingSpinner/>
-        </div>
-    {:then voices}
-        {#if showRequiresAuth}
-            <NoticeRequiresAuth providerName={resolveProvider(provider).name}/>
-        {:else}
-            <SvelteVirtualList items={ttsVoicesFiltered as Voice[]}>
-                {#snippet renderItem(voice)}
-                    <SelectListOption value={voice.id}>
-                        {voice.name}
-                    </SelectListOption>
-                {/snippet}
-            </SvelteVirtualList>
-        {/if}
-    {/await}
-</SelectList>
-
-<div class="buttons">
-    <Button style="width: 100%;justify-content: center;" disabled={!enableUseButton} type="accent"
-        onclick={() => {
-          if(!enableUseButton) return;
-          let ttsStoreCopy = get(ttsStore);
-          ttsStoreCopy.voice = JSON.parse(JSON.stringify(ttsVoices.find((v: Voice) => (v.id == selectedVoice))!));
-          ttsStore.set(ttsStoreCopy);
-          justApplied = true;
+    <SelectList
+        bind:value={provider}
+        onChange={() => {
+            showRequiresAuth = false
+            ttsVoices = []
+            selectedVoice = ""
+            showProviders = false;
         }}
-    >Use Voice
-    </Button>
-</div>
+        height="fit-content"
+        shrink="0"
+    >
+        {#each $ttsProviders as provider}
+            <SelectListOption value={provider.id}>
+                {provider.name}
+                {#if provider.cloud}
+                    <IconCloud width="16px" height="16px" />
+                {/if}
+            </SelectListOption>
+        {/each}
+    </SelectList>
+{:else}
+    <div class="header header-inp">
+        <Button type="small" onclick={() => {
+            showProviders = true;
+            provider = ""
+        }}>
+            <h2><span class="header-arrow">‹</span> {resolveProvider(provider).name}</h2>
+        </Button>
+        <div>
+            {#if voiceSearchQuery.length < 1}
+            <div class="header-inp-label-container">
+                <div>
+                    <label for="">
+                        <IconSearch width="16px" height="16px"/>
+                        Search
+                    </label>
+                </div>
+            </div>
+            {/if}
+            <TextInput bind:value={voiceSearchQuery} onclick={() => disableInputCapture.set(true)}/>
+        </div>
+    </div>
+    <SelectList
+        bind:value={selectedVoice}
+        onChange={() => {
+        justApplied = false
+        }}
+        height="100%"
+    >
+        {#await updateVoices() }
+            <div class="selectlist-loading-container">
+                <LoadingSpinner/>
+            </div>
+        {:then voices}
+            {#if showRequiresAuth}
+                <NoticeRequiresAuth providerName={resolveProvider(provider).name}/>
+            {:else}
+                <SvelteVirtualList items={ttsVoicesFiltered as Voice[]}>
+                    {#snippet renderItem(voice)}
+                        <SelectListOption value={voice.id}>
+                            {voice.name}
+                        </SelectListOption>
+                    {/snippet}
+                </SvelteVirtualList>
+            {/if}
+        {/await}
+    </SelectList>
+    <div class="buttons">
+        <Button style="width: 100%;justify-content: center;" disabled={!enableUseButton} type="accent"
+            onclick={() => {
+            if(!enableUseButton) return;
+            let ttsStoreCopy = get(ttsStore);
+            ttsStoreCopy.voice = JSON.parse(JSON.stringify(ttsVoices.find((v: Voice) => (v.id == selectedVoice))!));
+            ttsStore.set(ttsStoreCopy);
+            justApplied = true;
+            }}
+        >Use Voice
+        </Button>
+    </div>
+{/if}
+
 
 <style>
     .selectlist-loading-container {
         display: flex;
         width: 100%;
         justify-content: center;
-        padding: 8px;
+
+        /* this is so cursed but whatever */
+        padding: 32px;
     }
 
     .buttons {
@@ -137,9 +156,12 @@
     }
 
     h2 {
-      font-size: 0.95rem;
-      font-weight: 600;
+      font-size: 0.9rem;
+      font-weight: 500;
       user-select: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .header {
@@ -149,6 +171,7 @@
     }
 
     .header-inp {
+        font-size: 0.8rem;
         .header-inp-label-container {
             position: absolute;
             label {
@@ -167,8 +190,28 @@
         }
         :global(input) {
             height: 1.5rem;
-            font-size: 0.8rem;
+
             width: 100%;
+        }
+    }
+
+    .header-arrow {
+        display: inline-block;
+        width: 16px;
+        transform: scale(1.5);
+        opacity: 0.75;
+
+        border-radius: 12px;
+
+        &::before {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: red;
+            border-radius: var(--rounding);
+            transform: scale(calc(1 / 1.5));
+            transform-origin: center;
         }
     }
 </style>

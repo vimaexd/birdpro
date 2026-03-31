@@ -1,19 +1,21 @@
 <script lang="ts">
     /* TODO: Refactor this to new Modal component */
+    import ModalContainer from "@bird/components/alert/ModalContainer.svelte";
+    import ModalCloseButton from "@bird/components/alert/ModalCloseButton.svelte";
+    import { disableInputCapture } from "@bird/lib/modal";
+    import { onMount } from "svelte";
 
     import SettingsAudio from "./settings-audio.svelte";
     import SettingsAbout from "./settings-about.svelte";
     import SettingsIntegrations from "./settings-integrations.svelte";
     import SettingsProviders from "./settings-providers.svelte";
     import SettingsBehaviour from "./settings-behaviour.svelte";
-    import ModalContainer from "@bird/components/alert/ModalContainer.svelte";
-    import ModalCloseButton from "@bird/components/alert/ModalCloseButton.svelte";
-    import { disableInputCapture } from "@bird/lib/modal";
-    import { onMount } from "svelte";
     import SettingsReplacements from "./settings-replacements.svelte";
     import SettingsAppearence from "./settings-appearence.svelte";
-    import { devmode } from "@bird/lib/bird";
     import SettingsDev from "./settings-dev.svelte";
+    import SettingsDevcomponents from "./settings-devcomponents.svelte";
+
+    import { devmode } from "@bird/lib/bird";
 
     let selectedPage = $state("Audio");
     const pages: {[id: string]: any} = $state({
@@ -29,6 +31,7 @@
     devmode.subscribe(d => {
       if(d) {
         pages["Developer"] = SettingsDev
+        pages["Developer Petting Zoo"] = SettingsDevcomponents
       }
     })
 

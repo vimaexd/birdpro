@@ -1,9 +1,11 @@
 <script>
     import IconSpinner from "../assets/icons/IconSpinner.svelte";
+    import { fade } from 'svelte/transition';
+
     const props = $props();
 </script>
 
-<div class="spin spin-center">
+<div class="spin spin-center" in:fade={{delay: 50}}>
     <IconSpinner height={24} width={24} {...props}/>
 </div>
 
@@ -24,7 +26,7 @@
 
     .spin {
         animation-name: spin;
-        animation-duration: 0.6s;
+        animation-duration: 0.45s;
         animation-timing-function: linear;
         animation-iteration-count: infinite;
 
