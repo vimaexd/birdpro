@@ -131,14 +131,16 @@ export async function speakTts(text: string, preview: boolean = false) {
 
         let words = message.split(" ");
         let replacements = Object.entries(cs["replacements"]);
+
         for (let i = 0; i < words.length; i++) {
             // go through all the replacements
             for (let j = 0; j < replacements.length; j++) {
                 if (words[i] == replacements[j][0]) {
-                    words[i] = replacements[j][1]
+                    words[i] = replacements[j][1];
+
+                    // stop on first replacement found
+                    break;
                 }
-                // stop on first replacement found
-                break;
             }
         }
 
