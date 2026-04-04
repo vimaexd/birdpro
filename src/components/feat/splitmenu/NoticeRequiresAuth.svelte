@@ -1,13 +1,14 @@
 <script>
     import IconKey from "@bird/assets/icons/IconKey.svelte";
+    import { _ } from "svelte-i18n";
 
     let { providerName = "EXAMPLE PROVIDER" } = $props();
 </script>
 
 <div class="requiresauth">
     <IconKey width={64} height={64}/>
-    <h3>Authentication required</h3>
-    <p>To use voices from <b>{providerName}</b>, enter an API key in settings</p>
+    <h3>{$_('sidebar.authRequired')}</h3>
+    <p>{@html $_('sidebar.authRequiredExplainer', { values: { providerName: providerName }})}</p>
 </div>
 
 <style>

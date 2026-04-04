@@ -9,8 +9,9 @@
     import Modal from '@bird/components/alert/Modal.svelte';
     import { favouritesStore, saveFavourites } from '@bird/lib/favourites';
     import { get } from 'svelte/store';
+    import { _ } from 'svelte-i18n';
 
-    let name = $state("My voice");
+    let name = $state($_("favourite.defaultName"));
     let color = $state("#4744eb");
 
     onMount(() => {
@@ -45,28 +46,28 @@
 </script>
 
 <Modal onClose={() => doClose()}>
-    <h1>Add favourite</h1>
+    <h1>{$_("favourite.addFavourite")}</h1>
 
     <div class="modal-section preview">
-        <label for="preview">Preview</label>
+        <label for="preview">{$_("favourite.preview")}</label>
         <div class="preview-fav-container">
-            <FavouriteVoice name={name || "My voice"} color={color} store={$ttsStore}/>
+            <FavouriteVoice name={name || $_("favourite.defaultName")} color={color} store={$ttsStore}/>
         </div>
     </div>
 
     <div class="modal-section">
         <TextInput bind:value={name} required={true} maxlength={64}>
-            Name
+            {$_("favourite.name")}
         </TextInput>
     </div>
 
     <div class="modal-section color">
-        <label for="color">Color</label>
+        <label for="color">{$_("favourite.color")}</label>
         <ColorPicker bind:hex={color} isAlpha={false}/>
     </div>
 
     <div class="modal-section bottom">
-        <Button type="accent" onclick={doAdd}> Add </Button>
+        <Button type="accent" onclick={doAdd}> {$_('ui.add')} </Button>
     </div>
 </Modal>
 

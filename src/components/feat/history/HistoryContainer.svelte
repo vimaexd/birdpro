@@ -1,4 +1,5 @@
 <script>
+    import { _ } from "svelte-i18n";
     import { historyStore } from "@bird/lib/history";
     import HistoryItem from "./HistoryItem.svelte";
 
@@ -9,13 +10,13 @@
 <div class="history">
     <div class="history-side">
         <span class="vr"></span>
-        <h2 class="history-title">History</h2>
+        <h2 class="history-title">{$_('history.historyTitle')}</h2>
         <span class="vr"></span>
     </div>
     <div class="history-items">
         {#if $historyStore.length < 1}
             <span class="history-empty"
-                >Say something, and it'll show up here!</span
+                >{$_('history.noHistory')}</span
             >
         {/if}
         {#each $historyStore as item}

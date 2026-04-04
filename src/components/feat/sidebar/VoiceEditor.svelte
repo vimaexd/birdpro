@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { _ } from "svelte-i18n";
     import { expoOut } from "svelte/easing";
     import { fly } from "svelte/transition";
     import { resolveProvider, ttsStore, type Provider } from "@bird/lib/bird";
@@ -33,7 +34,7 @@
         expanded={!isMinimised}
     />
     <div class="voicebank-action" use:tooltip={{
-        content: 'Favourite',
+        content: $_("favourite.favourite"),
         position: 'left',
         delay: 0
       }}>
@@ -58,24 +59,26 @@
             bind:value={$ttsStore.pitch}
         >
             <IconPitch width={24} height={24} />
-            <h2>Pitch</h2>
+            <h2>{$_('voiceEditor.features.pitch')}</h2>
         </StepToggle>
 
-        <StepToggle
-            initial={0}
-            majStep={1}
-            minStep={0.5}
-            min={-8}
-            max={8}
-            bind:value={$ttsStore.rate}
-        >
-            <IconRate width={24} height={24} />
-            <h2>Rate</h2>
-        </StepToggle>
+        {#if resolveProvider($ttsStore.voice.provider).supported_features.includes("Rate")}
+            <StepToggle
+                initial={0}
+                majStep={1}
+                minStep={0.5}
+                min={-8}
+                max={8}
+                bind:value={$ttsStore.rate}
+            >
+                <IconRate width={24} height={24} />
+                <h2>{$_('voiceEditor.features.rate')}</h2>
+            </StepToggle>
+        {/if}
 
         <div class="actions-container">
             <div class="actions">
-                <div use:tooltip={{ content: 'Audible typing indicator', position: 'top', animation: "pop", delay: 0, align: "center"}}>
+                <div use:tooltip={{ content: $_('settings.behaviour.audibleTypingIndicator'), position: 'top', animation: "pop", delay: 0, align: "center"}}>
                     <button class="action-button {($configStore.audioTypingIndicator) ? 'on' : ''}" onclick={() => {
                       $configStore.audioTypingIndicator = !$configStore.audioTypingIndicator
                     }}>

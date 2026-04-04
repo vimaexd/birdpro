@@ -8,6 +8,7 @@
     import { configStore } from "@bird/lib/config";
     import { getTextFilePath, getTypingIndicatorTextFilePath } from "@bird/lib/txtoutput";
     import { invoke } from "@tauri-apps/api/core";
+    import { _ } from "svelte-i18n";
     import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 
     async function connectOsc() {
@@ -27,34 +28,34 @@
             VRChat
         </SettingsSectionTitle>
         <Checkbox onchange={connectOsc} bind:checked={$configStore.vrcOsc}>
-            Enable VRChat OSC
+            {$_("settings.integrations.vrcOsc")}
         </Checkbox>
 
         <SettingsExplainerText>
-            Enabling VRChat OSC will send TTS messages to the VRChat textbox, and sync the typing indicator.
+            {$_("settings.integrations.vrcOscExplainer")}
         </SettingsExplainerText>
     </div>
 
 
     <div class="option">
         <SettingsSectionTitle>
-            Text file output
+            {$_("settings.integrations.txtOutput")}
         </SettingsSectionTitle>
         <Checkbox bind:checked={$configStore.txtoutput}>
-            Enable text file output
+            {$_("settings.integrations.txtOutputEnable")}
         </Checkbox>
         <Checkbox bind:checked={$configStore["txtoutput.clear"]} disabled={!$configStore.txtoutput}>
-            Clear after time
+            {$_("settings.integrations.txtOutputClear")}
         </Checkbox>
         <div class="num {(!$configStore.txtoutput) ? 'disabled' : ''}">
             <input name="txttimeout" type="number" min="0" max="30" bind:value={$configStore["txtoutput.clearTimeout"]}>
-            <label for="txttimeout">second timeout before clearing</label>
+            <label for="txttimeout">{$_("settings.integrations.txtOutputTimeout")}</label>
         </div>
         {#if $configStore.txtoutput}
             {#await getTextFilePath() then path}
                 <div>
                     <h4>
-                        Text file path
+                        {$_("settings.integrations.txtOutputPath")}
                     </h4>
                     <SettingsExplainerText>
                         <code>{path}</code>
@@ -67,19 +68,19 @@
 
     <div class="option">
         <SettingsSectionTitle>
-            Text typing indicator
+            {$_("settings.integrations.txtIndicator")}
         </SettingsSectionTitle>
         <Checkbox bind:checked={$configStore["txtoutput.typingIndicator"]}>
-            Enable .txt typing indicator
+            {$_("settings.integrations.txtIndicatorEnable")}
         </Checkbox>
         {#if $configStore["txtoutput.typingIndicator"]}
             <TextInput bind:value={$configStore["txtoutput.typingIndicatorText"]}>
-                Typing indicator text
+                {$_("settings.integrations.txtIndicatorText")}
             </TextInput>
             {#await getTypingIndicatorTextFilePath() then path}
                 <div>
                     <h4>
-                        Typing indicator path
+                        {$_("settings.integrations.txtIndicatorPath")}
                     </h4>
                     <SettingsExplainerText>
                         <code>{path}</code>

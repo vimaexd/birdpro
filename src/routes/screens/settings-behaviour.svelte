@@ -4,39 +4,41 @@
     import SettingsSectionTitle from "@bird/components/feat/settings/SettingsSectionTitle.svelte";
     import Checkbox from "@bird/components/ui/Checkbox.svelte";
     import { configStore } from "@bird/lib/config";
+    import { _ } from "svelte-i18n";
+
 </script>
 
 <SettingsPage>
     <div class="option">
         <SettingsSectionTitle>
-            Sound
+            {$_("settings.behaviour.sound")}
         </SettingsSectionTitle>
         <Checkbox bind:checked={$configStore["audioTypingIndicator"]}>
-            Audible typing indicator
+            {$_("settings.behaviour.audibleTypingIndicator")}
         </Checkbox>
 
     </div>
 
     <div class="option">
         <SettingsSectionTitle>
-            Textbox
+            {$_("settings.behaviour.textbox")}
         </SettingsSectionTitle>
         <Checkbox bind:checked={$configStore["bypassCharLimit"]}>
-            Bypass character limit
+            {$_("settings.behaviour.bypassCharLimit")}
         </Checkbox>
         {#if $configStore["bypassCharLimit"]}
             <SettingsExplainerText>
-                If you are outputting over VRChat OSC, messages will be truncated.
+                {$_("settings.behaviour.bypassCharLimitExplainer")}
             </SettingsExplainerText>
         {/if}
     </div>
 
     <div class="option">
         <SettingsSectionTitle>
-            App
+            {$_("settings.behaviour.app")}
         </SettingsSectionTitle>
         <Checkbox bind:checked={$configStore["checkForUpdates"]}>
-            Check for updates
+            {$_("settings.behaviour.checkForUpdates")}
         </Checkbox>
     </div>
 

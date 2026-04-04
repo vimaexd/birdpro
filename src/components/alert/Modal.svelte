@@ -4,10 +4,12 @@
     import { disableInputCapture } from '@bird/lib/modal';
     import ModalCloseButton from '@bird/components/alert/ModalCloseButton.svelte';
 
-    let { onClose, modalClass, children } = $props<{
+    let { onClose, modalClass, children, width = "600px", height = "600px" } = $props<{
       onClose: () => any;
       modalClasses?: string;
       children: Snippet;
+      width?: string;
+      height?: string;
     }>();
 
     onMount(() => {
@@ -22,7 +24,7 @@
 </script>
 
 <ModalContainer>
-    <div class="modal {modalClass || ''}">
+    <div class="modal {modalClass || ''}" style="width: {width}; height: {height}">
         <ModalCloseButton onclick={() => onClose()}/>
         {@render children()}
     </div>
@@ -38,8 +40,6 @@
 
         gap: 16px;
 
-        width: 600px;
-        height: 600px;
         background-color: var(--color-bg);
         border-radius: var(--rounding);
         padding: 24px;

@@ -1,4 +1,5 @@
 <script>
+    import { _ } from "svelte-i18n";
     import Button from "@bird/components/ui/Button.svelte";
     import IconUpdate from "@bird/assets/icons/IconUpdate.svelte";
     import { fly } from "svelte/transition";
@@ -12,7 +13,7 @@
     <Button type="small" onclick={async () => {
       await openUrl(updateUrl)
     }}>
-        <IconUpdate width="16px" height="16px"/> An update is available!
+        <IconUpdate width="16px" height="16px"/> {$_("update.updateAvailable")}
     </Button>
 </div>
 

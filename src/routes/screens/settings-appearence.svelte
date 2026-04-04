@@ -7,25 +7,26 @@
     import SelectListOption from "@bird/components/ui/SelectListOption.svelte";
     import { configStore } from "@bird/lib/config";
     import ColorPicker from "svelte-awesome-color-picker";
+    import { _ } from "svelte-i18n";
 </script>
 
 <SettingsPage>
     <div class="option">
-        <SettingsSectionTitle>Theme</SettingsSectionTitle>
+        <SettingsSectionTitle>{$_("settings.appearence.theme")}</SettingsSectionTitle>
         <SelectList direction="horizontal" bind:value={$configStore["ui.theme"]}>
-            <SelectListOption value="dark">Dark</SelectListOption>
-            <SelectListOption value="light">Light</SelectListOption>
-            <SelectListOption value="auto">Auto</SelectListOption>
+            <SelectListOption value="dark">{$_("settings.appearence.themeDark")}</SelectListOption>
+            <SelectListOption value="light">{$_("settings.appearence.themeLight")}</SelectListOption>
+            <SelectListOption value="auto">{$_("settings.appearence.themeAuto")}</SelectListOption>
         </SelectList>
     </div>
 
     <div class="option">
-        <SettingsSectionTitle>Accent color</SettingsSectionTitle>
+        <SettingsSectionTitle>{$_("settings.appearence.accentColor")}</SettingsSectionTitle>
         <ColorPicker bind:hex={$configStore['ui.accentColor']} isAlpha={false}/>
     </div>
 
     <div class="option">
-        <SettingsSectionTitle>Rounding</SettingsSectionTitle>
+        <SettingsSectionTitle>{$_("settings.appearence.rounding")}</SettingsSectionTitle>
         <div class="range-val">
             <p>{$configStore['ui.rounding']}px</p>
             <input type="range" name="rounding" width="100%" bind:value={$configStore['ui.rounding']} min={0} max={16} step={1}>
@@ -34,10 +35,10 @@
 
     <div class="option">
         <SettingsSectionTitle>
-            Sections
+            {$_("settings.appearence.sections")}
         </SettingsSectionTitle>
         <Checkbox bind:checked={$configStore["ui.showHistory"]}>
-            Show history
+            {$_("settings.appearence.showHistory")}
         </Checkbox>
     </div>
 </SettingsPage>

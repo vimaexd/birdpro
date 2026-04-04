@@ -16,6 +16,7 @@
     import { info } from "@tauri-apps/plugin-log";
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
+    import { _ } from 'svelte-i18n';
 
     import AddFavourite from "./screens/add-favourite.svelte";
     import Settings from "./screens/settings.svelte";
@@ -208,6 +209,7 @@
     onmousemove={trackMouseAndResizeBar}
     onmouseup={() => { resizeBar = false }}
     in:fade={{ duration: 300 }}>
+
     {#if !$configStore.onboarded}
         <Onboarding/>
     {/if}
@@ -220,7 +222,7 @@
         <div class="talkbox-container">
             <textarea
                 id="talkbox"
-                placeholder="type something to say"
+                placeholder={$_('talkbox.placeholder')}
                 bind:value={message}
                 bind:this={talkboxRef}
                 oninput={(e: any) => {
@@ -239,7 +241,7 @@
             <div class="talkbox-corner">
                 <div class="talkbox-corner-inner">
                     {#if typingIndicatorShowing}
-                        <p class="typingindicator-floating" out:fade={{duration: 150}}>typing</p>
+                        <p class="typingindicator-floating" out:fade={{duration: 150}}>{$_('talkbox.typingIndicator')}</p>
                     {/if}
                     <p class="char-count">{message.length}/{$configStore["bypassCharLimit"] ?  '∞' : '144'}</p>
                 </div>
@@ -248,7 +250,7 @@
                         <div in:fade={{duration: 100}} out:fade={{duration: 100}}>
                             <Button onclick={() => {
                               message = ""
-                            }}>clear</Button>
+                            }}>{$_('talkbox.clear')}</Button>
                         </div>
                     {/if}
                 </div>
@@ -263,7 +265,7 @@
                     color="var(--color-surface2)"
                 >
                     <IconHeadphones height={24} width={24}/>
-                    <span class="action">preview</span>
+                    <span class="action">{$_('talkbox.actionPreview')}</span>
                 </ClickyButton>
             {/if}
 
@@ -278,7 +280,7 @@
                     active={buttonIsDown}
                 >
                     <IconEnter height={24} width={24} />
-                    <span class="action">say</span>
+                    <span class="action">{$_('talkbox.actionSay')}</span>
                 </ClickyButton>
             </div>
             <ClickyButton
@@ -288,7 +290,7 @@
                 color="var(--color-danger)"
             >
                 <IconStop height={24} width={24}/>
-                <span class="action">stop</span>
+                <span class="action">{$_('talkbox.actionStop')}</span>
             </ClickyButton>
         </div>
 

@@ -1,4 +1,5 @@
 <script>
+    import { _ } from "svelte-i18n";
     import { isSettingsOpen } from "@bird/lib/modal";
     import Button from "./ui/Button.svelte";
     import IconSettings from "@bird/assets/icons/IconSettings.svelte";
@@ -14,7 +15,7 @@
     </div>
 
     <Button type="small" onclick={() => ($isSettingsOpen = true)}>
-        <IconSettings width="16px" height="16px"/> Settings
+        <IconSettings width="16px" height="16px"/> {$_("settings.settings")}
     </Button>
 </div>
 

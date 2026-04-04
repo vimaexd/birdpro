@@ -1,0 +1,127 @@
+{
+    "onboarding": {
+        "welcome": "Welcome to Bird Pro!",
+        "complete": "Lets go!"
+    },
+    "ui": {
+        "pickColor": "Choose a color",
+        "selectFolder": "Select a folder",
+        "hiddenText": "(hidden, click to reveal)",
+        "search": "Search",
+        "add": "Add"
+    },
+    "talkbox": {
+        "placeholder": "type something to say",
+        "clear": "clear",
+        "actionPreview": "preview",
+        "actionSay": "say",
+        "actionStop": "stop",
+        "typingIndicator": "typing"
+    },
+    "voiceEditor": {
+        "features": {
+            "pitch": "Pitch",
+            "rate": "Rate"
+        }
+    },
+    "sidebar": {
+        "favourite": "Favourite",
+        "allVoices": "All Voices",
+        "chooseProvider": "Choose a provider:",
+        "useVoice": "Use Voice",
+
+        "authRequired": "Authentication required",
+        "authRequiredExplainer": "To use voices from <b>{providerName}</b>, enter an API key in settings"
+    },
+    "favourite": {
+        "favourite": "Favourite",
+        "noFavourites": "Click the {star} button to add a favourite!",
+        "addFavourite": "Add favourite",
+        "preview": "Preview",
+        "name": "Name",
+        "defaultName": "My voice",
+        "color": "Color"
+    },
+    "history": {
+        "historyTitle": "History",
+        "noHistory": "Say something, and it'll show up here!"
+    },
+    "update": {
+        "updateAvailable": "An update is available!"
+    },
+    "settings": {
+        "settings": "Settings",
+        "pages": {
+            "audio": "Audio",
+            "appearence": "Appearence",
+            "behaviour": "Behaviour",
+            "replacements": "Replacements",
+            "providers": "Providers",
+            "integrations": "Integrations",
+            "about": "About"
+        },
+        "audio": {
+            "outputDevice": "Output Device",
+            "mainVolume": "Main Volume",
+
+            "previewDevice": "Preview Device",
+            "previewVolume": "Preview Volume"
+        },
+        "appearence": {
+            "theme": "Theme",
+
+            "themeDark": "Dark",
+            "themeLight": "Light",
+            "themeAuto": "Auto",
+
+            "accentColor": "Accent color",
+            "rounding": "Rounding",
+            "sections": "Sections",
+            "showHistory": "Show history"
+        },
+        "behaviour": {
+            "sound": "Sound",
+            "audibleTypingIndicator": "Audible typing indicator",
+
+            "textbox": "Textbox",
+            "bypassCharLimit": "Bypass character limit",
+            "bypassCharLimitExplainer": "If you are outputting over VRChat OSC, messages will be truncated.",
+
+            "app": "App",
+            "checkForUpdates": "Check for updates"
+        },
+        "replacements": {
+            "replacementsExplainer": "Replacements can be used to correct TTS engine pronounciation or create shorthands for phrases.",
+            "pattern": "Pattern",
+            "replacement": "Replacement",
+
+            "defaultReplacementFromText": "Text to replace",
+            "defaultReplacementToText": "Replacement text"
+        },
+        "providers": {
+            "apikey": "API Key",
+            "elevenlabsExplainer": "Generate an API key at {link}",
+            "piperVoicesPath": "Voices path",
+            "piperExplainer": "Voices can be downloaded from {link}"
+        },
+        "integrations": {
+            "vrcOsc": "Enable VRChat OSC",
+            "vrcOscExplainer": "Enabling VRChat OSC will send TTS messages to the VRChat textbox, and sync the typing indicator",
+
+            "txtOutput": "Text file output",
+            "txtOutputEnable": "Enable text file output",
+            "txtOutputClear": "Clear after time",
+            "txtOutputTimeout": "second timeout before clearing",
+            "txtOutputPath": "Text file path",
+
+            "txtIndicator": "Text typing indicator",
+            "txtIndicatorEnable": "Enable .txt typing indicator",
+            "txtIndicatorText": "Typing indicator text",
+            "txtIndicatorPath": "Typing indicator path"
+        },
+        "about": {
+            "config": "Config",
+            "logs": "Logs"
+        }
+    }
+}

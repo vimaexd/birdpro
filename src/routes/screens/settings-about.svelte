@@ -6,6 +6,7 @@
     import { path } from "@tauri-apps/api";
     import { devmode } from "@bird/lib/bird";
     import { showError } from "@bird/lib/toast";
+    import { _ } from "svelte-i18n";
 
     let versionClicked = $state(0);
 </script>
@@ -41,12 +42,12 @@
     <Button onclick={async () => {
       let cfgDir = await path.appConfigDir();
       openPath(cfgDir);
-    }}>Config</Button>
+    }}>{$_('settings.about.config')}</Button>
 
     <Button onclick={async () => {
       let cfgDir = await path.appDataDir();
       openPath(cfgDir);
-    }}>Logs</Button>
+    }}>{$_('settings.about.logs')}</Button>
 </div>
 
 <style>

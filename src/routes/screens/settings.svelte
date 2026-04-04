@@ -4,6 +4,7 @@
     import ModalCloseButton from "@bird/components/alert/ModalCloseButton.svelte";
     import { disableInputCapture } from "@bird/lib/modal";
     import { onMount } from "svelte";
+    import { _ } from "svelte-i18n";
 
     import SettingsAudio from "./settings-audio.svelte";
     import SettingsAbout from "./settings-about.svelte";
@@ -17,15 +18,15 @@
 
     import { devmode } from "@bird/lib/bird";
 
-    let selectedPage = $state("Audio");
+    let selectedPage = $state($_('settings.pages.audio'));
     const pages: {[id: string]: any} = $state({
-      "Audio": SettingsAudio,
-      "Appearence": SettingsAppearence,
-      "Behaviour": SettingsBehaviour,
-      "Replacements": SettingsReplacements,
-      "Providers": SettingsProviders,
-      "Integrations": SettingsIntegrations,
-      "About": SettingsAbout,
+      [$_('settings.pages.audio')]: SettingsAudio,
+      [$_('settings.pages.appearence')]: SettingsAppearence,
+      [$_('settings.pages.behaviour')]: SettingsBehaviour,
+      [$_('settings.pages.replacements')]: SettingsReplacements,
+      [$_('settings.pages.providers')]: SettingsProviders,
+      [$_('settings.pages.integrations')]: SettingsIntegrations,
+      [$_('settings.pages.about')]: SettingsAbout,
     });
 
     devmode.subscribe(d => {

@@ -14,7 +14,7 @@
     import TextInput from '@bird/components/ui/TextInput.svelte';
     import IconSearch from '@bird/assets/icons/IconSearch.svelte';
     import { disableInputCapture } from '@bird/lib/modal';
-    import { fade } from 'svelte/transition';
+    import { _ } from 'svelte-i18n';
 
     // provider
     let showProviders = $state(true);
@@ -55,7 +55,7 @@
 {#if showProviders}
     <div class="header header-inp">
         <div>
-            <h2>Choose a provider:</h2>
+            <h2>{$_('sidebar.chooseProvider')}</h2>
         </div>
     </div>
     <SelectList
@@ -92,7 +92,7 @@
                 <div>
                     <label for="">
                         <IconSearch width="16px" height="16px"/>
-                        Search
+                        {$_('ui.search')}
                     </label>
                 </div>
             </div>
@@ -134,7 +134,7 @@
             ttsStore.set(ttsStoreCopy);
             justApplied = true;
             }}
-        >Use Voice
+        >{$_('sidebar.useVoice')}
         </Button>
     </div>
 {/if}

@@ -7,6 +7,7 @@
     import IconEdit from "@bird/assets/icons/IconEdit.svelte";
     import { animate, stagger } from "animejs";
     import IconBin from "@bird/assets/icons/IconBin.svelte";
+    import { _ } from "svelte-i18n";
 
     let itemsContainer: HTMLDivElement;
     let editMode = $state(false);
@@ -124,8 +125,9 @@
 
 {#if $favouritesStore.length == 0}
     <p class="no-results">
-        Click the <span><IconFavourite width="20px" height="20px" /></span>
-        button to add a favourite!
+        {#each $_('favourite.noFavourites').split('{star}') as part, i}
+            {part}{#if i === 0}<span><IconFavourite width="20px" height="20px" /></span>{/if}
+        {/each}
     </p>
 {:else}
     <div class="favourites-bar smol-buttons">
@@ -176,15 +178,15 @@
 
 <style>
     .no-results {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
+        text-align: center;
         font-size: 0.9rem;
         opacity: 0.6;
 
         span {
-            transform: translateY(1px);
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
+            transform: translateY(-1px);
             margin: 0 2px;
         }
     }

@@ -8,6 +8,7 @@
     import { configStore } from "@bird/lib/config";
     import { onMount } from "svelte";
     import { get } from "svelte/store";
+    import { _, format } from "svelte-i18n";
 
     // local replacements here are stored in a different way to replacements
     // as its difficult to change the value of a k/v
@@ -50,10 +51,12 @@
 
     const addNewReplacement = () => {
       let keys = replacements.map(r => r.from);
+      let triedStr = '';
       let triedNumber = 1;
 
       while(true) {
-        if(keys.includes(`Text to replace (${triedNumber})`)) {
+        triedStr = $_('settings.replacements.defaultReplacementFromText') + ` (${triedNumber})`;
+        if(keys.includes(triedStr)) {
           triedNumber++;
         } else {
           break;
@@ -61,8 +64,8 @@
       }
 
       replacements.push({
-        from: `Text to replace (${triedNumber})`,
-        to: "Replacement text"
+        from: triedStr,
+        to: $_('settings.replacements.defaultReplacementToText')
       })
 
       saveReplacements();
@@ -82,14 +85,14 @@
 
 <SettingsPage>
     <SettingsExplainerText>
-        Replacements can be used to correct TTS engine pronounciation or create shorthands for phrases.
+      {$_('settings.replacements.replacementsExplainer')}
     </SettingsExplainerText>
 
     <table class="replacement-table">
         <thead>
             <tr>
-                <th>Pattern</th>
-                <th>Replacement</th>
+                <th>{$_('settings.replacements.pattern')}</th>
+                <th>{$_('settings.replacements.replacement')}</th>
                 <th></th>
             </tr>
         </thead>
@@ -97,11 +100,9 @@
             {#each replacements as entry, i}
                 <tr>
                     <td>
-                        <!-- todo make this work -->
                         <TextInput oninput={(e: any) => updateReplacement(i, "k", e.target.value)} value={entry.from}></TextInput>
                     </td>
                     <td>
-                        <!-- todo make this work -->
                         <TextInput oninput={(e: any) => updateReplacement(i, "v", e.target.value)} value={entry.to}></TextInput>
                     </td>
                     <td class="actions">

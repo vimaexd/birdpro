@@ -8,6 +8,7 @@
     import { favouritesStore } from "@bird/lib/favourites";
     import { historyStore } from "@bird/lib/history";
     import { showError } from "@bird/lib/toast";
+    import { isUpdateAvailable } from "@bird/lib/updates";
 
 </script>
 
@@ -16,6 +17,7 @@
     <div class="quick-buttons">
         <Button onclick={() => $configStore['onboarded'] = false}>Reset onboarding</Button>
         <Button onclick={() => {showError("TestError", "This is a test error")}}>Show test error</Button>
+        <Button onclick={() => {isUpdateAvailable.set(true); }}>Force update indicator</Button>
     </div>
 
     <SettingsSectionTitle>ttsStore</SettingsSectionTitle>

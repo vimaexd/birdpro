@@ -14,6 +14,9 @@
     import { showError } from "@bird/lib/toast";
     import { getCurrentWindow } from "@tauri-apps/api/window";
 
+    import { register as registerLang, init as initLang, init, getLocaleFromNavigator } from 'svelte-i18n';
+    registerLang('en', () => import('@bird/lang/en.json'));
+
     let ready = $state(false);
 
     // used to set actual theme - can NOT have auto
@@ -28,6 +31,11 @@
         getCurrentWindow().show();
 
         try {
+            initLang({
+                fallbackLocale: 'en',
+                initialLocale: 'en'
+            })
+
             await initialiseConfig();
             await initialiseApp();
             ready = true;

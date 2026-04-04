@@ -6,6 +6,7 @@
     import { configStore } from "@bird/lib/config";
     import SettingsPage from "@bird/components/feat/settings/SettingsPage.svelte";
     import { invoke } from "@tauri-apps/api/core";
+    import { _ } from "svelte-i18n";
 
     const adjustVolume = async (setup: number, amount: number) => {
       await invoke("audio_set_volume", { setupIdx: setup, volume: amount })
@@ -15,7 +16,7 @@
 <SettingsPage>
     <div class="devices">
 
-        <p>Output Device</p>
+        <p>{$_("settings.audio.outputDevice")}</p>
         <SelectList onChange={() => setAudioDevice($audioStore.devices[0], 0)} bind:value={$audioStore.devices[0]} maxHeight="400px">
             {#each $audioDevices as device}
                 <SelectListOption value={device}>
@@ -25,7 +26,7 @@
         </SelectList>
 
         <div class="extractrl">
-            <label for="vol0">Main Volume</label>
+            <label for="vol0">{$_("settings.audio.mainVolume")}</label>
             <input type="range" name="vol0" width="100%" bind:value={$configStore.volumes[0]} onchange={() => {
               adjustVolume(0, $configStore.volumes[0])
             }} min={0} max={1} step={0.01}>
@@ -50,7 +51,7 @@
             setAudioDevice($audioStore.devices[0], 1)
           }
         }}>
-            Preview Device
+            {$_("settings.audio.previewDevice")}
         </Checkbox>
 
         {#if $configStore.audio.usePreviewOutput}
@@ -63,7 +64,7 @@
             </SelectList>
             {#if $audioStore.devices[1]}
                 <div class="extractrl">
-                    <label for="vol0">Preview Volume</label>
+                    <label for="vol0">{$_("settings.audio.previewVolume")}</label>
                     <input type="range" name="vol0" width="100%" bind:value={$configStore.volumes[1]} onchange={() => {
                       adjustVolume(1, $configStore.volumes[1])
                     }} min={0} max={1} step={0.01}>

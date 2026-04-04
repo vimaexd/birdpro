@@ -1,4 +1,6 @@
 <script>
+    import { _ } from "svelte-i18n";
+
     let {
         value = $bindable(),
         children = undefined,
@@ -26,7 +28,7 @@
                 hidden = false;
             }}
         >
-            <p>(hidden, click to reveal)</p>
+            <p>{$_("ui.hiddenText")}</p>
         </div>
     {:else}
         <input

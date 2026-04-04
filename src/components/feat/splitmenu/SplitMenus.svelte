@@ -3,14 +3,15 @@
     import IconSparkle from "@bird/assets/icons/IconSparkle.svelte";
     import { fade } from "svelte/transition";
     import { expoOut } from "svelte/easing";
+    import { _ } from "svelte-i18n";
 
     import SplitMenuFavourite from "./SplitMenuFavourite.svelte";
     import SplitMenuBrowse from "./SplitMenuBrowse.svelte";
 
-    let selectedPage = $state("Favourite");
+    let selectedPage = $state($_('sidebar.favourite'));
     let menus: {[id: string]: any} = {
-      "Favourite": SplitMenuFavourite,
-      "All Voices": SplitMenuBrowse
+      [$_('sidebar.favourite')]: SplitMenuFavourite,
+      [$_('sidebar.allVoices')]: SplitMenuBrowse
     }
 
     let icons: any[] = [IconFavourite, IconSparkle];

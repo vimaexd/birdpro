@@ -9,6 +9,7 @@
     import ColorPicker from "svelte-awesome-color-picker";
     import { expoOut } from "svelte/easing";
     import { fade } from "svelte/transition";
+    import { _ } from 'svelte-i18n'
 
     const completeOnboarding = () => {
       disableInputCapture.set(false);
@@ -23,25 +24,25 @@
 <div class="onboarding" out:fade={{duration: 900, easing: expoOut}}>
     <div class="onboarding-container">
         <img src={logo} class="logo" alt="Bird Pro logo"/>
-        <h1>Welcome to Bird Pro!</h1>
+        <h1>{$_('onboarding.welcome')}</h1>
 
         <div class="box">
             <div class="option">
-                <h2>Theme</h2>
+                <h2>{$_('settings.appearence.theme')}</h2>
                 <SelectList direction="horizontal" bind:value={$configStore["ui.theme"]}>
-                    <SelectListOption value="dark">Dark</SelectListOption>
-                    <SelectListOption value="light">Light</SelectListOption>
-                    <SelectListOption value="auto">Auto</SelectListOption>
+                    <SelectListOption value="dark">{$_("settings.appearence.themeDark")}</SelectListOption>
+                    <SelectListOption value="light">{$_("settings.appearence.themeLight")}</SelectListOption>
+                    <SelectListOption value="auto">{$_("settings.appearence.themeAuto")}</SelectListOption>
                 </SelectList>
             </div>
             <div class="option">
-                <h2>Color</h2>
+                <h2>{$_('settings.appearence.accentColor')}</h2>
                 <ColorPicker bind:hex={$configStore['ui.accentColor']} isAlpha={false}/>
             </div>
         </div>
 
         <div class="actions">
-            <Button type="accent" onclick={completeOnboarding}>Lets go!</Button>
+            <Button type="accent" onclick={completeOnboarding}>{$_('onboarding.complete')}</Button>
         </div>
     </div>
 </div>
