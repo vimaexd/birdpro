@@ -11,44 +11,54 @@ pub struct AudioDeviceInfo {
     pub bit_depth: usize,
 }
 
+#[derive(Deserialize, Serialize)]
+pub enum AudioSetupError {
+    DeviceNoLongerExists,
+    NoDefaultDevice,
+    DeviceOpenFailed,
+    StreamOpenFailed
+}
+
 pub struct AudioSetup {
     pub device: rodio::Device,
-    pub stream_handle: rodio::stream::OutputStream,
-    pub sink: rodio::Sink,
+    pub stream_handle: rodio::stream::MixerDeviceSink,
+    pub sink: rodio::Player,
 }
 
 impl AudioSetup {
-    pub fn new() -> Self {
+    pub fn new() -> Result<Self, AudioSetupError> {
         let host = cpal::default_host();
-        let device = host.default_output_device().unwrap();
+        let device = host.default_output_device().ok_or(AudioSetupError::NoDefaultDevice);
 
-        Self::from_device(device)
+        Self::from_device(device?)
     }
 
-    pub fn from_device(device: rodio::Device) -> Self {
-        let stream_handle = rodio::OutputStreamBuilder::from_device(device.clone())
-            .expect("failed to open device")
-            .open_stream_or_fallback()
-            .expect("failed to open stream handle");
+    pub fn from_device(device: rodio::Device) -> Result<Self, AudioSetupError> {
+        let stream_handle = rodio::DeviceSinkBuilder::from_device(device.clone())
+            .map_err(|_| AudioSetupError::NoDefaultDevice)?
+            .open_sink_or_fallback()
+            .map_err(|_| AudioSetupError::StreamOpenFailed)?;
 
-        let sink = rodio::Sink::connect_new(&stream_handle.mixer());
+        let sink = rodio::Player::connect_new(&stream_handle.mixer());
 
         log::info!(
             "audio setup created with device \"{}\"",
-            device.clone().name().unwrap()
+            device.clone().description().unwrap().name()
         );
 
-        Self {
-            device,
-            stream_handle,
-            sink,
-        }
+        Ok(
+            Self {
+                device,
+                stream_handle,
+                sink,
+            }
+        )
     }
 }
 
 // helper to be able to differenciate different tts sinks to
 // different audio outputs
-pub struct BirdSink {
-    pub sink: rodio::Sink,
+pub struct BirdPlayer {
+    pub sink: rodio::Player,
     pub setup_index: usize,
 }

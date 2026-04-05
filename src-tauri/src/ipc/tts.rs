@@ -1,11 +1,11 @@
-use rodio::{Decoder, Sink, Source};
+use rodio::{Decoder, Player, Source};
 use std::io::Cursor;
 use std::sync::OnceLock;
 use tauri::State;
 use tokio::sync::Mutex as AsyncMutex;
 use vrchat_osc::rosc::{OscMessage, OscPacket, OscType};
 
-use crate::audio::BirdSink;
+use crate::audio::BirdPlayer;
 use crate::backends::elevenlabs::ElevenlabsTTSProvider;
 use crate::backends::msedge::MsEdgeTTSProvider;
 
@@ -105,14 +105,14 @@ pub async fn tts_say(
             .map_err(|_| TTSProviderError::DecodeError)?
             .speed(speed);
 
-        let sink = Sink::connect_new(&audiosetup.stream_handle.mixer());
+        let sink = Player::connect_new(&audiosetup.stream_handle.mixer());
         sink.append(src);
 
         // get sink volume level
         let vols = state.config["volumes"].as_array().unwrap();
         sink.set_volume(vols[setup].as_f64().unwrap_or(1.0) as f32);
 
-        state.audio_sinks.push(BirdSink {
+        state.audio_sinks.push(BirdPlayer {
             sink: sink,
             setup_index: setup,
         });

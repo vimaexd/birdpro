@@ -1,6 +1,6 @@
 use std::io::Cursor;
 
-use crate::audio::{AudioDeviceInfo, AudioSetup, BirdSink};
+use crate::audio::{AudioDeviceInfo, AudioSetup, AudioSetupError, BirdPlayer};
 use crate::AppData;
 use rodio::cpal::traits::HostTrait;
 use rodio::{cpal, DeviceTrait, Source};
@@ -12,7 +12,7 @@ use tokio::sync::Mutex as AsyncMutex;
 pub fn audio_get_devices() -> Vec<String> {
     let devices = cpal::default_host().output_devices().unwrap();
 
-    let device_list: Vec<String> = devices.map(|x| x.name().unwrap()).collect();
+    let device_list: Vec<String> = devices.map(|x| x.description().unwrap().name().to_string()).collect();
 
     device_list
 }
@@ -31,8 +31,8 @@ pub async fn audio_get_device(
         .expect("failed to get audio setup");
 
     Ok(Some(AudioDeviceInfo {
-        name: setup.device.name().unwrap(),
-        sample_rate: setup.stream_handle.config().sample_rate(),
+        name: setup.device.description().unwrap().name().to_string(),
+        sample_rate: setup.stream_handle.config().sample_rate().into(),
         bit_depth: setup.stream_handle.config().sample_format().sample_size(),
     }))
 }
@@ -42,20 +42,20 @@ pub async fn audio_set_device(
     setup_idx: usize,
     device_name: String,
     state: State<'_, AsyncMutex<AppData>>,
-) -> Result<(), String> {
+) -> Result<(), AudioSetupError> {
     let mut state = state.lock().await;
 
     //find the device based on the name
     let mut devices = cpal::default_host().output_devices().unwrap();
-    let device = match devices.find(|x| x.name().unwrap() == device_name) {
+    let device = match devices.find(|x| x.description().unwrap().name() == device_name) {
         Some(d) => d,
         None => {
-            return Err(format!("Device '{}' isn't available", device_name));
+            return Err(AudioSetupError::DeviceNoLongerExists);
         }
     };
 
     log::info!("Audio setup update (setup {})", setup_idx);
-    let setup = AudioSetup::from_device(device);
+    let setup = AudioSetup::from_device(device)?;
     state.audio_setups[setup_idx] = Some(setup);
 
     Ok(())
@@ -149,13 +149,13 @@ pub async fn audio_typingindicator_start(
     for i in 0..st.audio_setups.len() {
         let setup = &st.audio_setups[i];
         if setup.is_some() {
-            let sink = rodio::Sink::connect_new(&setup.as_ref().unwrap().stream_handle.mixer());
+            let sink = rodio::Player::connect_new(&setup.as_ref().unwrap().stream_handle.mixer());
             let src = rodio::Decoder::try_from(Cursor::new(audio_data.clone())).unwrap();
             sink.set_volume(0.8);
             sink.append(src.repeat_infinite());
             sink.play();
 
-            let bs = BirdSink {
+            let bs = BirdPlayer {
                 setup_index: i,
                 sink: sink,
             };

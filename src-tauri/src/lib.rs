@@ -6,7 +6,7 @@ pub mod voice;
 #[macro_use]
 pub mod ipc;
 
-use crate::audio::{AudioSetup, BirdSink};
+use crate::audio::{AudioSetup, BirdPlayer};
 use crate::provider::TTSProviderPlatform;
 use log::*;
 use serde_json::Value;
@@ -19,8 +19,8 @@ use vrchat_osc::VRChatOSC;
 pub struct AppData {
     config: Value,
     audio_setups: Vec<Option<AudioSetup>>,
-    audio_sinks: Vec<BirdSink>,
-    audio_sinks_typingindicator: Vec<BirdSink>,
+    audio_sinks: Vec<BirdPlayer>,
+    audio_sinks_typingindicator: Vec<BirdPlayer>,
     vrc_osc: Option<Arc<VRChatOSC>>,
 }
 
@@ -75,14 +75,18 @@ pub fn run() {
             win.set_background_color(Some(Color::from([17, 18, 16])))
                 .unwrap();
 
-            let audio = AudioSetup::new();
+            // create default audio device output
+            let main_output = AudioSetup::new().ok();
+
             app.manage(AsyncMutex::new(AppData {
                 config: Value::from(0), // will be updated by frontend
-                audio_setups: vec![Some(audio), None, None, None],
+                audio_setups: vec![main_output, None, None, None],
                 audio_sinks: vec![],
                 audio_sinks_typingindicator: vec![],
                 vrc_osc: None,
             }));
+
+            info!("Setup complete, waiting for webview");
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
