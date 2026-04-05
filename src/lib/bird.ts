@@ -52,8 +52,9 @@ export let devmode = writable(dev);
  * Runs after config initialisation
  */
 export async function initialiseApp() {
-    info(`=== frontend initialisation ===`);
+    info(`=== Frontend initialisation ===`);
     const config = get(configStore);
+
 
     // Resurrect audio config from loaded config
     await tryResurrectAudioConfig();

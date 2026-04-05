@@ -3,6 +3,7 @@ import { writable, get } from "svelte/store";
 import { error, info } from "@tauri-apps/plugin-log";
 import { configStore } from "./config";
 import { showError } from "./toast";
+import { show } from "@tauri-apps/api/app";
 
 export interface AudioDevice {
   name: string;
@@ -61,7 +62,11 @@ export async function setAudioDevice(device: string, idx: number = 0) {
 }
 
 export async function _setAudioDeviceBackend(device: string, idx: number = 0) {
-  await invoke("audio_set_device", { setupIdx: idx, deviceName: device });
+    try {
+        await invoke("audio_set_device", { setupIdx: idx, deviceName: device });
+    } catch (err: any) {
+        showError("Audio device error", `Tried to set Output ${idx} to ${device}, got ${err}`);
+    }
 }
 
 export async function destroyAudioDevice(idx: number) {

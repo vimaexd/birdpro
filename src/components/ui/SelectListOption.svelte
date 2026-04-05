@@ -17,7 +17,7 @@
     button {
         width: 100%;
         padding: 6px 16px;
-        font-size: .9rem;
+        font-size: 0.9rem;
 
         background: transparent;
         color: var(--color-text);

@@ -17,7 +17,7 @@
     <div class="devices">
 
         <p>{$_("settings.audio.outputDevice")}</p>
-        <SelectList onChange={() => setAudioDevice($audioStore.devices[0], 0)} bind:value={$audioStore.devices[0]} maxHeight="400px">
+        <SelectList onChange={() => setAudioDevice($audioStore.devices[0], 0)} bind:value={$audioStore.devices[0]} maxHeight="100%">
             {#each $audioDevices as device}
                 <SelectListOption value={device}>
                     {device}
@@ -55,7 +55,7 @@
         </Checkbox>
 
         {#if $configStore.audio.usePreviewOutput}
-            <SelectList onChange={() => setAudioDevice($audioStore.devices[1], 1)} bind:value={$audioStore.devices[1]} maxHeight="400px">
+            <SelectList onChange={() => setAudioDevice($audioStore.devices[1], 1)} bind:value={$audioStore.devices[1]} maxHeight="100%">
                 {#each $audioDevices as device}
                     <SelectListOption value={device}>
                         {device}
@@ -86,11 +86,15 @@
     .devices {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        grid-template-rows: 20px 1fr 1fr;
+        grid-template-rows: 20px 1fr 74px;
         grid-auto-flow: column;
         gap: 16px;
 
         overflow-x: hidden;
+
+        :global(button) {
+            font-size: 0.8rem;
+        }
     }
 
     .device-info {

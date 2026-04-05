@@ -101,7 +101,7 @@ export async function initialiseConfig() {
   if (cfg) {
     try {
       let readConfig = JSON.parse(new TextDecoder().decode(cfg));
-      info(`using config at ${cfgPath}`)
+      info(`Using config at ${cfgPath}`)
 
       // fill config keys that arent filled
       let keysEx = Object.keys(initialConfig);

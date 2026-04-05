@@ -8,11 +8,23 @@ use tauri::path::BaseDirectory;
 use tauri::{Manager, State};
 use tokio::sync::Mutex as AsyncMutex;
 
+
 #[tauri::command]
 pub fn audio_get_devices() -> Vec<String> {
-    let devices = cpal::default_host().output_devices().unwrap();
+    let host = cpal::default_host();
+    let mut seen = std::collections::HashSet::new();
 
-    let device_list: Vec<String> = devices.map(|x| x.description().unwrap().name().to_string()).collect();
+    let device_list: Vec<String> = host
+        .output_devices()
+        .unwrap()
+        // with returning descriptions
+        .filter_map(|d| d.description().ok())
+        // that we can output to
+        .filter(|d| d.supports_output())
+        .map(|d| d.name().to_string())
+        // remove duplicates
+        .filter(|name| seen.insert(name.clone()))
+        .collect();
 
     device_list
 }

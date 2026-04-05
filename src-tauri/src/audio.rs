@@ -35,7 +35,7 @@ impl AudioSetup {
 
     pub fn from_device(device: rodio::Device) -> Result<Self, AudioSetupError> {
         let stream_handle = rodio::DeviceSinkBuilder::from_device(device.clone())
-            .map_err(|_| AudioSetupError::NoDefaultDevice)?
+            .map_err(|_| AudioSetupError::DeviceOpenFailed)?
             .open_sink_or_fallback()
             .map_err(|_| AudioSetupError::StreamOpenFailed)?;
 
