@@ -11,13 +11,15 @@
     import { initialiseApp } from "@bird/lib/bird";
     import LoadingSpinner from "@bird/components/LoadingSpinner.svelte";
     import logo from "@bird/assets/img/birdpro-logo.png";
-    import { showError } from "@bird/lib/toast";
     import { getCurrentWindow } from "@tauri-apps/api/window";
+    import { _ } from "svelte-i18n";
 
     import { register as registerLang, init as initLang, init, getLocaleFromNavigator } from 'svelte-i18n';
+    import WarningWithOutline from "@bird/assets/icons/twemoji/WarningWithOutline.svelte";
     registerLang('en', () => import('@bird/lang/en.json'));
 
     let ready = $state(false);
+    let error = $state("");
 
     // used to set actual theme - can NOT have auto
     let theme = $state("dark");
@@ -60,7 +62,12 @@
             })
 
         } catch (e: any) {
-            showError("Startup Error", e);
+            setTimeout(() => {
+                // honestly it looks nicer if it looks like the app
+                // *tried* to load, launching straight into an error is
+                // very frustrating
+                error = e;
+            }, 500)
         }
     });
 </script>
@@ -73,12 +80,32 @@
     {:else}
         <div
             class="loader"
-            in:fade={{ duration: 500 }}
+            in:fade={{ duration: 300 }}
             out:fade={{ duration: 100 }}
         >
             <img src={logo} height="128px" width="128px" alt="Bird Pro logo" />
-            <div class="spinner">
-                <LoadingSpinner />
+            {#if error != ""}
+                <div class="loader-erroricon-container" in:fade={{ duration: 50 }}>
+                    <WarningWithOutline/>
+                </div>
+            {/if}
+            <div class="loader-bottom">
+                {#if !error}
+                    <div class="loader-spinner">
+                        <LoadingSpinner />
+                    </div>
+                {:else}
+                    <div class="loader-crashhandler" in:fade={{ duration: 100 }}>
+                        <h2>{$_("error.startupError")}</h2>
+                        <p>
+                            {$_("error.startupErrorExplainer")}
+                        </p>
+
+                        <code>
+                            {error}
+                        </code>
+                    </div>
+                {/if}
             </div>
         </div>
     {/if}
@@ -101,6 +128,34 @@
         color: var(--color-text);
     }
 
+    .loader-erroricon-container {
+        position: absolute;
+        :global(svg) {
+            width: 64px;
+
+            position: relative;
+            left: 32px;
+            top: 32px;
+
+            animation: loader-erroricon 0.5s alternate infinite;
+        }
+    }
+
+    @keyframes loader-erroricon {
+        0% {
+            filter: brightness(0.5);
+        }
+        100% {
+
+        }
+    }
+
+    .loader-spinner {
+        opacity: 0;
+        will-change: opacity;
+        animation: spinner-in 1s 0.5s forwards;
+    }
+
     @keyframes spinner-in {
         0% {
             opacity: 0;
@@ -110,11 +165,29 @@
         }
     }
 
-    .spinner {
+    .loader-bottom {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+
         position: absolute;
-        bottom: 64px;
-        opacity: 0;
-        will-change: opacity;
-        animation: spinner-in 1s 0.5s forwards;
+        bottom: 12vh;
+    }
+
+    .loader-crashhandler {
+        text-align: center;
+        width: 500px;
+
+        a {
+            color: lightskyblue;
+        }
+
+        code {
+            margin-top: 16px;
+            opacity: 0.6;
+            font-size: 0.7rem;
+        }
     }
 </style>

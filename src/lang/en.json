@@ -3,6 +3,11 @@
         "welcome": "Welcome to Bird Pro!",
         "complete": "Lets go!"
     },
+    "error": {
+        "genericError": "Error",
+        "startupError": "Startup error",
+        "startupErrorExplainer": "Bird Pro was unable to start up"
+    },
     "ui": {
         "pickColor": "Choose a color",
         "selectFolder": "Select a folder",
