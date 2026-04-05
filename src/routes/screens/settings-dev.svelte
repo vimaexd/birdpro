@@ -1,4 +1,5 @@
 <script>
+    import { invoke } from "@tauri-apps/api/core";
     import SettingsPage from "@bird/components/feat/settings/SettingsPage.svelte";
     import SettingsSectionTitle from "@bird/components/feat/settings/SettingsSectionTitle.svelte";
     import Button from "@bird/components/ui/Button.svelte";
@@ -10,7 +11,10 @@
     import { showError } from "@bird/lib/toast";
     import { isUpdateAvailable } from "@bird/lib/updates";
 
+    // await invoke("osc_typing_indicator", { typing: true });
 </script>
+
+
 
 <SettingsPage>
     <SettingsSectionTitle>Test buttons</SettingsSectionTitle>
@@ -18,6 +22,12 @@
         <Button onclick={() => $configStore['onboarded'] = false}>Reset onboarding</Button>
         <Button onclick={() => {showError("TestError", "This is a test error")}}>Show test error</Button>
         <Button onclick={() => {isUpdateAvailable.set(true); }}>Force update indicator</Button>
+    </div>
+
+    <SettingsSectionTitle>OSC Typing indicator</SettingsSectionTitle>
+    <div class="quick-buttons">
+        <Button onclick={async () => await invoke("osc_typing_indicator", { typing: true })}>Typing ON</Button>
+        <Button onclick={async () => await invoke("osc_typing_indicator", { typing: false })}>Typing OFF</Button>
     </div>
 
     <SettingsSectionTitle>ttsStore</SettingsSectionTitle>

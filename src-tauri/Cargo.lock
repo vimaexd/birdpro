@@ -6785,9 +6785,9 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "vrchat_osc"
-version = "2.1.0"
+version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "808d993e75ec3c2d737bb346455c52b94e0b3d266027deb0ff4d146be0a7664a"
+checksum = "7529eca12e57007acba4f1bae84971bf8f9c9b6419465b29cf9619ca0948ebc9"
 dependencies = [
  "axum",
  "futures",
