@@ -30,6 +30,8 @@ rodio = { version = "0.22.2", features = ["wav", "vorbis", "mp3", "symphonia"] }
 cpal = { version = "0.17.1", features = ["jack"] }
 tokio = "1.49.0"
 reqwest = { version = "0.13.1", features = ["json"] }
+tokio-tungstenite = { version = "0.29", features = ["native-tls"] }
+futures-util = "0.3"
 humantime = "2.3.0"
 log = "0.4.29"
 hound = "3.5.1"

@@ -40,7 +40,6 @@
 
             await initialiseConfig();
             await initialiseApp();
-            ready = true;
 
             // change theme when theme store changes
             configStore.subscribe(async (c) => {
@@ -60,6 +59,8 @@
                     theme = newTheme.payload;
                 }
             })
+
+            ready = true;
 
         } catch (e: any) {
             setTimeout(() => {

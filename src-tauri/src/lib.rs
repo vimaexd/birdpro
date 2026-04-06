@@ -2,17 +2,19 @@ pub mod audio;
 pub mod backends;
 pub mod provider;
 pub mod voice;
+pub mod hrm;
 
 #[macro_use]
 pub mod ipc;
 
 use crate::audio::{AudioSetup, BirdPlayer};
+use crate::hrm::PulsoidService;
 use crate::provider::TTSProviderPlatform;
 use log::*;
 use serde_json::Value;
 use std::sync::Arc;
 use tauri::window::Color;
-use tauri::Manager;
+use tauri::{Manager};
 use tokio::sync::Mutex as AsyncMutex;
 use vrchat_osc::VRChatOSC;
 
@@ -22,6 +24,7 @@ pub struct AppData {
     audio_sinks: Vec<BirdPlayer>,
     audio_sinks_typingindicator: Vec<BirdPlayer>,
     vrc_osc: Option<Arc<VRChatOSC>>,
+    pulsoid_service: Option<PulsoidService>
 }
 
 pub fn get_platform() -> TTSProviderPlatform {
@@ -84,6 +87,7 @@ pub fn run() {
                 audio_sinks: vec![],
                 audio_sinks_typingindicator: vec![],
                 vrc_osc: None,
+                pulsoid_service: None
             }));
 
             info!("Setup complete, waiting for webview");
@@ -107,6 +111,8 @@ pub fn run() {
             crate::ipc::osc::osc_start,
             crate::ipc::osc::osc_stop,
             crate::ipc::osc::osc_typing_indicator,
+            crate::ipc::osc::hrm_svc_start,
+            crate::ipc::osc::hrm_svc_stop,
             crate::ipc::error::get_error_text,
             crate::ipc::config::update_config
         ])

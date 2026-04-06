@@ -5,10 +5,18 @@
     import IconSettings from "@bird/assets/icons/IconSettings.svelte";
     import UpdateButton from "./feat/update/UpdateButton.svelte";
     import { isUpdateAvailable } from "@bird/lib/updates";
+    import HeartRate from "./feat/statusbar/HeartRate.svelte";
+    import HrmScreen from "@bird/routes/screens/hrm.svelte";
 
+    let showHrmScreen = $state(false);
 </script>
+{#if showHrmScreen}
+    <HrmScreen onClose={() => showHrmScreen = false}/>
+{/if}
 <div class="statusbar">
     <div class="left">
+        <HeartRate onclick={() => showHrmScreen = true}/>
+
         {#if $isUpdateAvailable}
            	<UpdateButton/>
         {/if}
@@ -28,6 +36,7 @@
         overflow: hidden;
 
         .left {
+            display: flex;
             margin-right: auto;
             width: 50%;
         }
