@@ -37,6 +37,7 @@
         justify-content: end;
         font-size: .8rem;
         overflow: hidden;
+        height: 24px;
 
         .left {
             display: flex;
