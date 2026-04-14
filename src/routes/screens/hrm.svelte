@@ -58,7 +58,7 @@
       <summary>Advanced</summary>
 
       <div class="advanced">
-          <TextInput onchange={(e) => {
+          <TextInput onchange={(e: string) => {
               if(!isNaN(parseInt(e)) && +e > 0) {
                   $configStore["heartrate.customMaxHeartrate"] = e;
               }
