@@ -60,7 +60,7 @@
       <div class="advanced">
           <TextInput onchange={(e: string) => {
               if(!isNaN(parseInt(e)) && +e > 0) {
-                  $configStore["heartrate.customMaxHeartrate"] = e;
+                  $configStore["heartrate.customMaxHeartrate"] = +e;
               }
           }} value={$configStore["heartrate.customMaxHeartrate"]} placeholder="200">{$_("hrm.advancedMaxHr")}</TextInput>
           <TextInput bind:value={$configStore["heartrate.customConnectedParam"]} placeholder="/avatar/parameters/hr_connected">{$_("hrm.advancedConnectedParam")}</TextInput>
