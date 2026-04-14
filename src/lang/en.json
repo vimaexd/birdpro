@@ -51,6 +51,18 @@
         "historyTitle": "History",
         "noHistory": "Say something, and it'll show up here!"
     },
+    "hrm": {
+        "hrm": "Heart rate monitor",
+        "explainer": "Bird Pro can connect to a heart rate monitor using <b>Pulsoid</b> and send your heart rate information over OSC for supported avatars.",
+        "vrcOscExplainer": "Heart rate monitoring will only work if VRChat OSC is enabled in settings.",
+        "useHrm": "Use heart rate monitor",
+        "widgetId": "Widget ID",
+
+        "advanced": "Advanced",
+        "advancedMaxHr": "Max heart rate",
+        "advancedConnectedParam": "OSC connected parameter",
+        "advancedPercentParam": "OSC percentage parameter"
+    },
     "update": {
         "updateAvailable": "An update is available!"
     },
@@ -82,7 +94,8 @@
             "accentColor": "Accent color",
             "rounding": "Rounding",
             "sections": "Sections",
-            "showHistory": "Show history"
+            "showHistory": "Show history",
+            "showHrm": "Show heart rate monitor"
         },
         "behaviour": {
             "sound": "Sound",

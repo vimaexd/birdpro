@@ -1,5 +1,5 @@
 use crate::AppData;
-use crate::hrm::PulsoidService;
+use crate::hrm::{HeartRateService};
 use log::info;
 use tauri::{AppHandle, Emitter, State, Manager};
 use tokio::sync::Mutex as AsyncMutex;
@@ -75,27 +75,34 @@ pub async fn osc_typing_indicator(
 }
 
 #[tauri::command]
-pub async fn hrm_svc_start(app: AppHandle, state: State<'_, AsyncMutex<AppData>>) -> Result<(), ()>  {
+pub async fn hrm_svc_start(app: AppHandle, state: State<'_, AsyncMutex<AppData>>) -> Result<(), String>  {
     let mut st = state.lock().await;
 
     if st.pulsoid_service.is_some() {
         return Ok(())
     }
 
-    let mut pulsoid = PulsoidService::new();
-    pulsoid.on_heart_rate(move |hr| {
-        let ah = app.clone();
-        log::info!("heart rate: {hr}");
-        app.emit("birdpro://hrm/update", hr).ok();
+    let mut pulsoid = HeartRateService::new();
+    let app_hr = app.clone();
+    let app_connect = app.clone();
+    let app_disconnect = app.clone();
 
+    pulsoid.on_heart_rate(move |hr| {
+        app_hr.emit("birdpro://hrm/update", hr).ok();
+
+        let app_cb_thread = app_hr.clone();
         tauri::async_runtime::spawn(async move {
-            let state = ah.state::<AsyncMutex<AppData>>();
+            let state = app_cb_thread.state::<AsyncMutex<AppData>>();
             let st = state.lock().await;
 
             if let Some(osc) = &st.vrc_osc {
+                // let param_connected = st.config["heartrate.customConnectedParam"].as_str().unwrap_or("/avatar/parameters/hr_connected");
+                let param_percent = st.config["heartrate.customPercentParam"].as_str().unwrap_or("/avatar/parameters/hr_percent");
+                let max_hr = st.config["heartrate.customMaxHeartrate"].as_f64().unwrap_or(200.0);
+
                 let msg = OscMessage {
-                    addr: "/avatar/parameters/hr_percent".to_string(),
-                    args: vec![OscType::Float(hr as f32 / 200.0)],
+                    addr: param_percent.to_string(),
+                    args: vec![OscType::Float(hr as f32 / max_hr as f32)],
                 };
                 if let Err(e) = osc.send(OscPacket::Message(msg), "VRChat-Client-*").await {
                     log::error!("osc send error: {e}");
@@ -103,7 +110,24 @@ pub async fn hrm_svc_start(app: AppHandle, state: State<'_, AsyncMutex<AppData>>
             }
         });
     });
-    pulsoid.start();
+
+    pulsoid.on_connect(move || {
+        app_connect.emit("birdpro://hrm/connected", ()).ok();
+    });
+
+    pulsoid.on_disconnect(move || {
+        app_disconnect.emit("birdpro://hrm/disconnected", ()).ok();
+    });
+
+    let widget_id = st.config["heartrate.widgetId"].as_str();
+    if widget_id.is_none() {
+        return Err("Widget ID must be specified".to_string());
+    }
+
+    pulsoid.start(widget_id.unwrap().to_string());
+
+    // emit starting message
+    app.emit("birdpro://hrm/connecting", ()).ok();
 
     st.pulsoid_service = Some(pulsoid);
 
@@ -120,4 +144,15 @@ pub async fn hrm_svc_stop(_app: AppHandle, state: State<'_, AsyncMutex<AppData>>
     }
 
     Ok(())
+}
+
+#[tauri::command]
+pub async fn hrm_svc_status(state: State<'_, AsyncMutex<AppData>>) -> Result<bool, String>  {
+    let st = state.lock().await;
+
+    if st.pulsoid_service.is_some() {
+        return Ok(true)
+    } else {
+        return Ok(false)
+    }
 }

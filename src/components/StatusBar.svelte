@@ -7,6 +7,7 @@
     import { isUpdateAvailable } from "@bird/lib/updates";
     import HeartRate from "./feat/statusbar/HeartRate.svelte";
     import HrmScreen from "@bird/routes/screens/hrm.svelte";
+    import { configStore } from "@bird/lib/config";
 
     let showHrmScreen = $state(false);
 </script>
@@ -15,7 +16,9 @@
 {/if}
 <div class="statusbar">
     <div class="left">
-        <HeartRate onclick={() => showHrmScreen = true}/>
+        {#if $configStore["ui.showHrm"]}
+            <HeartRate onclick={() => showHrmScreen = true}/>
+        {/if}
 
         {#if $isUpdateAvailable}
            	<UpdateButton/>

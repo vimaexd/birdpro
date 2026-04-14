@@ -59,17 +59,14 @@ export async function initialiseApp() {
     // Resurrect audio config from loaded config
     await tryResurrectAudioConfig();
 
-    // Start OSC if configured to do so
-    if (config.vrcOsc) {
-        invoke("osc_start");
-    }
-
     // Download provider list
     let prv: Provider[] = await invoke("tts_get_providerlist");
     if (prv.length < 1) {
         throw "No providers available, possibly an unsupported platform";
     }
     ttsProviders.set(prv);
+    console.log("providers", get(ttsProviders));
+
     updateAudioDeviceList();
 
     // Restore last voice unless that provider is no longer available
@@ -106,12 +103,21 @@ export async function initialiseApp() {
         configStore.set(cs);
     });
 
+    // Start OSC if configured to do so
+    if (config.vrcOsc) {
+        await invoke("osc_start");
+    }
+
+    // Start heart rate monitoring if configured to do so
+    if (config.heartrate) {
+        await invoke("hrm_svc_start")
+    }
+
     // check for updates in the background
     if (config["checkForUpdates"]) {
         setTimeout(startUpdateCheck, 1000);
     }
 
-    console.log("providers", get(ttsProviders));
 }
 
 export function resolveProvider(providerId: string): Provider {

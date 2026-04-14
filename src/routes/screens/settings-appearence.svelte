@@ -40,6 +40,9 @@
         <Checkbox bind:checked={$configStore["ui.showHistory"]}>
             {$_("settings.appearence.showHistory")}
         </Checkbox>
+        <Checkbox bind:checked={$configStore["ui.showHrm"]}>
+            {$_("settings.appearence.showHrm")}
+        </Checkbox>
     </div>
 </SettingsPage>
 

@@ -8,7 +8,7 @@ pub mod hrm;
 pub mod ipc;
 
 use crate::audio::{AudioSetup, BirdPlayer};
-use crate::hrm::PulsoidService;
+use crate::hrm::HeartRateService;
 use crate::provider::TTSProviderPlatform;
 use log::*;
 use serde_json::Value;
@@ -24,7 +24,7 @@ pub struct AppData {
     audio_sinks: Vec<BirdPlayer>,
     audio_sinks_typingindicator: Vec<BirdPlayer>,
     vrc_osc: Option<Arc<VRChatOSC>>,
-    pulsoid_service: Option<PulsoidService>
+    pulsoid_service: Option<HeartRateService>
 }
 
 pub fn get_platform() -> TTSProviderPlatform {
@@ -113,6 +113,7 @@ pub fn run() {
             crate::ipc::osc::osc_typing_indicator,
             crate::ipc::osc::hrm_svc_start,
             crate::ipc::osc::hrm_svc_stop,
+            crate::ipc::osc::hrm_svc_status,
             crate::ipc::error::get_error_text,
             crate::ipc::config::update_config
         ])
