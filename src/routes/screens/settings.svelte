@@ -12,7 +12,7 @@
     import SettingsProviders from "./settings-providers.svelte";
     import SettingsBehaviour from "./settings-behaviour.svelte";
     import SettingsReplacements from "./settings-replacements.svelte";
-    import SettingsAppearence from "./settings-appearence.svelte";
+    import SettingsAppearance from "./settings-appearance.svelte";
     import SettingsDev from "./settings-dev.svelte";
     import SettingsDevcomponents from "./settings-devcomponents.svelte";
 
@@ -21,7 +21,7 @@
     let selectedPage = $state($_('settings.pages.audio'));
     const pages: {[id: string]: any} = $state({
       [$_('settings.pages.audio')]: SettingsAudio,
-      [$_('settings.pages.appearence')]: SettingsAppearence,
+      [$_('settings.pages.appearance')]: SettingsAppearance,
       [$_('settings.pages.behaviour')]: SettingsBehaviour,
       [$_('settings.pages.replacements')]: SettingsReplacements,
       [$_('settings.pages.providers')]: SettingsProviders,

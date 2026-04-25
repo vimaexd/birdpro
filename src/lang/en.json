@@ -70,7 +70,7 @@
         "settings": "Settings",
         "pages": {
             "audio": "Audio",
-            "appearence": "Appearence",
+            "appearance": "Appearance",
             "behaviour": "Behaviour",
             "replacements": "Replacements",
             "providers": "Providers",
@@ -84,7 +84,7 @@
             "previewDevice": "Preview Device",
             "previewVolume": "Preview Volume"
         },
-        "appearence": {
+        "appearance": {
             "theme": "Theme",
 
             "themeDark": "Dark",

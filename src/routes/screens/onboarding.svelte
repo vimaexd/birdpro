@@ -28,15 +28,15 @@
 
         <div class="box">
             <div class="option">
-                <h2>{$_('settings.appearence.theme')}</h2>
+                <h2>{$_('settings.appearance.theme')}</h2>
                 <SelectList direction="horizontal" bind:value={$configStore["ui.theme"]}>
-                    <SelectListOption value="dark">{$_("settings.appearence.themeDark")}</SelectListOption>
-                    <SelectListOption value="light">{$_("settings.appearence.themeLight")}</SelectListOption>
-                    <SelectListOption value="auto">{$_("settings.appearence.themeAuto")}</SelectListOption>
+                    <SelectListOption value="dark">{$_("settings.appearance.themeDark")}</SelectListOption>
+                    <SelectListOption value="light">{$_("settings.appearance.themeLight")}</SelectListOption>
+                    <SelectListOption value="auto">{$_("settings.appearance.themeAuto")}</SelectListOption>
                 </SelectList>
             </div>
             <div class="option">
-                <h2>{$_('settings.appearence.accentColor')}</h2>
+                <h2>{$_('settings.appearance.accentColor')}</h2>
                 <ColorPicker bind:hex={$configStore['ui.accentColor']} isAlpha={false}/>
             </div>
         </div>
