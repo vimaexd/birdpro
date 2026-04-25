@@ -12,21 +12,21 @@
 
 <SettingsPage>
     <div class="option">
-        <SettingsSectionTitle>{$_("settings.appearence.theme")}</SettingsSectionTitle>
+        <SettingsSectionTitle>{$_("settings.appearance.theme")}</SettingsSectionTitle>
         <SelectList direction="horizontal" bind:value={$configStore["ui.theme"]}>
-            <SelectListOption value="dark">{$_("settings.appearence.themeDark")}</SelectListOption>
-            <SelectListOption value="light">{$_("settings.appearence.themeLight")}</SelectListOption>
-            <SelectListOption value="auto">{$_("settings.appearence.themeAuto")}</SelectListOption>
+            <SelectListOption value="dark">{$_("settings.appearance.themeDark")}</SelectListOption>
+            <SelectListOption value="light">{$_("settings.appearance.themeLight")}</SelectListOption>
+            <SelectListOption value="auto">{$_("settings.appearance.themeAuto")}</SelectListOption>
         </SelectList>
     </div>
 
     <div class="option">
-        <SettingsSectionTitle>{$_("settings.appearence.accentColor")}</SettingsSectionTitle>
+        <SettingsSectionTitle>{$_("settings.appearance.accentColor")}</SettingsSectionTitle>
         <ColorPicker bind:hex={$configStore['ui.accentColor']} isAlpha={false}/>
     </div>
 
     <div class="option">
-        <SettingsSectionTitle>{$_("settings.appearence.rounding")}</SettingsSectionTitle>
+        <SettingsSectionTitle>{$_("settings.appearance.rounding")}</SettingsSectionTitle>
         <div class="range-val">
             <p>{$configStore['ui.rounding']}px</p>
             <input type="range" name="rounding" width="100%" bind:value={$configStore['ui.rounding']} min={0} max={16} step={1}>
@@ -35,13 +35,13 @@
 
     <div class="option">
         <SettingsSectionTitle>
-            {$_("settings.appearence.sections")}
+            {$_("settings.appearance.sections")}
         </SettingsSectionTitle>
         <Checkbox bind:checked={$configStore["ui.showHistory"]}>
-            {$_("settings.appearence.showHistory")}
+            {$_("settings.appearance.showHistory")}
         </Checkbox>
         <Checkbox bind:checked={$configStore["ui.showHrm"]}>
-            {$_("settings.appearence.showHrm")}
+            {$_("settings.appearance.showHrm")}
         </Checkbox>
     </div>
 </SettingsPage>
