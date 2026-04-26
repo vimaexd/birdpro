@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { writable, get } from "svelte/store";
 import { showError } from "./toast";
-import { audioDevices, tryResurrectAudioConfig } from "./audio";
+import { audioDevices, audioStore, tryResurrectAudioConfig, type AudioDevice } from "./audio";
 import { configStore } from "./config";
 import {
     setTextFileContents,
@@ -69,6 +69,14 @@ export async function initialiseApp() {
 
     updateAudioDeviceList();
 
+    // populate audiostore with default device
+    let defaultDevice: AudioDevice = await invoke("audio_get_device", { setupIdx: 0 });
+    if (defaultDevice) {
+        info(`Starting with default device (${defaultDevice.name})`)
+        let as = get(audioStore);
+        as.devices[0] = defaultDevice.name
+    }
+
     // Restore last voice unless that provider is no longer available
     if (
         config["last"] != undefined &&
@@ -121,7 +129,6 @@ export async function initialiseApp() {
     if (config["checkForUpdates"]) {
         setTimeout(startUpdateCheck, 1000);
     }
-
 }
 
 export function resolveProvider(providerId: string): Provider {
