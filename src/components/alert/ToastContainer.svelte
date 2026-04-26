@@ -36,10 +36,10 @@
     .toast {
         color: #fff;
 
-        background: color-mix(in srgb, var(--color-danger) 10%,
-            color-mix(in srgb, var(--color-bg) 60%, transparent 40%) 90%);
+        background: color-mix(in srgb, var(--color-danger) 40%,
+            color-mix(in srgb, var(--color-bg) 60%, transparent 40%) 60%);
 
-        backdrop-filter: blur(16px) brightness(0.8);
+        backdrop-filter: blur(16px);
         border: 1px var(--color-danger) solid;
 
         /*
@@ -50,7 +50,6 @@
         sorry sharp border lovers! lmao
         */
         border-radius: 6px;
-
 
         padding: 8px 16px;
         width: 400px;
