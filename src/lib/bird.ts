@@ -110,7 +110,11 @@ export async function initialiseApp() {
 
     // Start heart rate monitoring if configured to do so
     if (config.heartrate) {
-        await invoke("hrm_svc_start")
+        try {
+            await invoke("hrm_svc_start");
+        } catch (err: any) {
+            showError("Heart rate error", err);
+        }
     }
 
     // check for updates in the background

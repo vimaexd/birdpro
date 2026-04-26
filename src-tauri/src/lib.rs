@@ -24,7 +24,7 @@ pub struct AppData {
     audio_sinks: Vec<BirdPlayer>,
     audio_sinks_typingindicator: Vec<BirdPlayer>,
     vrc_osc: Option<Arc<VRChatOSC>>,
-    pulsoid_service: Option<HeartRateService>
+    hrm_service: Option<HeartRateService>
 }
 
 pub fn get_platform() -> TTSProviderPlatform {
@@ -87,7 +87,7 @@ pub fn run() {
                 audio_sinks: vec![],
                 audio_sinks_typingindicator: vec![],
                 vrc_osc: None,
-                pulsoid_service: None
+                hrm_service: None
             }));
 
             info!("Setup complete, waiting for webview");

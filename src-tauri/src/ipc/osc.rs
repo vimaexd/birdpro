@@ -75,19 +75,19 @@ pub async fn osc_typing_indicator(
 }
 
 #[tauri::command]
-pub async fn hrm_svc_start(app: AppHandle, state: State<'_, AsyncMutex<AppData>>) -> Result<(), String>  {
+pub async fn hrm_svc_start(app: AppHandle, state: State<'_, AsyncMutex<AppData>>) -> Result<(), &'static str> {
     let mut st = state.lock().await;
 
-    if st.pulsoid_service.is_some() {
+    if st.hrm_service.is_some() {
         return Ok(())
     }
 
-    let mut pulsoid = HeartRateService::new();
+    let mut hrm = HeartRateService::new();
     let app_hr = app.clone();
     let app_connect = app.clone();
     let app_disconnect = app.clone();
 
-    pulsoid.on_heart_rate(move |hr| {
+    hrm.on_heart_rate(move |hr| {
         app_hr.emit("birdpro://hrm/update", hr).ok();
 
         let app_cb_thread = app_hr.clone();
@@ -111,36 +111,36 @@ pub async fn hrm_svc_start(app: AppHandle, state: State<'_, AsyncMutex<AppData>>
         });
     });
 
-    pulsoid.on_connect(move || {
+    hrm.on_connect(move || {
         app_connect.emit("birdpro://hrm/connected", ()).ok();
     });
 
-    pulsoid.on_disconnect(move || {
+    hrm.on_disconnect(move || {
         app_disconnect.emit("birdpro://hrm/disconnected", ()).ok();
     });
 
     let widget_id = st.config["heartrate.widgetId"].as_str();
     if widget_id.is_none() {
-        return Err("Widget ID must be specified".to_string());
+        return Err("Widget ID must be specified");
     }
 
-    pulsoid.start(widget_id.unwrap().to_string());
+    let status = hrm.start(widget_id.unwrap().to_string()).await?;
 
     // emit starting message
     app.emit("birdpro://hrm/connecting", ()).ok();
 
-    st.pulsoid_service = Some(pulsoid);
+    st.hrm_service = Some(hrm);
 
-    Ok(())
+    Ok(status)
 }
 
 #[tauri::command]
 pub async fn hrm_svc_stop(_app: AppHandle, state: State<'_, AsyncMutex<AppData>>) -> Result<(), ()>  {
     let mut st = state.lock().await;
 
-    if st.pulsoid_service.is_some() {
-        st.pulsoid_service.as_mut().unwrap().stop();
-        st.pulsoid_service = None;
+    if st.hrm_service.is_some() {
+        st.hrm_service.as_mut().unwrap().stop();
+        st.hrm_service = None;
     }
 
     Ok(())
@@ -150,7 +150,7 @@ pub async fn hrm_svc_stop(_app: AppHandle, state: State<'_, AsyncMutex<AppData>>
 pub async fn hrm_svc_status(state: State<'_, AsyncMutex<AppData>>) -> Result<bool, String>  {
     let st = state.lock().await;
 
-    if st.pulsoid_service.is_some() {
+    if st.hrm_service.is_some() {
         return Ok(true)
     } else {
         return Ok(false)

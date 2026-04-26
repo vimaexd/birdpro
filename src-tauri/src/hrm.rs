@@ -1,5 +1,6 @@
 use futures_util::{StreamExt};
 use serde_json::Value;
+use tokio::sync::oneshot;
 use std::sync::Arc;
 use std::sync::Mutex;
 use tokio_tungstenite::{connect_async, tungstenite::Message};
@@ -66,15 +67,23 @@ impl HeartRateService {
         self
     }
 
-    pub fn start(&mut self, widget_id: String) {
+    pub async fn start(&mut self, widget_id: String) -> Result<(), &'static str> {
         let connected = Arc::clone(&self.connected);
         let on_discon_callback = self.on_disconnect.as_ref().map(Arc::clone);
         let on_con_callback = self.on_connect.as_ref().map(Arc::clone);
         let on_hr_callback = self.on_heart_rate.as_ref().map(Arc::clone);
 
+        let (tx, rx) = oneshot::channel::<Result<(), &'static str>>();
+
         let handle = tauri::async_runtime::spawn(async move {
-            let ws_url = HeartRateService::get_ws_url(&widget_id).await.unwrap();
-            let (mut socket, _) = connect_async(ws_url).await.unwrap();
+            let ws_url = HeartRateService::get_ws_url(&widget_id).await;
+            if ws_url.is_none() {
+                log::warn!("No hrm ws url could be resolved - exiting early");
+                let _ = tx.send(Err("Heartrate socket could not be opened - check if your widget ID is correct!"));
+                return;
+            }
+            let (mut socket, _) = connect_async(ws_url.unwrap()).await.unwrap();
+            let _ = tx.send(Ok(()));
             log::info!("websocket connected");
 
             let mut locally_connected = false;
@@ -111,6 +120,8 @@ impl HeartRateService {
         });
 
         self.task = Some(handle);
+
+        rx.await.unwrap()
     }
 
     pub fn stop(&mut self) {

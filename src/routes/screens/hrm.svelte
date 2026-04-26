@@ -9,6 +9,7 @@
     import { invoke } from "@tauri-apps/api/core";
     import { configStore } from "@bird/lib/config";
     import { onMount } from "svelte";
+    import { showError } from "@bird/lib/toast";
 
     let serviceStatus = $state(false);
 
@@ -22,7 +23,11 @@
     }
 
     const startSvc = async () => {
-        await invoke("hrm_svc_start");
+        try {
+            await invoke("hrm_svc_start");
+        } catch(err: any) {
+            showError("Heart rate error", err);
+        }
         await updateSvcStatus();
     }
 
