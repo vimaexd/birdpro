@@ -5,7 +5,6 @@ use tauri::{AppHandle, Emitter, State, Manager};
 use tokio::sync::Mutex as AsyncMutex;
 use vrchat_osc::rosc::{OscMessage, OscPacket, OscType};
 use vrchat_osc::{ServiceType, VRChatOSC};
-use std::net::{IpAddr, Ipv4Addr};
 
 #[tauri::command]
 pub async fn osc_start(app: AppHandle, state: State<'_, AsyncMutex<AppData>>) -> Result<(), ()> {
@@ -17,8 +16,7 @@ pub async fn osc_start(app: AppHandle, state: State<'_, AsyncMutex<AppData>>) ->
         return Ok(());
     }
 
-    let localhost = IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1));
-    let osc = VRChatOSC::new(Some(localhost)).await.unwrap();
+    let osc = VRChatOSC::new(None).await.unwrap();
 
     info!("starting OSC");
 
