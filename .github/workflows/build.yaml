@@ -18,8 +18,6 @@ jobs:
         include:
           - platform: 'macos-latest' # apple silicon mac
             args: '--target aarch64-apple-darwin'
-          - platform: 'macos-latest' # intel mac
-            args: '--target x86_64-apple-darwin'
           - platform: 'ubuntu-22.04'
             args: ''
           - platform: 'windows-latest'
