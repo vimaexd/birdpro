@@ -5,6 +5,7 @@
     import { resolveProvider, ttsStore, type Provider } from "@bird/lib/bird";
     import { configStore } from "@bird/lib/config";
     import { tooltip } from "@svelte-plugins/tooltips";
+    import { invoke } from "@tauri-apps/api/core";
 
     import StepToggle from "@bird/components/StepToggle.svelte";
     import Button from "@bird/components/ui/Button.svelte";
@@ -91,8 +92,13 @@
                 </div>
 
                 <div use:tooltip={{ content: 'VRChat OSC', animation: "pop", position: 'top', delay: 0, align: "center"}}>
-                    <button class="action-button {($configStore.vrcOsc) ? 'on' : ''}" onclick={() => {
+                    <button class="action-button {($configStore.vrcOsc) ? 'on' : ''}" onclick={async () => {
                       $configStore.vrcOsc = !$configStore.vrcOsc
+                      if($configStore.vrcOsc) {
+                        await invoke("osc_start");
+                      } else {
+                        await invoke("osc_stop");
+                      }
                     }}>
                         <IconOsc height="24px" width="48px"/>
                     </button>
