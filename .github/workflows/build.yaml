@@ -32,10 +32,8 @@ jobs:
         with:
           submodules: recursive
 
-      - name: setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
 
       - name: install rust stable
         uses: dtolnay/rust-toolchain@stable
