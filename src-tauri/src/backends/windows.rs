@@ -43,7 +43,7 @@ impl TTSProvider for WindowsTTSProvider {
         let speech_stream: SpeechSynthesisStream = synth
             .SynthesizeSsmlToStreamAsync(&HSTRING::from(ssml))
             .expect("failed to synthesize")
-            .get()
+            .await
             .map_err(|_| TTSProviderError::SynthesisFailure)
             .unwrap();
 
@@ -55,7 +55,7 @@ impl TTSProvider for WindowsTTSProvider {
         let ibuf: IBuffer = speech_stream
             .ReadAsync(&buf, size, InputStreamOptions::None)
             .unwrap()
-            .get()
+            .await
             .unwrap();
 
         let len = ibuf.Length().unwrap();
