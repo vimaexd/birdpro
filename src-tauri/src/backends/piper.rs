@@ -110,14 +110,22 @@ impl TTSProvider for PiperTTSProvider {
                     }
                 };
 
+                let mut name = format!(
+                    "{}",
+                    json["dataset"].as_str().unwrap_or_else(|| {
+                        entry.file_name().to_str().unwrap()
+                    }).to_string()
+                );
+
+                let quality = json["audio"]["quality"].as_str();
+                if quality.is_some() {
+                    name = name + " " + format!("({})", quality.unwrap()).as_str();
+                }
+
                 voices.push(Voice {
                     provider: TTSProviderType::Piper,
                     id: entry.path().to_string_lossy().to_string(),
-                    name: format!(
-                        "{} ({})",
-                        json["dataset"].as_str().unwrap().to_string(),
-                        json["audio"]["quality"].as_str().unwrap().to_string()
-                    ),
+                    name: name,
                     lang: json["language"]["code"].as_str().map(|o| o.to_string()),
                 });
             }
