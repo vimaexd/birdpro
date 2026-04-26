@@ -73,6 +73,19 @@ jobs:
       - name: install frontend dependencies
         run: bun install --frozen-lockfile
 
+      - name: cache cargo crates
+        uses: actions/cache@v4
+        with:
+            path: |
+                ~/.cargo/bin/
+                ~/.cargo/registry/index/
+                ~/.cargo/registry/cache/
+                ~/.cargo/git/db/
+                src-tauri/target/
+            key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+            restore-keys: |
+                ${{ runner.os }}-cargo-
+
       - uses: tauri-apps/tauri-action@v0.6.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -96,7 +109,7 @@ jobs:
         with:
             name: birdpro-mac-${{ github.sha }}
             path: |
-                src-tauri/target/release/bundle/dmg/*.dmg
+                src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
             if-no-files-found: warn
             retention-days: 90
 
