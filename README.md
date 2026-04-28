@@ -18,7 +18,7 @@ Features:
 
 [**Download Release**](https://codeberg.org/vimae/birdpro/releases)
 
-Development builds for Windows, macOS and Linux can be downloaded from [GitHub Actions](https://github.com/vimaexd/birdpro) currently.
+Development builds for Windows, macOS and Linux can be downloaded from [GitHub Actions](https://github.com/vimaexd/birdpro/actions) currently.
 
 ### Please note:
 - AppImages may require `LD_PRELOAD=/usr/lib/libwayland-client.so` in wayland setups due to an upstream Tauri bug
