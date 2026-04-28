@@ -7,19 +7,21 @@ give a voice to those unable to speak.
 
 Features:
   - Beautiful user interface
-  - Multiple TTS voice providers (Windows, Microsoft Edge, Elevenlabs)
+  - Multiple TTS voice providers (Piper, Microsoft Edge, ElevenLabs, Windows)
   - VRChat chatbox integration over OSC
   - Output to a txt file (for use in OBS subtitles)
   - Native Linux support
 
 # Download
 
-**Bird Pro is currently work in progress and has not reached release state.** Please keep this in mind if you want to try it out.
+**Bird Pro is an ongoing work in progress and may be unstable.** Please keep this in mind if you want to try it out.
 
-Latest builds for Windows and Linux can be downloaded from [Codeberg Actions](https://codeberg.org/vimae/birdpro/actions) currently.
+[**Download Release**](https://codeberg.org/vimae/birdpro/releases)
+
+Development builds for Windows, macOS and Linux can be downloaded from [GitHub Actions](https://github.com/vimaexd/birdpro) currently.
 
 ### Please note:
-- AppImages are currently not working due to an upstream bug
+- AppImages may require `LD_PRELOAD=/usr/lib/libwayland-client.so` in wayland setups due to an upstream Tauri bug
 
 # Develop
 
