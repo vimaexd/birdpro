@@ -11,18 +11,20 @@
 </script>
 
 <SettingsPage>
-    <div class="option">
-        <SettingsSectionTitle>{$_("settings.appearance.theme")}</SettingsSectionTitle>
-        <SelectList direction="horizontal" bind:value={$configStore["ui.theme"]}>
-            <SelectListOption value="dark">{$_("settings.appearance.themeDark")}</SelectListOption>
-            <SelectListOption value="light">{$_("settings.appearance.themeLight")}</SelectListOption>
-            <SelectListOption value="auto">{$_("settings.appearance.themeAuto")}</SelectListOption>
-        </SelectList>
-    </div>
+    <div class="option-row">
+        <div class="option">
+            <SettingsSectionTitle>{$_("settings.appearance.theme")}</SettingsSectionTitle>
+            <SelectList direction="horizontal" bind:value={$configStore["ui.theme"]}>
+                <SelectListOption value="dark">{$_("settings.appearance.themeDark")}</SelectListOption>
+                <SelectListOption value="light">{$_("settings.appearance.themeLight")}</SelectListOption>
+                <SelectListOption value="auto">{$_("settings.appearance.themeAuto")}</SelectListOption>
+            </SelectList>
+        </div>
 
-    <div class="option">
-        <SettingsSectionTitle>{$_("settings.appearance.accentColor")}</SettingsSectionTitle>
-        <ColorPicker bind:hex={$configStore['ui.accentColor']} isAlpha={false}/>
+        <div class="option">
+            <SettingsSectionTitle>{$_("settings.appearance.accentColor")}</SettingsSectionTitle>
+            <ColorPicker bind:hex={$configStore['ui.accentColor']} isAlpha={false}/>
+        </div>
     </div>
 
     <div class="option">
@@ -30,6 +32,14 @@
         <div class="range-val">
             <p>{$configStore['ui.rounding']}px</p>
             <input type="range" name="rounding" width="100%" bind:value={$configStore['ui.rounding']} min={0} max={16} step={1}>
+        </div>
+    </div>
+
+    <div class="option">
+        <SettingsSectionTitle>{$_("settings.appearance.textSize")}</SettingsSectionTitle>
+        <div class="range-val">
+            <p>{$configStore['ui.textboxTextSize']}px</p>
+            <input type="range" name="rounding" width="100%" bind:value={$configStore['ui.textboxTextSize']} min={12} max={78} step={1}>
         </div>
     </div>
 

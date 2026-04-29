@@ -1,8 +1,8 @@
 pub mod audio;
 pub mod backends;
+pub mod hrm;
 pub mod provider;
 pub mod voice;
-pub mod hrm;
 
 #[macro_use]
 pub mod ipc;
@@ -14,7 +14,7 @@ use log::*;
 use serde_json::Value;
 use std::sync::Arc;
 use tauri::window::Color;
-use tauri::{Manager};
+use tauri::Manager;
 use tokio::sync::Mutex as AsyncMutex;
 use vrchat_osc::VRChatOSC;
 
@@ -24,7 +24,7 @@ pub struct AppData {
     audio_sinks: Vec<BirdPlayer>,
     audio_sinks_typingindicator: Vec<BirdPlayer>,
     vrc_osc: Option<Arc<VRChatOSC>>,
-    hrm_service: Option<HeartRateService>
+    hrm_service: Option<HeartRateService>,
 }
 
 pub fn get_platform() -> TTSProviderPlatform {
@@ -39,6 +39,7 @@ pub fn get_platform() -> TTSProviderPlatform {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(
@@ -87,7 +88,7 @@ pub fn run() {
                 audio_sinks: vec![],
                 audio_sinks_typingindicator: vec![],
                 vrc_osc: None,
-                hrm_service: None
+                hrm_service: None,
             }));
 
             info!("Setup complete, waiting for webview");

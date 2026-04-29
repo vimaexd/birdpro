@@ -93,6 +93,8 @@
 
             "accentColor": "Accent color",
             "rounding": "Rounding",
+            "textSize": "Textbox text size",
+
             "sections": "Sections",
             "showHistory": "Show history",
             "showHrm": "Show heart rate monitor"

@@ -1,12 +1,13 @@
 <script lang="ts">
     import { fade, fly } from "svelte/transition";
     import { expoOut } from "svelte/easing";
-    let {
-      children,
-      containerClass = ''
-    } = $props();
+    let { children, containerClass = "" } = $props();
 </script>
-<div class="settings-page {containerClass}" in:fly={{duration: 400, x:-2, easing: expoOut }}>
+
+<div
+    class="settings-page {containerClass}"
+    in:fly={{ duration: 400, x: -2, easing: expoOut }}
+>
     {@render children()}
 </div>
 
@@ -28,5 +29,11 @@
         flex-direction: column;
         gap: 12px;
         margin-bottom: 24px;
+    }
+
+    .settings-page :global(.option-row) {
+        display: flex;
+        flex-direction: row;
+        gap: 24px;
     }
 </style>

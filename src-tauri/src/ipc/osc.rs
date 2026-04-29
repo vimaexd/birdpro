@@ -1,7 +1,7 @@
+use crate::hrm::HeartRateService;
 use crate::AppData;
-use crate::hrm::{HeartRateService};
 use log::info;
-use tauri::{AppHandle, Emitter, State, Manager};
+use tauri::{AppHandle, Emitter, Manager, State};
 use tokio::sync::Mutex as AsyncMutex;
 use vrchat_osc::rosc::{OscMessage, OscPacket, OscType};
 use vrchat_osc::{ServiceType, VRChatOSC};
@@ -73,11 +73,14 @@ pub async fn osc_typing_indicator(
 }
 
 #[tauri::command]
-pub async fn hrm_svc_start(app: AppHandle, state: State<'_, AsyncMutex<AppData>>) -> Result<(), &'static str> {
+pub async fn hrm_svc_start(
+    app: AppHandle,
+    state: State<'_, AsyncMutex<AppData>>,
+) -> Result<(), &'static str> {
     let mut st = state.lock().await;
 
     if st.hrm_service.is_some() {
-        return Ok(())
+        return Ok(());
     }
 
     let mut hrm = HeartRateService::new();
@@ -95,8 +98,12 @@ pub async fn hrm_svc_start(app: AppHandle, state: State<'_, AsyncMutex<AppData>>
 
             if let Some(osc) = &st.vrc_osc {
                 // let param_connected = st.config["heartrate.customConnectedParam"].as_str().unwrap_or("/avatar/parameters/hr_connected");
-                let param_percent = st.config["heartrate.customPercentParam"].as_str().unwrap_or("/avatar/parameters/hr_percent");
-                let max_hr = st.config["heartrate.customMaxHeartrate"].as_f64().unwrap_or(200.0);
+                let param_percent = st.config["heartrate.customPercentParam"]
+                    .as_str()
+                    .unwrap_or("/avatar/parameters/hr_percent");
+                let max_hr = st.config["heartrate.customMaxHeartrate"]
+                    .as_f64()
+                    .unwrap_or(200.0);
 
                 let msg = OscMessage {
                     addr: param_percent.to_string(),
@@ -133,7 +140,10 @@ pub async fn hrm_svc_start(app: AppHandle, state: State<'_, AsyncMutex<AppData>>
 }
 
 #[tauri::command]
-pub async fn hrm_svc_stop(_app: AppHandle, state: State<'_, AsyncMutex<AppData>>) -> Result<(), ()>  {
+pub async fn hrm_svc_stop(
+    _app: AppHandle,
+    state: State<'_, AsyncMutex<AppData>>,
+) -> Result<(), ()> {
     let mut st = state.lock().await;
 
     if st.hrm_service.is_some() {
@@ -145,12 +155,12 @@ pub async fn hrm_svc_stop(_app: AppHandle, state: State<'_, AsyncMutex<AppData>>
 }
 
 #[tauri::command]
-pub async fn hrm_svc_status(state: State<'_, AsyncMutex<AppData>>) -> Result<bool, String>  {
+pub async fn hrm_svc_status(state: State<'_, AsyncMutex<AppData>>) -> Result<bool, String> {
     let st = state.lock().await;
 
     if st.hrm_service.is_some() {
-        return Ok(true)
+        return Ok(true);
     } else {
-        return Ok(false)
+        return Ok(false);
     }
 }

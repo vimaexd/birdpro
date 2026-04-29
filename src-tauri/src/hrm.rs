@@ -1,8 +1,8 @@
-use futures_util::{StreamExt};
+use futures_util::StreamExt;
 use serde_json::Value;
-use tokio::sync::oneshot;
 use std::sync::Arc;
 use std::sync::Mutex;
+use tokio::sync::oneshot;
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 
 pub struct HeartRateService {
@@ -79,7 +79,9 @@ impl HeartRateService {
             let ws_url = HeartRateService::get_ws_url(&widget_id).await;
             if ws_url.is_none() {
                 log::warn!("No hrm ws url could be resolved - exiting early");
-                let _ = tx.send(Err("Heartrate socket could not be opened - check if your widget ID is correct!"));
+                let _ = tx.send(Err(
+                    "Heartrate socket could not be opened - check if your widget ID is correct!",
+                ));
                 return;
             }
             let (mut socket, _) = connect_async(ws_url.unwrap()).await.unwrap();

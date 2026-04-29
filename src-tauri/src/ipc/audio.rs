@@ -8,7 +8,6 @@ use tauri::path::BaseDirectory;
 use tauri::{Manager, State};
 use tokio::sync::Mutex as AsyncMutex;
 
-
 #[tauri::command]
 pub fn audio_get_devices() -> Vec<String> {
     let host = cpal::default_host();

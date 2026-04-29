@@ -98,7 +98,10 @@ impl TTSProvider for PiperTTSProvider {
 
         let mut voices = vec![];
 
-        for entry in WalkDir::new(voices_path.unwrap()).into_iter().filter_map(|e| e.ok()) {
+        for entry in WalkDir::new(voices_path.unwrap())
+            .into_iter()
+            .filter_map(|e| e.ok())
+        {
             if entry.file_type().is_file()
                 && entry.file_name().to_str().unwrap().ends_with(".onnx.json")
             {
@@ -112,9 +115,10 @@ impl TTSProvider for PiperTTSProvider {
 
                 let mut name = format!(
                     "{}",
-                    json["dataset"].as_str().unwrap_or_else(|| {
-                        entry.file_name().to_str().unwrap()
-                    }).to_string()
+                    json["dataset"]
+                        .as_str()
+                        .unwrap_or_else(|| { entry.file_name().to_str().unwrap() })
+                        .to_string()
                 );
 
                 let quality = json["audio"]["quality"].as_str();

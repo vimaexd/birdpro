@@ -1,22 +1,26 @@
 <script lang="ts">
-
     import {
         speakTts,
         ttsStore,
         resolveProvider,
-        type Provider
+        type Provider,
     } from "@bird/lib/bird";
     import { configStore } from "@bird/lib/config";
-    import { getLastMessage, historyStore, pushHistory } from "@bird/lib/history";
+    import {
+        getLastMessage,
+        historyStore,
+        pushHistory,
+    } from "@bird/lib/history";
     import { disableInputCapture, isSettingsOpen } from "@bird/lib/modal";
     import { setTextTypingIndicator } from "@bird/lib/txtoutput";
 
     import { invoke } from "@tauri-apps/api/core";
     import { getCurrentWindow } from "@tauri-apps/api/window";
     import { info } from "@tauri-apps/plugin-log";
+    import { platform } from "@tauri-apps/plugin-os"
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
-    import { _ } from 'svelte-i18n';
+    import { _ } from "svelte-i18n";
 
     import AddFavourite from "./screens/add-favourite.svelte";
     import Settings from "./screens/settings.svelte";
@@ -33,6 +37,7 @@
     import VoiceEditor from "@bird/components/feat/sidebar/VoiceEditor.svelte";
     import HistoryContainer from "@bird/components/feat/history/HistoryContainer.svelte";
     import Onboarding from "./screens/onboarding.svelte";
+    import { get } from "svelte/store";
 
     // talk box and messaging
     let talkboxRef: HTMLTextAreaElement;
@@ -56,14 +61,17 @@
 
     const onTyping = async () => {
         // regardless of whever this is already showing, send typing over OSC
-        if($configStore["vrcOsc"]) {
-          await invoke("osc_typing_indicator", { typing: true });
+        if ($configStore["vrcOsc"]) {
+            await invoke("osc_typing_indicator", { typing: true });
         }
 
         // if the indicator is already showing, extend the timeout by 4s
         if (typingIndicatorShowing) {
             clearTimeout(typingIndicatorTimeout);
-            typingIndicatorTimeout = setTimeout(onTypingTimeout, typingIndicatorTimeoutSeconds);
+            typingIndicatorTimeout = setTimeout(
+                onTypingTimeout,
+                typingIndicatorTimeoutSeconds,
+            );
             return;
         }
         // prevent this from being called until we time out
@@ -73,16 +81,24 @@
         info("Showing typing indicator");
 
         // set osc and txt typing indicators
-        if($configStore["txtoutput"] && $configStore["txtoutput.typingIndicator"]) {
-          await setTextTypingIndicator($configStore["txtoutput.typingIndicatorText"]);
+        if (
+            $configStore["txtoutput"] &&
+            $configStore["txtoutput.typingIndicator"]
+        ) {
+            await setTextTypingIndicator(
+                $configStore["txtoutput.typingIndicatorText"],
+            );
         }
 
         // set audio typing indicator
-        if($configStore["audioTypingIndicator"]) {
-          await invoke("audio_typingindicator_start");
+        if ($configStore["audioTypingIndicator"]) {
+            await invoke("audio_typingindicator_start");
         }
 
-        typingIndicatorTimeout = setTimeout(onTypingTimeout, typingIndicatorTimeoutSeconds);
+        typingIndicatorTimeout = setTimeout(
+            onTypingTimeout,
+            typingIndicatorTimeoutSeconds,
+        );
     };
 
     // clear after the timeout from not typing has run
@@ -107,9 +123,9 @@
         await speakTts(msg);
 
         // clear typing indicators
-        if(typingIndicatorTimeout) {
-          clearTimeout(typingIndicatorTimeout);
-          onTypingTimeout();
+        if (typingIndicatorTimeout) {
+            clearTimeout(typingIndicatorTimeout);
+            onTypingTimeout();
         }
 
         isLoadingTts = false;
@@ -130,33 +146,83 @@
     };
 
     const trackMouseAndResizeBar = (e: MouseEvent) => {
-      if(!resizeBar) return;
-      console.log("rsz")
-      let newWidth = (window.innerWidth - e.pageX);
-      barSize = Math.min(Math.max(newWidth, 300), 700) - 18
-    }
+        if (!resizeBar) return;
+        console.log("rsz");
+        let newWidth = window.innerWidth - e.pageX;
+        barSize = Math.min(Math.max(newWidth, 300), 700) - 18;
+    };
 
     onMount(async () => {
         await getCurrentWindow().listen("tauri://focus", () => {
             if (!$isSettingsOpen) {
-                focusTextbox()
+                focusTextbox();
             }
-        })
+        });
 
+        // process hotkeys
         document.body.addEventListener("keydown", async (e) => {
             // dont capture strokes if a modal is shown
             // the user needs that to type stuff!!!
-            if($disableInputCapture) {
-              return;
+
+            if ($disableInputCapture) {
+                return;
             }
 
+
+            // Checks for CMD on macOS, and CTRL for Linux and Windows
+            let platAwareControl =
+                platform() == "macos" ? e.metaKey : e.ctrlKey;
+
             switch (e.key) {
+
+                /*
+                    Ctrl ,
+                    Open settings
+                */
                 case ",":
-                    if(e.ctrlKey) {
-                      $isSettingsOpen = true;
+                    if (platAwareControl) {
+                        $isSettingsOpen = true;
                     }
                     break;
 
+                /*
+                    Ctrl =
+                    Increase font size
+                */
+                case "=":
+                    if (platAwareControl) {
+                        console.log("add")
+
+                        let cs = get(configStore);
+                        if(cs['ui.textboxTextSize'] > 77) return;
+
+                        cs['ui.textboxTextSize'] += 2;
+                        configStore.set(cs);
+                        console.log(cs['ui.textboxTextSize'])
+                    }
+                    break;
+
+                /*
+                    Ctrl -
+                    Decrease font size
+                */
+                case "-":
+                    if (platAwareControl) {
+                        console.log("minus")
+
+                        let cs = get(configStore);
+                        if(cs['ui.textboxTextSize'] < 13) return;
+
+                        cs['ui.textboxTextSize'] -= 2;
+                        configStore.set(cs);
+                    }
+                    break;
+
+
+                /*
+                    Up arrow
+                    Fill textbox with last history item
+                */
                 case "ArrowUp":
                     e.preventDefault();
                     if (message == "") {
@@ -165,28 +231,36 @@
                     focusTextbox();
                     break;
 
+                /*
+                    Enter
+                    Speak message
+                */
                 case "Enter":
                     e.preventDefault();
-                    if(e.altKey && $configStore.audio.usePreviewOutput) {
-                      // preview mode!
-                      if (buttonIsDownPreview) return;
-                      sendPreviewMessage();
-                      buttonIsDownPreview = true;
+                    if (e.altKey && $configStore.audio.usePreviewOutput) {
+                        // preview mode!
+                        if (buttonIsDownPreview) return;
+                        sendPreviewMessage();
+                        buttonIsDownPreview = true;
                     } else {
-                      if (buttonIsDown) return;
-                      sendMessage();
-                      buttonIsDown = true;
+                        if (buttonIsDown) return;
+                        sendMessage();
+                        buttonIsDown = true;
                     }
                     break;
 
+                /*
+                    Del
+                    Stop all speech
+                */
                 case "Delete":
-                    await invoke("audio_stop_all")
+                    await invoke("audio_stop_all");
                     break;
 
                 default:
                     focusTextbox();
             }
-        })
+        });
 
         document.body.addEventListener("keyup", (e) => {
             switch (e.key) {
@@ -201,17 +275,20 @@
 </script>
 
 <!--svelte-ignore a11y_no_noninteractive_element_interactions -->
-<main class="app-container"
+<main
+    class="app-container"
     style="
     --sidebar-width: {barSize}px;
-    --rounding: {$configStore["ui.rounding"]}px;
+    --rounding: {$configStore['ui.rounding']}px;
     --color-accent: {$configStore['ui.accentColor']};"
     onmousemove={trackMouseAndResizeBar}
-    onmouseup={() => { resizeBar = false }}
-    in:fade={{ duration: 300 }}>
-
+    onmouseup={() => {
+        resizeBar = false;
+    }}
+    in:fade={{ duration: 300 }}
+>
     {#if !$configStore.onboarded}
-        <Onboarding/>
+        <Onboarding />
     {/if}
 
     {#if $isSettingsOpen}
@@ -222,7 +299,7 @@
         <div class="talkbox-container">
             <textarea
                 id="talkbox"
-                placeholder={$_('talkbox.placeholder')}
+                placeholder={$_("talkbox.placeholder")}
                 bind:value={message}
                 bind:this={talkboxRef}
                 oninput={(e: any) => {
@@ -233,24 +310,39 @@
                     typingIndicatorLastLength = e.target.value.length;
                 }}
                 onclick={() => {
-                  $disableInputCapture = false;
+                    $disableInputCapture = false;
                 }}
                 maxlength={$configStore["bypassCharLimit"] ? 99999 : 144}
+                style="--talkbox-text-size: {$configStore['ui.textboxTextSize']}px;"
             >
             </textarea>
             <div class="talkbox-corner">
                 <div class="talkbox-corner-inner">
                     {#if typingIndicatorShowing}
-                        <p class="typingindicator-floating" out:fade={{duration: 150}}>{$_('talkbox.typingIndicator')}</p>
+                        <p
+                            class="typingindicator-floating"
+                            out:fade={{ duration: 150 }}
+                        >
+                            {$_("talkbox.typingIndicator")}
+                        </p>
                     {/if}
-                    <p class="char-count">{message.length}/{$configStore["bypassCharLimit"] ?  '∞' : '144'}</p>
+                    <p class="char-count">
+                        {message.length}/{$configStore["bypassCharLimit"]
+                            ? "∞"
+                            : "144"}
+                    </p>
                 </div>
                 <div class="talkbox-corner-inner-bl">
                     {#if message.length > 0}
-                        <div in:fade={{duration: 100}} out:fade={{duration: 100}}>
-                            <Button onclick={() => {
-                              message = ""
-                            }}>{$_('talkbox.clear')}</Button>
+                        <div
+                            in:fade={{ duration: 100 }}
+                            out:fade={{ duration: 100 }}
+                        >
+                            <Button
+                                onclick={() => {
+                                    message = "";
+                                }}>{$_("talkbox.clear")}</Button
+                            >
                         </div>
                     {/if}
                 </div>
@@ -264,8 +356,8 @@
                     active={buttonIsDownPreview}
                     color="var(--color-surface2)"
                 >
-                    <IconHeadphones height={24} width={24}/>
-                    <span class="action">{$_('talkbox.actionPreview')}</span>
+                    <IconHeadphones height={24} width={24} />
+                    <span class="action">{$_("talkbox.actionPreview")}</span>
                 </ClickyButton>
             {/if}
 
@@ -280,43 +372,49 @@
                     active={buttonIsDown}
                 >
                     <IconEnter height={24} width={24} />
-                    <span class="action">{$_('talkbox.actionSay')}</span>
+                    <span class="action">{$_("talkbox.actionSay")}</span>
                 </ClickyButton>
             </div>
             <ClickyButton
                 onclick={async () => {
-                  await invoke("audio_stop_all")
+                    await invoke("audio_stop_all");
                 }}
                 color="var(--color-danger)"
             >
-                <IconStop height={24} width={24}/>
-                <span class="action">{$_('talkbox.actionStop')}</span>
+                <IconStop height={24} width={24} />
+                <span class="action">{$_("talkbox.actionStop")}</span>
             </ClickyButton>
         </div>
 
-        {#if $configStore['ui.showHistory']}
-            <HistoryContainer onSelectMessage={(msg: string) => {
-              message = msg;
-            }}/>
+        {#if $configStore["ui.showHistory"]}
+            <HistoryContainer
+                onSelectMessage={(msg: string) => {
+                    message = msg;
+                }}
+            />
         {/if}
     </div>
 
     <!--svelte-ignore a11y_no_static_element_interactions -->
-    <div class="divider" onmousedown={() => { resizeBar = true }}>
+    <div
+        class="divider"
+        onmousedown={() => {
+            resizeBar = true;
+        }}
+    >
         <span class="vr"></span>
     </div>
     <div class="app-right">
         {#if $ttsStore.voice.provider}
-            <VoiceEditor/>
+            <VoiceEditor />
         {:else}
             <LoadingSpinner />
         {/if}
 
-
-        <SplitMenus/>
+        <SplitMenus />
 
         <div class="bottom">
-            <StatusBar/>
+            <StatusBar />
         </div>
     </div>
 </main>
@@ -379,15 +477,14 @@
         100% {
             outline-color: var(--color-surface0);
         }
-    }div
-
-    .talkbox-container {
+    }
+    div .talkbox-container {
         width: 100%;
         height: 100%;
     }
 
     #talkbox {
-        font-size: 1.25rem;
+        font-size: var(--talkbox-text-size);
         font-family: var(--font-family);
         border-radius: var(--rounding);
         padding: 12px;
@@ -399,7 +496,9 @@
         resize: none;
 
         will-change: outline-width;
-        transition: outline-width 0.1s var(--ease-out-expo);
+        transition:
+            outline-width 0.1s var(--ease-out-expo),
+            font-size 0.2s var(--ease-out-expo);
     }
 
     #talkbox:focus {
@@ -429,7 +528,6 @@
         .bottom {
             margin-top: auto;
         }
-
     }
 
     /* compact mode */
@@ -459,7 +557,7 @@
             position: absolute;
             right: 16px;
             bottom: 16px;
-            font-size: .9rem;
+            font-size: 0.9rem;
 
             display: flex;
             flex-direction: row;
@@ -473,7 +571,7 @@
             position: absolute;
             left: 16px;
             bottom: 16px;
-            font-size: .9rem;
+            font-size: 0.9rem;
 
             display: flex;
             flex-direction: row;
@@ -521,24 +619,29 @@
     }
 
     @property --gradient-percent {
-      syntax: "<percentage>";
-      inherits: false;
-      initial-value: 0%;
+        syntax: "<percentage>";
+        inherits: false;
+        initial-value: 0%;
     }
 
-
     @property --gradient-alpha {
-      syntax: "<percentage>";
-      inherits: false;
-      initial-value: 0%;
+        syntax: "<percentage>";
+        inherits: false;
+        initial-value: 0%;
     }
 
     .typingindicator-floating {
         --gradient-percent: 0%;
 
-        background: linear-gradient(90deg,
+        background: linear-gradient(
+            90deg,
             color-mix(in srgb, var(--color-text), transparent 50%),
-            color-mix(in srgb, var(--color-text) calc(var(--gradient-alpha)), transparent calc(100% - var(--gradient-alpha))) var(--gradient-percent),
+            color-mix(
+                    in srgb,
+                    var(--color-text) calc(var(--gradient-alpha)),
+                    transparent calc(100% - var(--gradient-alpha))
+                )
+                var(--gradient-percent),
             color-mix(in srgb, var(--color-text), transparent 50%)
         );
         background-size: 200%;
@@ -548,5 +651,4 @@
 
         animation: 1.4s typingindicator-anim infinite linear;
     }
-
 </style>

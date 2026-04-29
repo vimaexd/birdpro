@@ -54,6 +54,7 @@ interface BirdProConfig {
     "ui.theme": "dark" | "light" | "auto";
     "ui.rounding": 6;
     "ui.accentColor": string;
+    "ui.textboxTextSize": number;
     "ui.showHistory": boolean;
     "ui.showHrm": boolean;
 }
@@ -98,6 +99,7 @@ export async function initialiseConfig() {
         "ui.theme": "dark",
         "ui.rounding": 6,
         "ui.accentColor": "#4744eb",
+        "ui.textboxTextSize": 20,
         "ui.showHistory": true,
         "ui.showHrm": false,
         checkForUpdates: true,

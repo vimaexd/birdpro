@@ -16,7 +16,7 @@ pub enum AudioSetupError {
     DeviceNoLongerExists,
     NoDefaultDevice,
     DeviceOpenFailed,
-    StreamOpenFailed
+    StreamOpenFailed,
 }
 
 pub struct AudioSetup {
@@ -28,7 +28,9 @@ pub struct AudioSetup {
 impl AudioSetup {
     pub fn new() -> Result<Self, AudioSetupError> {
         let host = cpal::default_host();
-        let device = host.default_output_device().ok_or(AudioSetupError::NoDefaultDevice);
+        let device = host
+            .default_output_device()
+            .ok_or(AudioSetupError::NoDefaultDevice);
 
         Self::from_device(device?)
     }
@@ -46,13 +48,11 @@ impl AudioSetup {
             device.clone().description().unwrap().name()
         );
 
-        Ok(
-            Self {
-                device,
-                stream_handle,
-                sink,
-            }
-        )
+        Ok(Self {
+            device,
+            stream_handle,
+            sink,
+        })
     }
 }
 

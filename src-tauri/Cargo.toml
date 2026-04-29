@@ -45,6 +45,7 @@ piper-rs = "0.1.9"
 ort = { version = "=2.0.0-rc.9" }
 ort-sys = { version = "=2.0.0-rc.9", default-features = false }
 tauri-plugin-dialog = "2"
+tauri-plugin-os = "2"
 
 [patch.crates-io]
 espeak-rs-sys = { path = "../crates/espeak-rs-sys" }
