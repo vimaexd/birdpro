@@ -7,6 +7,12 @@ use serde_json::Value;
 
 pub struct MsEdgeTTSProvider {}
 
+// MsEdge and Windows backends will
+// fail synthesis if the message has a < or > char
+pub fn sanitize_ssml_message(str: String) -> String {
+    str.replace("<", "&lt;").replace(">", "&lt;")
+}
+
 impl TTSProvider for MsEdgeTTSProvider {
     fn name() -> &'static str {
         "Microsoft Edge TTS"
@@ -35,7 +41,10 @@ impl TTSProvider for MsEdgeTTSProvider {
             .map_err(|_| TTSProviderError::FetchError)?;
 
         let audio = tts
-            .synthesize(message, &speech_config)
+            .synthesize(
+                sanitize_ssml_message(message.to_string()).as_str(),
+                &speech_config,
+            )
             .await
             .map_err(|_| TTSProviderError::FetchError)?;
 

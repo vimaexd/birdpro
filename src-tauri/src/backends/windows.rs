@@ -1,3 +1,4 @@
+use crate::backends::msedge::sanitize_ssml_message;
 use crate::provider::{TTSProvider, TTSProviderError, TTSProviderType};
 use crate::voice::{Voice, VoiceWithSettings};
 use serde_json::Value;
@@ -34,9 +35,11 @@ impl TTSProvider for WindowsTTSProvider {
         let lang = voice.voice.lang.as_ref().unwrap();
         let rate = (voice.rate * 10.0).round() as i32;
 
+        let sanitized_message = sanitize_ssml_message(message);
+
         let ssml = format!("<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xml:lang=\"{lang}\">
                 <prosody rate=\"{rate:+}%\">
-                    {message}
+                    {sanitized_message}
                 </prosody>
         </speak>");
 
