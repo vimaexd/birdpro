@@ -153,7 +153,10 @@ fn main() {
     let espeak_dst = out_dir.join("espeak-ng");
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").expect("Failed to get CARGO_MANIFEST_DIR");
     let espeak_src = Path::new(&manifest_dir).join("espeak-ng");
-    let build_shared_libs = false;
+
+    // BIRD PRO
+    // Build shared libs
+    let build_shared_libs = true;
 
     let build_shared_libs = std::env::var("ESPEAK_BUILD_SHARED_LIBS")
         .map(|v| v == "1")
@@ -218,13 +221,9 @@ fn main() {
         config.static_crt(static_crt);
     }
 
-    if cfg!(target_os = "macos") {
-        config.define("USE_LIBPCAUDIO", "OFF");
-    }
-
-    if cfg!(target_os = "linux") {
-        config.define("USE_LIBPCAUDIO", "OFF");
-    }
+    // BIRD PRO
+    // Disable LibPCAudio as we use our own audio pipeline
+    config.define("USE_LIBPCAUDIO", "OFF");
 
     // General
     config
