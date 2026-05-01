@@ -26,7 +26,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: recursive
 
@@ -74,7 +74,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: cache cargo crates
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
             path: |
                 ~/.cargo/bin/
@@ -94,7 +94,7 @@ jobs:
 
       - name: upload artifact (linux)
         if: matrix.platform == 'ubuntu-22.04'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
             name: birdpro-linux-${{ github.sha }}
             path: |
