@@ -156,7 +156,7 @@ fn main() {
 
     // BIRD PRO
     // Build shared libs
-    let build_shared_libs = true;
+    let build_shared_libs = false;
 
     let build_shared_libs = std::env::var("ESPEAK_BUILD_SHARED_LIBS")
         .map(|v| v == "1")

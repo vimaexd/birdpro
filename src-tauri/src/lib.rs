@@ -15,6 +15,7 @@ use serde_json::Value;
 use std::sync::Arc;
 use tauri::window::Color;
 use tauri::Manager;
+use tauri::path::BaseDirectory::Resource;
 use tokio::sync::Mutex as AsyncMutex;
 use vrchat_osc::VRChatOSC;
 
@@ -73,6 +74,14 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .setup(move |app| {
             info!("Bird Pro v{}", app.package_info().version);
+
+            // set espeak data folder
+            let data_path = app
+                .path()
+                .resolve("espeak-ng-data", Resource)
+                .expect("missing espeak data");
+
+            std::env::set_var("ESPEAK_DATA_PATH", &data_path);
 
             // set background color to avoid flashes on startup
             let win = app.get_webview_window("main").unwrap();

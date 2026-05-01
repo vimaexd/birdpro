@@ -36,7 +36,10 @@
             "icons/macos/gen/birdpro-icon-mac.icns",
             "icons/icon.ico"
         ],
-        "resources": ["assets/"],
+        "resources": [
+            "assets/",
+            "../crates/espeak-rs-sys/espeak-ng/espeak-ng-data"
+        ],
         "windows": {
             "nsis": {
                 "sidebarImage": "./assets-installer/installer-sidebar.bmp"
