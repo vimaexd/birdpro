@@ -1,25 +1,23 @@
 <script lang="ts">
     import dayjs from "dayjs";
-    let { children, onclick = undefined, time = dayjs(0) } = $props();
+    let { children, onclick = undefined, time = dayjs() } = $props();
 </script>
 
 <button class="history-item" {onclick} tabindex="0">
     <p>{@render children()}</p>
-    <p class="time">
-        {time.format("HH:mm:ss")}
-    </p>
 </button>
 
 <style>
     .history-item {
-        width: 100%;
+        width: fit-content;
+        max-width: 100%;
+
         background-color: var(--color-surface0);
-        padding: 12px 16px;
+        padding: 4px 12px;
         min-width: 0;
-        font-size: 1.115rem;
+        font-size: 0.75rem;
         font-family: var(--font-family);
-        font-weight: 400;
-        color: color-mix(in srgb, var(--color-text), transparent 20%);
+        color: var(--color-text);
         text-align: left;
 
         border: none;
@@ -29,25 +27,12 @@
         transition: filter 0.02s var(--ease-out-expo);
         will-change: filter;
 
-        display: flex;
-        gap: 16px;
-
         & p {
             display: block;
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
             user-select: none;
-        }
-
-        & .time {
-            font-size: 0.9rem;
-            margin-left: auto;
-
-            flex-shrink: 0;
-            align-self: center;
-            opacity: 0.5;
-            mix-blend-mode: color-dodge;
         }
 
         &:hover {

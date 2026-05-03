@@ -17,12 +17,11 @@
     import { invoke } from "@tauri-apps/api/core";
     import { getCurrentWindow } from "@tauri-apps/api/window";
     import { info } from "@tauri-apps/plugin-log";
-    import { platform } from "@tauri-apps/plugin-os"
+    import { platform } from "@tauri-apps/plugin-os";
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     import { _ } from "svelte-i18n";
 
-    import AddFavourite from "./screens/add-favourite.svelte";
     import Settings from "./screens/settings.svelte";
 
     import SplitMenus from "@bird/components/feat/splitmenu/SplitMenus.svelte";
@@ -167,13 +166,11 @@
                 return;
             }
 
-
             // Checks for CMD on macOS, and CTRL for Linux and Windows
             let platAwareControl =
                 platform() == "macos" ? e.metaKey : e.ctrlKey;
 
             switch (e.key) {
-
                 /*
                     Ctrl ,
                     Open settings
@@ -190,14 +187,14 @@
                 */
                 case "=":
                     if (platAwareControl) {
-                        console.log("add")
+                        console.log("add");
 
                         let cs = get(configStore);
-                        if(cs['ui.textboxTextSize'] > 77) return;
+                        if (cs["ui.textboxTextSize"] > 77) return;
 
-                        cs['ui.textboxTextSize'] += 2;
+                        cs["ui.textboxTextSize"] += 2;
                         configStore.set(cs);
-                        console.log(cs['ui.textboxTextSize'])
+                        console.log(cs["ui.textboxTextSize"]);
                     }
                     break;
 
@@ -207,16 +204,15 @@
                 */
                 case "-":
                     if (platAwareControl) {
-                        console.log("minus")
+                        console.log("minus");
 
                         let cs = get(configStore);
-                        if(cs['ui.textboxTextSize'] < 13) return;
+                        if (cs["ui.textboxTextSize"] < 13) return;
 
-                        cs['ui.textboxTextSize'] -= 2;
+                        cs["ui.textboxTextSize"] -= 2;
                         configStore.set(cs);
                     }
                     break;
-
 
                 /*
                     Up arrow
@@ -312,7 +308,9 @@
                     $disableInputCapture = false;
                 }}
                 maxlength={$configStore["bypassCharLimit"] ? 99999 : 144}
-                style="--talkbox-text-size: {$configStore['ui.textboxTextSize']}px;"
+                style="--talkbox-text-size: {$configStore[
+                    'ui.textboxTextSize'
+                ]}px;"
             >
             </textarea>
             <div class="talkbox-corner">
@@ -374,6 +372,7 @@
                     <span class="action">{$_("talkbox.actionSay")}</span>
                 </ClickyButton>
             </div>
+
             <ClickyButton
                 onclick={async () => {
                     await invoke("audio_stop_all");
@@ -385,14 +384,39 @@
             </ClickyButton>
         </div>
 
-        {#if $configStore["ui.showHistory"]}
+        {#if $configStore["ui.showHistory"] && $configStore["history.mode"] == "bar"}
             <HistoryContainer
+                width="100%"
+                onSelectMessage={(msg: string) => {
+                    message = msg;
+                }}
+            />
+        {/if}
+
+        {#if $configStore["ui.showHistory"] && $configStore["history.mode"] == "single"}
+            <HistoryContainer
+                maxItems={1}
+                width="100%"
+                singleLineMode={true}
                 onSelectMessage={(msg: string) => {
                     message = msg;
                 }}
             />
         {/if}
     </div>
+
+    {#if $configStore["ui.showHistory"] && $configStore["history.mode"] == "panel"}
+        <div class="history-panel-container">
+            <HistoryContainer
+                fullHeight={true}
+                maxItems={99}
+                width="350px"
+                onSelectMessage={(msg: string) => {
+                    message = msg;
+                }}
+            />
+        </div>
+    {/if}
 
     <!--svelte-ignore a11y_no_static_element_interactions -->
     <div
@@ -420,12 +444,9 @@
 
 <style>
     .app-container {
-        display: grid;
-        grid-template-columns: minmax(0, 3fr) auto auto;
-        grid-template-rows: 1fr;
-        min-height: 100vh;
-        max-height: 100vh;
+        display: flex;
 
+        min-height: 100vh;
         min-width: 100vw;
         height: 100%;
         width: 100%;
@@ -508,8 +529,14 @@
     .app-left {
         display: flex;
         flex-direction: column;
+        flex-grow: 1;
         width: 100%;
         gap: 8px;
+    }
+
+    .history-panel-container {
+        width: fit-content;
+        height: calc(100vh - 24px);
     }
 
     .app-right {
@@ -521,6 +548,7 @@
         max-height: 100vh;
 
         width: var(--sidebar-width);
+        flex-shrink: 0;
 
         overflow-y: auto;
 
@@ -544,8 +572,11 @@
     }
 
     .buttons {
+        flex-shrink: 0;
         display: grid;
+        height: 164px;
         grid-template-columns: 128px 1fr 128px;
+        grid-auto-flow: column;
         gap: 8px;
     }
 

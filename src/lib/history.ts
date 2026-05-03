@@ -1,28 +1,37 @@
+import dayjs, { Dayjs } from "dayjs";
 import { writable, get } from "svelte/store";
 
-const HISTORY_MAX = 3;
+const HISTORY_MAX = 999;
 
-export let historyStore = writable<string[]>([]);
+interface HistoryItem {
+    message: string;
+    timestamp: Dayjs;
+}
 
-export function pushHistory(item: string) {
-  let hist = get(historyStore);
+export let historyStore = writable<HistoryItem[]>([]);
 
-  hist.push(item);
-  if (hist.length > HISTORY_MAX) {
-    hist = hist.slice(1, hist.length)
-  }
+export function pushHistory(message: string) {
+    let hist = get(historyStore);
 
-  historyStore.set(hist);
+    hist.push({
+        message,
+        timestamp: dayjs(),
+    });
+    if (hist.length > HISTORY_MAX) {
+        hist = hist.slice(1, hist.length);
+    }
+
+    historyStore.set(hist);
 }
 
 export function getLastMessage() {
-  let hist = get(historyStore);
-  if (hist.length < 1) {
-    return ""
-  }
-  return hist[hist.length-1];
+    let hist = get(historyStore);
+    if (hist.length < 1) {
+        return "";
+    }
+    return hist[hist.length - 1].message;
 }
 
 export function clearHistory() {
-  historyStore.set([]);
+    historyStore.set([]);
 }

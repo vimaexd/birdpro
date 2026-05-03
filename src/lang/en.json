@@ -1,150 +1,163 @@
 {
-  "onboarding": {
-    "welcome": "Welcome to Bird Pro!",
-    "complete": "Lets go!"
-  },
-  "error": {
-    "genericError": "Error",
-    "startupError": "Startup error",
-    "startupErrorExplainer": "Bird Pro was unable to start up"
-  },
-  "ui": {
-    "pickColor": "Choose a color",
-    "selectFolder": "Select a folder",
-    "hiddenText": "(hidden, click to reveal)",
-    "search": "Search",
-    "add": "Add"
-  },
-  "talkbox": {
-    "placeholder": "type something to say",
-    "clear": "clear",
-    "actionPreview": "preview",
-    "actionSay": "say",
-    "actionStop": "stop",
-    "typingIndicator": "typing"
-  },
-  "voiceEditor": {
-    "features": {
-      "pitch": "Pitch",
-      "rate": "Rate"
+    "onboarding": {
+        "welcome": "Welcome to Bird Pro!",
+        "complete": "Lets go!"
+    },
+    "error": {
+        "genericError": "Error",
+        "startupError": "Startup error",
+        "startupErrorExplainer": "Bird Pro was unable to start up"
+    },
+    "ui": {
+        "pickColor": "Choose a color",
+        "selectFolder": "Select a folder",
+        "hiddenText": "(hidden, click to reveal)",
+        "search": "Search",
+        "add": "Add"
+    },
+    "talkbox": {
+        "placeholder": "type something to say",
+        "clear": "clear",
+        "actionPreview": "preview",
+        "actionSay": "say",
+        "actionStop": "stop",
+        "typingIndicator": "typing"
+    },
+    "voiceEditor": {
+        "features": {
+            "pitch": "Pitch",
+            "rate": "Rate"
+        }
+    },
+    "sidebar": {
+        "favourite": "Favourite",
+        "allVoices": "All Voices",
+        "chooseProvider": "Choose a provider:",
+        "useVoice": "Use Voice",
+
+        "authRequired": "Authentication required",
+        "authRequiredExplainer": "To use voices from <b>{providerName}</b>, enter an API key in Settings",
+
+        "folderRequired": "Voices folder required",
+        "folderRequiredExplainer": "To use <b>{providerName}</b>, set a voices folder in Settings"
+    },
+    "favourite": {
+        "favourite": "Favourite",
+        "noFavourites": "Click the {star} button to add a favourite!",
+        "addFavourite": "Add favourite",
+        "preview": "Preview",
+        "name": "Name",
+        "defaultName": "My voice",
+        "color": "Color"
+    },
+    "history": {
+        "historyTitle": "History",
+        "noHistory": "Say something, and it'll show up here!"
+    },
+    "hrm": {
+        "hrm": "Heart rate monitor",
+        "explainer": "Bird Pro can connect to a heart rate monitor using <b>Pulsoid</b> and send your heart rate information over OSC for supported avatars.",
+        "vrcOscExplainer": "Heart rate monitoring will only work if VRChat OSC is enabled in settings.",
+        "useHrm": "Use heart rate monitor",
+        "widgetId": "Widget ID",
+
+        "advanced": "Advanced",
+        "advancedMaxHr": "Max heart rate",
+        "advancedConnectedParam": "OSC connected parameter",
+        "advancedPercentParam": "OSC percentage parameter"
+    },
+    "update": {
+        "updateAvailable": "An update is available!"
+    },
+    "settings": {
+        "settings": "Settings",
+        "pages": {
+            "audio": "Audio",
+            "appearance": "Appearance",
+            "behaviour": "Behaviour",
+            "replacements": "Replacements",
+            "providers": "Providers",
+            "integrations": "Integrations",
+            "about": "About"
+        },
+        "audio": {
+            "outputDevice": "Output Device",
+            "mainVolume": "Main Volume",
+
+            "previewDevice": "Preview Device",
+            "previewVolume": "Preview Volume"
+        },
+        "appearance": {
+            "theme": "Theme",
+
+            "themeDark": "Dark",
+            "themeLight": "Light",
+            "themeAuto": "Auto",
+
+            "accentColor": "Accent color",
+            "rounding": "Rounding",
+            "textSize": "Textbox text size",
+
+            "sections": "Sections",
+            "showHistory": "Show history",
+            "showHrm": "Show heart rate monitor"
+        },
+        "behaviour": {
+            "sound": "Sound",
+            "audibleTypingIndicator": "Audible typing indicator",
+
+            "textbox": "Textbox",
+            "bypassCharLimit": "Bypass character limit",
+            "bypassCharLimitExplainer": "If you are outputting over VRChat OSC, messages will be truncated.",
+
+            "history": "History",
+
+            "historyDesign": "Message appearence",
+            "historyDesignExampleMessage": "i am using bird pro. sqwawk!",
+            "historyMessageLarge": "Large",
+            "historyMessageCompact": "Compact",
+
+            "historyMode": "Mode",
+            "historyModeExplainer": "Panel mode will expand the history and put messages in a dedicated column of the screen.",
+            "historyMode.bar": "Bar",
+            "historyMode.panel": "Panel",
+            "historyMode.single": "Single",
+
+            "app": "App",
+            "checkForUpdates": "Check for updates"
+        },
+        "replacements": {
+            "replacementsExplainer": "Replacements can be used to correct TTS engine pronounciation or create shorthands for phrases.",
+            "pattern": "Pattern",
+            "replacement": "Replacement",
+
+            "defaultReplacementFromText": "Text to replace",
+            "defaultReplacementToText": "Replacement text"
+        },
+        "providers": {
+            "apikey": "API Key",
+            "elevenlabsExplainer": "Generate an API key at {link}",
+            "piperVoicesPath": "Voices folder",
+            "piperExplainer": "Voices can be downloaded from {link}"
+        },
+        "integrations": {
+            "vrcOsc": "Enable VRChat OSC",
+            "vrcOscExplainer": "Enabling VRChat OSC will send TTS messages to the VRChat textbox, and sync the typing indicator",
+
+            "txtOutput": "Text file output",
+            "txtOutputEnable": "Enable text file output",
+            "txtOutputClear": "Clear after time",
+            "txtOutputTimeout": "second timeout before clearing",
+            "txtOutputPath": "Text file path",
+
+            "txtIndicator": "Text typing indicator",
+            "txtIndicatorEnable": "Enable .txt typing indicator",
+            "txtIndicatorText": "Typing indicator text",
+            "txtIndicatorPath": "Typing indicator path"
+        },
+        "about": {
+            "config": "Config",
+            "logs": "Logs"
+        }
     }
-  },
-  "sidebar": {
-    "favourite": "Favourite",
-    "allVoices": "All Voices",
-    "chooseProvider": "Choose a provider:",
-    "useVoice": "Use Voice",
-
-    "authRequired": "Authentication required",
-    "authRequiredExplainer": "To use voices from <b>{providerName}</b>, enter an API key in Settings",
-
-    "folderRequired": "Voices folder required",
-    "folderRequiredExplainer": "To use <b>{providerName}</b>, set a voices folder in Settings"
-  },
-  "favourite": {
-    "favourite": "Favourite",
-    "noFavourites": "Click the {star} button to add a favourite!",
-    "addFavourite": "Add favourite",
-    "preview": "Preview",
-    "name": "Name",
-    "defaultName": "My voice",
-    "color": "Color"
-  },
-  "history": {
-    "historyTitle": "History",
-    "noHistory": "Say something, and it'll show up here!"
-  },
-  "hrm": {
-    "hrm": "Heart rate monitor",
-    "explainer": "Bird Pro can connect to a heart rate monitor using <b>Pulsoid</b> and send your heart rate information over OSC for supported avatars.",
-    "vrcOscExplainer": "Heart rate monitoring will only work if VRChat OSC is enabled in settings.",
-    "useHrm": "Use heart rate monitor",
-    "widgetId": "Widget ID",
-
-    "advanced": "Advanced",
-    "advancedMaxHr": "Max heart rate",
-    "advancedConnectedParam": "OSC connected parameter",
-    "advancedPercentParam": "OSC percentage parameter"
-  },
-  "update": {
-    "updateAvailable": "An update is available!"
-  },
-  "settings": {
-    "settings": "Settings",
-    "pages": {
-      "audio": "Audio",
-      "appearance": "Appearance",
-      "behaviour": "Behaviour",
-      "replacements": "Replacements",
-      "providers": "Providers",
-      "integrations": "Integrations",
-      "about": "About"
-    },
-    "audio": {
-      "outputDevice": "Output Device",
-      "mainVolume": "Main Volume",
-
-      "previewDevice": "Preview Device",
-      "previewVolume": "Preview Volume"
-    },
-    "appearance": {
-      "theme": "Theme",
-
-      "themeDark": "Dark",
-      "themeLight": "Light",
-      "themeAuto": "Auto",
-
-      "accentColor": "Accent color",
-      "rounding": "Rounding",
-      "textSize": "Textbox text size",
-
-      "sections": "Sections",
-      "showHistory": "Show history",
-      "showHrm": "Show heart rate monitor"
-    },
-    "behaviour": {
-      "sound": "Sound",
-      "audibleTypingIndicator": "Audible typing indicator",
-
-      "textbox": "Textbox",
-      "bypassCharLimit": "Bypass character limit",
-      "bypassCharLimitExplainer": "If you are outputting over VRChat OSC, messages will be truncated.",
-
-      "app": "App",
-      "checkForUpdates": "Check for updates"
-    },
-    "replacements": {
-      "replacementsExplainer": "Replacements can be used to correct TTS engine pronounciation or create shorthands for phrases.",
-      "pattern": "Pattern",
-      "replacement": "Replacement",
-
-      "defaultReplacementFromText": "Text to replace",
-      "defaultReplacementToText": "Replacement text"
-    },
-    "providers": {
-      "apikey": "API Key",
-      "elevenlabsExplainer": "Generate an API key at {link}",
-      "piperVoicesPath": "Voices folder",
-      "piperExplainer": "Voices can be downloaded from {link}"
-    },
-    "integrations": {
-      "vrcOsc": "Enable VRChat OSC",
-      "vrcOscExplainer": "Enabling VRChat OSC will send TTS messages to the VRChat textbox, and sync the typing indicator",
-
-      "txtOutput": "Text file output",
-      "txtOutputEnable": "Enable text file output",
-      "txtOutputClear": "Clear after time",
-      "txtOutputTimeout": "second timeout before clearing",
-      "txtOutputPath": "Text file path",
-
-      "txtIndicator": "Text typing indicator",
-      "txtIndicatorEnable": "Enable .txt typing indicator",
-      "txtIndicatorText": "Typing indicator text",
-      "txtIndicatorPath": "Typing indicator path"
-    },
-    "about": {
-      "config": "Config",
-      "logs": "Logs"
-    }
-  }
 }

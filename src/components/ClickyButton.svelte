@@ -5,14 +5,17 @@
     const props = $props();
 </script>
 
-<button style="--btn-color: {props.color || 'var(--color-accent)'};" class="btn-say {props.active ? 'active' : ''}" {...props}>
-{#if props.loading}
-    <LoadingSpinner/>
-{:else}
-    {@render props.children()}
-{/if}
+<button
+    style="--btn-color: {props.color || 'var(--color-accent)'};"
+    class="btn-say {props.active ? 'active' : ''}"
+    {...props}
+>
+    {#if props.loading}
+        <LoadingSpinner />
+    {:else}
+        {@render props.children()}
+    {/if}
 </button>
-
 
 <style>
     .btn-say {
@@ -28,11 +31,13 @@
         font-size: 1.25rem;
         font-weight: 500;
         font-family: var(--font-family);
-        height: 164px;
+        height: 100%;
 
         border-radius: var(--rounding);
 
-        transition: filter, transform .15s var(--ease-out-expo);
+        transition:
+            filter,
+            transform 0.15s var(--ease-out-expo);
         will-change: filter;
 
         box-shadow: 0px 4px color-mix(in srgb, var(--btn-color) 70%, white 30%);
@@ -43,10 +48,12 @@
             filter: brightness(1.35);
         }
 
-        &:active, :global(&.active) {
+        &:active,
+        :global(&.active) {
             transform: translateY(4px);
-            box-shadow: 0px 0px color-mix(in srgb, var(--btn-color) 70%, white 30%);
-            filter: brightness(0.90);
+            box-shadow: 0px 0px
+                color-mix(in srgb, var(--btn-color) 70%, white 30%);
+            filter: brightness(0.9);
         }
 
         & :global(*) {
@@ -57,6 +64,4 @@
             margin-left: 8px;
         }
     }
-
-
 </style>

@@ -83,6 +83,8 @@
         bind:value={provider}
         onChange={() => {
             showRequiresAuth = false;
+            showRequiresFolder = false;
+
             ttsVoices = [];
             selectedVoice = "";
             showProviders = false;
