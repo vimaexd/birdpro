@@ -1,6 +1,8 @@
 use std::io::Cursor;
 
-use crate::audio::{AudioDeviceInfo, AudioSetup, AudioSetupError, BirdPlayer};
+use crate::audio::{
+    get_device_display_name, AudioDeviceInfo, AudioSetup, AudioSetupError, BirdPlayer,
+};
 use crate::AppData;
 use rodio::cpal::traits::HostTrait;
 use rodio::{cpal, DeviceTrait, Source};
@@ -20,9 +22,9 @@ pub fn audio_get_devices() -> Vec<String> {
         .filter_map(|d| d.description().ok())
         // that we can output to
         .filter(|d| d.supports_output())
-        .map(|d| d.name().to_string())
+        .map(|d| get_device_display_name(d))
         // remove duplicates
-        .filter(|name| seen.insert(name.clone()))
+        .filter(|device| seen.insert(device.clone()))
         .collect();
 
     device_list
@@ -42,7 +44,7 @@ pub async fn audio_get_device(
         .expect("failed to get audio setup");
 
     Ok(Some(AudioDeviceInfo {
-        name: setup.device.description().unwrap().name().to_string(),
+        name: get_device_display_name(setup.device.description().unwrap()),
         sample_rate: setup.stream_handle.config().sample_rate().into(),
         bit_depth: setup.stream_handle.config().sample_format().sample_size(),
     }))
@@ -58,12 +60,13 @@ pub async fn audio_set_device(
 
     //find the device based on the name
     let mut devices = cpal::default_host().output_devices().unwrap();
-    let device = match devices.find(|x| x.description().unwrap().name() == device_name) {
-        Some(d) => d,
-        None => {
-            return Err(AudioSetupError::DeviceNoLongerExists);
-        }
-    };
+    let device =
+        match devices.find(|x| get_device_display_name(x.description().unwrap()) == device_name) {
+            Some(d) => d,
+            None => {
+                return Err(AudioSetupError::DeviceNoLongerExists);
+            }
+        };
 
     log::info!("Audio setup update (setup {})", setup_idx);
     let setup = AudioSetup::from_device(device)?;

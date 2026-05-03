@@ -1,3 +1,4 @@
+use cpal::DeviceDescription;
 use rodio::cpal::{self, traits::HostTrait};
 use rodio::DeviceTrait;
 use serde::{Deserialize, Serialize};
@@ -45,7 +46,7 @@ impl AudioSetup {
 
         log::info!(
             "audio setup created with device \"{}\"",
-            device.clone().description().unwrap().name()
+            get_device_display_name(device.clone().description().unwrap())
         );
 
         Ok(Self {
@@ -54,6 +55,14 @@ impl AudioSetup {
             sink,
         })
     }
+}
+
+// used for display in the ui and matching -> cpal devices
+// modifying this will break stored user device prefs!
+pub fn get_device_display_name(device: DeviceDescription) -> String {
+    let name = device.name().to_string();
+    let driver = device.driver().unwrap_or("").to_string();
+    format!("{name} ({driver})")
 }
 
 // helper to be able to differenciate different tts sinks to
