@@ -31,9 +31,25 @@
         margin-bottom: 24px;
     }
 
+    .settings-page :global(.option-section-header) {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
     .settings-page :global(.option-row) {
         display: flex;
         flex-direction: row;
         gap: 24px;
+    }
+
+    .settings-page :global(.option-section) {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 24px;
+        padding: 12px;
+        background-color: var(--color-bg-layer);
+        border-radius: var(--rounding);
     }
 </style>
