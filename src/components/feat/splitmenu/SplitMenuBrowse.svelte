@@ -1,20 +1,26 @@
 <script lang="ts">
-    import SelectList from '@bird/components/ui/SelectList.svelte';
-    import SelectListOption from '@bird/components/ui/SelectListOption.svelte';
-    import SvelteVirtualList from '@humanspeak/svelte-virtual-list';
-    import IconCloud from '@bird/assets/icons/IconCloud.svelte';
-    import Button from '@bird/components/ui/Button.svelte';
-    import { ttsProviders, ttsStore, type Voice, getErrorText, resolveProvider } from '@bird/lib/bird';
-    import { invoke } from '@tauri-apps/api/core';
-    import LoadingSpinner from '@bird/components/LoadingSpinner.svelte';
-    import { showError } from '@bird/lib/toast';
-    import { onMount } from 'svelte';
-    import { get } from 'svelte/store';
-    import NoticeRequiresAuth from './NoticeRequiresAuth.svelte';
-    import TextInput from '@bird/components/ui/TextInput.svelte';
-    import IconSearch from '@bird/assets/icons/IconSearch.svelte';
-    import { disableInputCapture } from '@bird/lib/modal';
-    import { _ } from 'svelte-i18n';
+    import SelectList from "@bird/components/ui/SelectList.svelte";
+    import SelectListOption from "@bird/components/ui/SelectListOption.svelte";
+    import SvelteVirtualList from "@humanspeak/svelte-virtual-list";
+    import IconCloud from "@bird/assets/icons/IconCloud.svelte";
+    import Button from "@bird/components/ui/Button.svelte";
+    import {
+        ttsProviders,
+        ttsStore,
+        type Voice,
+        getErrorText,
+        resolveProvider,
+    } from "@bird/lib/bird";
+    import { invoke } from "@tauri-apps/api/core";
+    import LoadingSpinner from "@bird/components/LoadingSpinner.svelte";
+    import { showError } from "@bird/lib/toast";
+    import { onMount } from "svelte";
+    import { get } from "svelte/store";
+    import NoticeRequiresAuth from "./NoticeRequiresAuth.svelte";
+    import TextInput from "@bird/components/ui/TextInput.svelte";
+    import IconSearch from "@bird/assets/icons/IconSearch.svelte";
+    import { disableInputCapture } from "@bird/lib/modal";
+    import { _ } from "svelte-i18n";
 
     // provider
     let showProviders = $state(true);
@@ -23,11 +29,15 @@
     // voices
     let ttsVoices = $state<Voice[]>([]);
     let ttsVoicesFiltered = $derived(
-      ttsVoices.filter(v => v.name.toLowerCase().includes(voiceSearchQuery.toLowerCase().trim()))
-    )
+        ttsVoices.filter((v) =>
+            v.name
+                .toLowerCase()
+                .includes(voiceSearchQuery.toLowerCase().trim()),
+        ),
+    );
     let justApplied = $state(false);
     let selectedVoice = $state("");
-    let voiceSearchQuery = $state("")
+    let voiceSearchQuery = $state("");
 
     let enableUseButton = $derived(!justApplied && selectedVoice !== "");
 
@@ -35,35 +45,37 @@
     let showRequiresAuth = $state(false);
 
     const updateVoices = async () => {
-      try {
-        ttsVoices = await invoke("tts_get_voicelist", { providerId: provider })
-      } catch(e: any) {
-        if(e == "AuthorizationRequired") {
-          showRequiresAuth = true
-        } else {
-          let err = await getErrorText(e);
-          showError(e, err);
+        try {
+            ttsVoices = await invoke("tts_get_voicelist", {
+                providerId: provider,
+            });
+        } catch (e: any) {
+            if (e == "AuthorizationRequired") {
+                showRequiresAuth = true;
+            } else {
+                let err = await getErrorText(e);
+                showError(e, err);
+            }
         }
-      }
-    }
+    };
 
     onMount(() => {
-      updateVoices();
-    })
+        updateVoices();
+    });
 </script>
 
 {#if showProviders}
     <div class="header header-inp">
         <div>
-            <h2>{$_('sidebar.chooseProvider')}</h2>
+            <h2>{$_("sidebar.chooseProvider")}</h2>
         </div>
     </div>
     <SelectList
         bind:value={provider}
         onChange={() => {
-            showRequiresAuth = false
-            ttsVoices = []
-            selectedVoice = ""
+            showRequiresAuth = false;
+            ttsVoices = [];
+            selectedVoice = "";
             showProviders = false;
         }}
         height="fit-content"
@@ -75,45 +87,58 @@
                 {#if provider.cloud}
                     <IconCloud width="16px" height="16px" />
                 {/if}
+
+                <div style="margin-left: auto;">›</div>
             </SelectListOption>
         {/each}
     </SelectList>
 {:else}
     <div class="header header-inp">
-        <Button type="small" onclick={() => {
-            showProviders = true;
-            provider = ""
-        }}>
-            <h2><span class="header-arrow">‹</span> {resolveProvider(provider).name}</h2>
+        <Button
+            type="small"
+            onclick={() => {
+                showProviders = true;
+                provider = "";
+            }}
+        >
+            <h2>
+                <span class="header-arrow">‹</span>
+                {resolveProvider(provider).name}
+            </h2>
         </Button>
         <div>
             {#if voiceSearchQuery.length < 1}
-            <div class="header-inp-label-container">
-                <div>
-                    <label for="">
-                        <IconSearch width="16px" height="16px"/>
-                        {$_('ui.search')}
-                    </label>
+                <div class="header-inp-label-container">
+                    <div>
+                        <label for="">
+                            <IconSearch width="16px" height="16px" />
+                            {$_("ui.search")}
+                        </label>
+                    </div>
                 </div>
-            </div>
             {/if}
-            <TextInput bind:value={voiceSearchQuery} onclick={() => disableInputCapture.set(true)}/>
+            <TextInput
+                bind:value={voiceSearchQuery}
+                onclick={() => disableInputCapture.set(true)}
+            />
         </div>
     </div>
     <SelectList
         bind:value={selectedVoice}
         onChange={() => {
-        justApplied = false
+            justApplied = false;
         }}
         height="100%"
     >
-        {#await updateVoices() }
+        {#await updateVoices()}
             <div class="selectlist-loading-container">
-                <LoadingSpinner/>
+                <LoadingSpinner />
             </div>
         {:then voices}
             {#if showRequiresAuth}
-                <NoticeRequiresAuth providerName={resolveProvider(provider).name}/>
+                <NoticeRequiresAuth
+                    providerName={resolveProvider(provider).name}
+                />
             {:else}
                 <SvelteVirtualList items={ttsVoicesFiltered as Voice[]}>
                     {#snippet renderItem(voice)}
@@ -126,19 +151,25 @@
         {/await}
     </SelectList>
     <div class="buttons">
-        <Button style="width: 100%;justify-content: center;" disabled={!enableUseButton} type="accent"
+        <Button
+            style="width: 100%;justify-content: center;"
+            disabled={!enableUseButton}
+            type="accent"
             onclick={() => {
-            if(!enableUseButton) return;
-            let ttsStoreCopy = get(ttsStore);
-            ttsStoreCopy.voice = JSON.parse(JSON.stringify(ttsVoices.find((v: Voice) => (v.id == selectedVoice))!));
-            ttsStore.set(ttsStoreCopy);
-            justApplied = true;
+                if (!enableUseButton) return;
+                let ttsStoreCopy = get(ttsStore);
+                ttsStoreCopy.voice = JSON.parse(
+                    JSON.stringify(
+                        ttsVoices.find((v: Voice) => v.id == selectedVoice)!,
+                    ),
+                );
+                ttsStore.set(ttsStoreCopy);
+                justApplied = true;
             }}
-        >{$_('sidebar.useVoice')}
+            >{$_("sidebar.useVoice")}
         </Button>
     </div>
 {/if}
-
 
 <style>
     .selectlist-loading-container {
@@ -156,12 +187,12 @@
     }
 
     h2 {
-      font-size: 0.9rem;
-      font-weight: 500;
-      user-select: none;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+        font-size: 0.9rem;
+        font-weight: 500;
+        user-select: none;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .header {
@@ -204,7 +235,7 @@
         border-radius: 12px;
 
         &::before {
-            content: '';
+            content: "";
             display: block;
             width: 100%;
             height: 100%;
