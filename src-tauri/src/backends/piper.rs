@@ -92,7 +92,7 @@ impl TTSProvider for PiperTTSProvider {
     ) -> Result<Vec<crate::voice::Voice>, crate::provider::TTSProviderError> {
         let voices_path = config["piper.voicesPath"].as_str();
 
-        if voices_path.is_none() {
+        if voices_path.is_none() || voices_path.unwrap().is_empty() {
             return Err(TTSProviderError::MissingVoicesPath);
         }
 

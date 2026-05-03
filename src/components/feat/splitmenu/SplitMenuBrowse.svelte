@@ -21,6 +21,7 @@
     import IconSearch from "@bird/assets/icons/IconSearch.svelte";
     import { disableInputCapture } from "@bird/lib/modal";
     import { _ } from "svelte-i18n";
+    import NoticeRequiresFolder from "./NoticeRequiresFolder.svelte";
 
     // provider
     let showProviders = $state(true);
@@ -43,6 +44,7 @@
 
     // notices
     let showRequiresAuth = $state(false);
+    let showRequiresFolder = $state(false);
 
     const updateVoices = async () => {
         try {
@@ -50,11 +52,18 @@
                 providerId: provider,
             });
         } catch (e: any) {
-            if (e == "AuthorizationRequired") {
-                showRequiresAuth = true;
-            } else {
-                let err = await getErrorText(e);
-                showError(e, err);
+            switch (e) {
+                case "AuthorizationRequired":
+                    showRequiresAuth = true;
+                    break;
+
+                case "MissingVoicesPath":
+                    showRequiresFolder = true;
+                    break;
+
+                default:
+                    let err = await getErrorText(e);
+                    showError(e, err);
             }
         }
     };
@@ -137,6 +146,10 @@
         {:then voices}
             {#if showRequiresAuth}
                 <NoticeRequiresAuth
+                    providerName={resolveProvider(provider).name}
+                />
+            {:else if showRequiresFolder}
+                <NoticeRequiresFolder
                     providerName={resolveProvider(provider).name}
                 />
             {:else}
