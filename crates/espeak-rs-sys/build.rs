@@ -343,4 +343,16 @@ fn main() {
             std::fs::hard_link(real_asset, dst).unwrap();
         }
     }
+
+    // BIRD PRO
+    // copy compiled espeak-ng-data to be bundled
+    let compiled_data_src = out_dir.join("build").join("espeak-ng-data");
+    let compiled_data_target = Path::new(&manifest_dir).join("espeak-data-compiled").join("build");
+
+    if compiled_data_src.exists() {
+        debug_log!("copying compiled espeak-ng-data");
+        copy_folder(&compiled_data_src, &compiled_data_target);
+    } else {
+        println!("cargo:warning=compiled espeak-ng-data not found")
+    }
 }

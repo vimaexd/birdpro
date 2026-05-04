@@ -78,10 +78,10 @@ pub fn run() {
             // set espeak data folder
             let data_path = app
                 .path()
-                .resolve("espeak-ng-data", Resource)
+                .resolve("resources/espeak-ng-data", Resource)
                 .expect("missing espeak data");
 
-            std::env::set_var("ESPEAK_DATA_PATH", &data_path);
+            std::env::set_var("PIPER_ESPEAKNG_DATA_DIRECTORY", &data_path);
 
             // set background color to avoid flashes on startup
             let win = app.get_webview_window("main").unwrap();
