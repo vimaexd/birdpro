@@ -36,17 +36,14 @@ impl TTSProvider for PiperTTSProvider {
 
         if cache.is_none() || (voice.voice.id.to_string() != cache.as_ref().unwrap().0) {
             let model = piper_rs::from_config_path(Path::new(voice.voice.id.as_str()))
-                .map_err(|_| TTSProviderError::VoiceNotFound)
-                .unwrap();
+                .map_err(|_| TTSProviderError::VoiceNotFound)?;
 
             let file = std::fs::File::open(voice.voice.id.as_str()).unwrap();
             let json: Value = serde_json::from_reader(file)
-                .map_err(|_| TTSProviderError::VoiceNotFound)
-                .unwrap();
+                .map_err(|_| TTSProviderError::VoiceNotFound)?;
 
             let synth = PiperSpeechSynthesizer::new(model)
-                .map_err(|_| TTSProviderError::VoiceNotFound)
-                .unwrap();
+                .map_err(|_| TTSProviderError::VoiceNotFound)?;
 
             *cache = Some((
                 voice.voice.id.to_string(),
@@ -60,8 +57,8 @@ impl TTSProvider for PiperTTSProvider {
         let mut samples: Vec<f32> = Vec::new();
         let audio = synth
             .synthesize_parallel(message.to_string(), None)
-            .map_err(|_| TTSProviderError::SynthesisFailure)
-            .unwrap();
+            .map_err(|_| TTSProviderError::SynthesisFailure)?;
+
         for result in audio {
             samples.append(&mut result.unwrap().into_vec());
         }
