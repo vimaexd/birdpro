@@ -33,6 +33,8 @@
 <div class="history {historyModeClass}" style="width: {width};">
     {#if !singleLineMode}
         <div class="history-side">
+            <h2 class="history-title">{$_("history.historyTitle")}</h2>
+            <span class="vr"></span>
             <div class="history-clear">
                 <Button
                     type="small"
@@ -52,9 +54,7 @@
                     <IconBin width="18px" height="18px" />
                 </Button>
             </div>
-            <span class="vr"></span>
-            <h2 class="history-title">{$_("history.historyTitle")}</h2>
-            <span class="vr"></span>
+
         </div>
     {:else}
         <div class="history-side-inline">History</div>
@@ -93,11 +93,11 @@
 
 <style>
     .history-large {
-        height: calc(16rem + 42px);
+        height: 150px;
     }
 
     .history-compact {
-        height: calc(9rem + 42px);
+        height: 102px;
     }
 
     .history-singleline {
@@ -115,12 +115,12 @@
         display: flex;
         gap: 8px;
 
+
         .history-side {
+            height: calc(100% - 16px);
             writing-mode: vertical-rl;
             text-orientation: sideways;
-            transform: rotate(180deg);
             display: flex;
-            flex-direction: row;
             align-items: center;
 
             gap: 8px;
@@ -162,9 +162,8 @@
         }
 
         .history-clear {
-            transform: rotate(180deg);
             display: block;
-
+            flex-shrink: 0;
             opacity: 0.8;
         }
     }
