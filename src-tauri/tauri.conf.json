@@ -38,7 +38,7 @@
         ],
         "resources": {
             "assets/": "assets/",
-            "../crates/espeak-rs-sys/espeak-data-compiled/espeak-ng-data": "resources/espeak-ng-data"
+            "../crates/espeak-rs-sys/espeak-ng-data-compiled": "resources/espeak-ng-data"
         },
         "windows": {
             "nsis": {
