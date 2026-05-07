@@ -42,13 +42,14 @@ vrchat_osc = "2.2.0"
 
 msedge-tts = "0.3.0"
 piper-rs = "0.1.9"
+espeak-rs-sys = { path = "../crates/espeak-rs-sys" }
+
 ort = { version = "=2.0.0-rc.9" }
 ort-sys = { version = "=2.0.0-rc.9", default-features = false }
 tauri-plugin-dialog = "2"
 tauri-plugin-os = "2"
 
-[patch.crates-io]
-espeak-rs-sys = { path = "../crates/espeak-rs-sys" }
+
 
 [target.'cfg(windows)'.dependencies.windows]
 version = ">=0.59, <=0.62"
