@@ -505,8 +505,6 @@ name = "birdpro"
 version = "1.1.1"
 dependencies = [
  "base64 0.22.1",
- "cpal",
- "espeak-rs-sys 0.1.9",
  "futures-util",
  "hound",
  "humantime",
@@ -1004,7 +1002,6 @@ dependencies = [
  "alsa",
  "coreaudio-rs",
  "dasp_sample",
- "jack",
  "jni",
  "js-sys",
  "libc",
@@ -1495,7 +1492,7 @@ version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d648355e4824dd2b37fcc84af3cbc234f96ae4f7c515fea2df7094f98453edd0"
 dependencies = [
- "espeak-rs-sys 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "espeak-rs-sys",
  "ffi-support",
  "once_cell",
  "regex",
@@ -1504,17 +1501,6 @@ dependencies = [
 [[package]]
 name = "espeak-rs-sys"
 version = "0.1.9"
-dependencies = [
- "bindgen 0.69.5",
- "cmake",
- "glob",
-]
-
-[[package]]
-name = "espeak-rs-sys"
-version = "0.1.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eeb333310ae915d57961a6bbc67f53ef7b313a9ee80d393d55c0f27f1b65c848"
 dependencies = [
  "bindgen 0.69.5",
  "cmake",
@@ -2762,33 +2748,6 @@ name = "itoa"
 version = "1.0.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "92ecc6618181def0457392ccd0ee51198e065e016d1d527a7ac1b6dc7c1f09d2"
-
-[[package]]
-name = "jack"
-version = "0.13.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ef009705c2f230e5ae113e2319a2151913e8d898e075ec44f8372cf33b90cfdd"
-dependencies = [
- "bitflags 2.10.0",
- "jack-sys",
- "lazy_static",
- "libc",
- "log",
-]
-
-[[package]]
-name = "jack-sys"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6013b7619b95a22b576dfb43296faa4ecbe40abbdb97dfd22ead520775fc86ab"
-dependencies = [
- "bitflags 1.3.2",
- "lazy_static",
- "libc",
- "libloading 0.7.4",
- "log",
- "pkg-config",
-]
 
 [[package]]
 name = "javascriptcore-rs"
@@ -8376,3 +8335,8 @@ dependencies = [
  "syn 2.0.114",
  "winnow 0.7.14",
 ]
+
+[[patch.unused]]
+name = "cpal"
+version = "0.18.0"
+source = "git+https://github.com/RustAudio/cpal.git?rev=078787ee8061c41fc3198e3a39d55238bc68fa4d#078787ee8061c41fc3198e3a39d55238bc68fa4d"

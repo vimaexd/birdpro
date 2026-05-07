@@ -62,7 +62,12 @@ impl AudioSetup {
 pub fn get_device_display_name(device: DeviceDescription) -> String {
     let name = device.name().to_string();
     let driver = device.driver().unwrap_or("").to_string();
-    format!("{name} ({driver})")
+
+    if cfg!(target_os = "windows") {
+        format!("{name} ({driver})")
+    } else {
+        format!("{name}")
+    }
 }
 
 // helper to be able to differenciate different tts sinks to
