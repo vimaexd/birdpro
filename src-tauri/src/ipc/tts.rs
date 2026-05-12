@@ -1,6 +1,7 @@
 use rodio::{Decoder, Player, Source};
+use std::collections::VecDeque;
 use std::io::Cursor;
-use std::sync::OnceLock;
+use std::sync::{LazyLock, OnceLock};
 use tauri::State;
 use tokio::sync::Mutex as AsyncMutex;
 use vrchat_osc::rosc::{OscMessage, OscPacket, OscType};
@@ -14,12 +15,18 @@ use crate::backends::tiktok::TiktokTTSProvider;
 #[cfg(windows)]
 use crate::backends::windows::WindowsTTSProvider;
 use crate::provider::{
-    TTSProvider, TTSProviderError, TTSProviderInfo, TTSProviderType, TTS_PROVIDERS,
+    TTS_PROVIDERS, TTSProvider, TTSProviderError, TTSProviderInfo, TTSProviderType
 };
-use crate::voice::{Voice, VoiceWithSettings};
+use crate::voice::{CachedMessage, Voice, VoiceWithSettings};
 use crate::{get_platform, AppData};
 
 pub static APP_HANDLE: OnceLock<tauri::AppHandle> = OnceLock::new();
+
+pub static MESSAGE_CACHE_LENGTH: usize = 5;
+pub static MESSAGE_CACHE: LazyLock<AsyncMutex<VecDeque<CachedMessage>>>
+    = LazyLock::new(|| AsyncMutex::new(
+        VecDeque::<CachedMessage>::new()
+        ));
 
 #[tauri::command]
 pub async fn tts_say(
@@ -52,24 +59,37 @@ pub async fn tts_say(
         rate: rate,
     };
 
-    let _bytes: Result<Vec<u8>, TTSProviderError> = match provider {
-        TTSProviderType::MsEdge => {
-            MsEdgeTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config).await
-        }
-        TTSProviderType::ElevenLabs => {
-            ElevenlabsTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config)
-                .await
-        }
-        TTSProviderType::Tiktok => {
-            TiktokTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config).await
-        }
-        TTSProviderType::Piper => {
-            PiperTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config).await
-        }
-        #[cfg(windows)]
-        TTSProviderType::Windows => {
-            WindowsTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config)
-                .await
+    // check if the message is cached
+    let mut cache = MESSAGE_CACHE.lock().await;
+    let cached_message = cache.iter().find(|m| m.voice == voice_final && m.content == message);
+
+    let _bytes: Result<Vec<u8>, TTSProviderError> = match cached_message {
+        Some(m) => {
+            log::info!("Playing message from cache");
+            Ok(m.audio_bytes.clone())
+        },
+
+        None => {
+            match provider {
+                TTSProviderType::MsEdge => {
+                    MsEdgeTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config).await
+                }
+                TTSProviderType::ElevenLabs => {
+                    ElevenlabsTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config)
+                        .await
+                }
+                TTSProviderType::Tiktok => {
+                    TiktokTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config).await
+                }
+                TTSProviderType::Piper => {
+                    PiperTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config).await
+                }
+                #[cfg(windows)]
+                TTSProviderType::Windows => {
+                    WindowsTTSProvider::get_speech_bytes(message.as_str(), &voice_final, &state.config)
+                        .await
+                }
+            }
         }
     };
 
@@ -77,6 +97,15 @@ pub async fn tts_say(
         Ok(v) => v,
         Err(e) => return Err(e),
     };
+
+    // if that wasnt cached, shove the audio into the cache
+    if cached_message.is_none() {
+        log::info!("Caching message");
+        cache.push_back(CachedMessage { content: message.clone(), voice: voice_final, audio_bytes: bytes.clone() });
+        if cache.len() > MESSAGE_CACHE_LENGTH {
+            cache.pop_front();
+        }
+    }
 
     // clean up previous finished sinks
     state.audio_sinks.retain(|sink| !sink.sink.empty());

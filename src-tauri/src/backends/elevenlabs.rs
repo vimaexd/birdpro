@@ -9,10 +9,6 @@ static ELEVENLABS_BASE_URL: &'static str = "https://api.elevenlabs.io";
 pub struct ElevenlabsTTSProvider {}
 
 impl TTSProvider for ElevenlabsTTSProvider {
-    fn name() -> &'static str {
-        "ElevenLabs"
-    }
-
     async fn get_speech_bytes(
         message: &str,
         voice: &VoiceWithSettings,

@@ -23,9 +23,6 @@ static PIPER_VOICE_CACHE: LazyLock<Mutex<Option<(String, PiperSpeechSynthWrapper
 pub struct PiperTTSProvider {}
 
 impl TTSProvider for PiperTTSProvider {
-    fn name() -> &'static str {
-        "Piper"
-    }
 
     async fn get_speech_bytes(
         message: &str,

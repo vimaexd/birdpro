@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::fmt;
 
-#[derive(Default, Clone, Copy, Serialize, Deserialize, Debug)]
+#[derive(Default, Clone, Copy, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub enum TTSProviderType {
     #[default]
     MsEdge,
@@ -145,8 +145,6 @@ pub enum TTSProviderPlatform {
 }
 
 pub trait TTSProvider {
-    fn name() -> &'static str;
-
     #[allow(async_fn_in_trait)]
     async fn get_speech_bytes(
         message: &str,

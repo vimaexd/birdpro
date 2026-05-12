@@ -10,10 +10,6 @@ use windows::Win32::System::WinRT::IBufferByteAccess;
 pub struct WindowsTTSProvider {}
 
 impl TTSProvider for WindowsTTSProvider {
-    fn name() -> &'static str {
-        "Windows"
-    }
-
     async fn get_speech_bytes(
         message: &str,
         voice: &VoiceWithSettings,

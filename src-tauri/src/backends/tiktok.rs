@@ -24,10 +24,6 @@ struct TiktokVoice {
 pub struct TiktokTTSProvider {}
 
 impl TTSProvider for TiktokTTSProvider {
-    fn name() -> &'static str {
-        "TikTok"
-    }
-
     async fn get_speech_bytes(
         message: &str,
         voice: &VoiceWithSettings,

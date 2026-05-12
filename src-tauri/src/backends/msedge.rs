@@ -14,10 +14,6 @@ pub fn sanitize_ssml_message(str: String) -> String {
 }
 
 impl TTSProvider for MsEdgeTTSProvider {
-    fn name() -> &'static str {
-        "Microsoft Edge TTS"
-    }
-
     async fn get_speech_bytes(
         message: &str,
         voice: &VoiceWithSettings,
