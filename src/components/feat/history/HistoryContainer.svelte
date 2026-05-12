@@ -117,7 +117,9 @@
 
 
         .history-side {
-            height: calc(100% - 16px);
+            /* potentially problematic on macOS ? */
+            /*height: calc(100% - 16px);*/
+
             writing-mode: vertical-rl;
             text-orientation: sideways;
             display: flex;
