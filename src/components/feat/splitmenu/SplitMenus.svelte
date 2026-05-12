@@ -103,8 +103,7 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
-
-        height: 100%;
         overflow: hidden;
+        flex-shrink: 1;
     }
 </style>

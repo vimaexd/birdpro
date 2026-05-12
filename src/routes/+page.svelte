@@ -545,7 +545,7 @@
         flex-grow: 0;
         gap: 8px;
 
-        max-height: 100vh;
+        max-height: calc(100vh - 24px);
 
         width: var(--sidebar-width);
         flex-shrink: 0;

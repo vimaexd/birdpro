@@ -246,7 +246,9 @@
     #favourites {
         display: flex;
         flex-direction: column;
+        flex-shrink: 1;
         gap: 8px;
+
         overflow-x: hidden;
         overflow-y: scroll;
     }
